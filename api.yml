@@ -1,0 +1,283 @@
+openapi: 3.0.1
+info:
+  title: LowCatOrNot
+  description: Moscow City Hack Case 3.
+  version: 1.0.0
+externalDocs:
+  description: Find out more about project
+  url: https://github.com/
+servers:
+- url: https://dno.ru/
+- url: http://dno.ru/
+- url: http2://dno.ru
+tags:
+- name: company
+  description: company
+- name: moderator
+  description: moderator
+paths:
+  /api/login:
+    post:
+      tags:
+      - company
+      summary: Вход в систему
+      description: Вход в систему
+      requestBody:
+        description: user data for signing in
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyLogin'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          # headers:
+          #   Set-Cookie:
+          #     description: HTTP-only cookie and time left before expire
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        400:
+          description: Логин или пароль неверные
+        404:
+          description: такого юзера нет
+          
+  /api/register:
+    post:
+      tags:
+      - company
+      summary: Вход в систему
+      description: Вход в систему
+      requestBody:
+        description: user data for signing in
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyRegistration'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          # headers:
+          #   Set-Cookie:
+          #     description: HTTP-only cookie and time left before expire
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        400:
+          description: Уже существует
+
+  /api/logout:
+    post:
+      tags:
+      - user
+      summary: Logs out current logged in user session
+      description: This can only be done by the logged in user
+      operationId: ""
+      responses:
+        200:
+          description: successful operation
+        401:
+          description: Unauthorized
+
+  /api/company/{title}:
+    get:
+      tags:
+      - company
+      description: для профиля компании
+      parameters:
+      - name: title
+        in: path
+        description: company title
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        404:
+          description: not found
+          
+  /api/category/{title}:
+    get:
+      tags:
+      - company
+      description: компании в данной категории
+      parameters:
+      - name: title
+        in: path
+        description: category title
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Company'
+        404:
+          description: not found
+
+  /api/industry/{title}:
+    get:
+      tags:
+      - company
+      description: категории в отрасли
+      parameters:
+      - name: title
+        in: path
+        description: industry title
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        404:
+          description: not found
+          
+    /api/industries:
+    get:
+      tags:
+      - company
+      description: отрасли в системе (отображаем на главной)
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Industry'
+
+
+components:
+  schemas:
+  
+    Industry:
+      description: Список отраслей
+      type: object
+      properties:
+        title:
+          type: string
+        numCategories:
+          type: integer 
+        
+    CompanyRegistration:
+      description: Данные профиля пользователя
+      type: object
+      properties:
+        itn:
+          type: string
+          description: ОГРН (Основной Государственный Регистрационный Номер) — PSRN (Primary State Registration Number)
+        psrn:
+          type: string
+          description: название компании
+        name:
+          type: string
+          description: юридическое имя
+        legalName:
+          type: string
+          description:
+        email:
+          type: string
+        link:
+          type: string
+          description: ссылка на главную страницу
+        password:
+          type: string
+          
+    CompanyLogin:
+      description: вход по емаилу и паролю
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    Company:
+      description: Данные о компании
+      type: object
+      properties:
+        itn:
+          type: string
+          description: ОГРН (Основной Государственный Регистрационный Номер) — PSRN (Primary State Registration Number)
+        psrn:
+          type: string
+          description: название компании
+        name:
+          type: string
+          description: юридическое имя
+        legalName:
+          type: string
+          description:
+        email:
+          type: string
+        link:
+          type: string
+          description: ссылка на главную страницу
+        category:
+          description: отрасли
+          type: object
+            $ref: '#/components/schemas/Category'
+          
+    Category:
+      description: Список компаний в категории внутри отрасли
+      type: object
+      properties:
+        industry:
+          description: название родительской отрасли
+          type: string
+        title:
+          type: string
+        numCompanies:
+          type: integer
+          
+    ApiResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int64
+        data:
+          type: object
+          properties: {}
+        msg:
+          type: string
+          
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://petstore.swagger.io/oauth/dialog
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
