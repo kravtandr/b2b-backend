@@ -67,6 +67,21 @@ func (u userUseCase) Registration(user *domain.User) (int, error) {
 	return fasthttp.StatusOK, err
 }
 
+func (u userUseCase) RegistrationCompany(company *domain.Company) (int, error) {
+	_, err := govalidator.ValidateStruct(company)
+	if err != nil {
+		log.Printf("error while validating user")
+		return fasthttp.StatusBadRequest, err
+	}
+	err = u.AddCompany(*company)
+	if err != nil {
+		log.Printf("error while adding user")
+		return fasthttp.StatusBadRequest, err
+	}
+
+	return fasthttp.StatusOK, err
+}
+
 func (c userUseCase) GetByEmail(key string) (value domain.User, err error) {
 	return c.userStorage.GetByEmail(key)
 }
@@ -90,6 +105,10 @@ func (c userUseCase) GetPublicUserByEmail(key string) (value []byte, err error) 
 
 func (c userUseCase) Add(user domain.User) error {
 	return c.userStorage.Add(user)
+}
+
+func (c userUseCase) AddCompany(company domain.Company) error {
+	return c.userStorage.AddCompany(company)
 }
 
 func (c userUseCase) Validate(user *domain.User) bool {

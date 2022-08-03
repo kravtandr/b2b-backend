@@ -20,6 +20,7 @@ import (
 type UserHandler interface {
 	Login(ctx *fasthttp.RequestCtx)
 	Registration(ctx *fasthttp.RequestCtx)
+	FastRegistration(ctx *fasthttp.RequestCtx)
 	Logout(ctx *fasthttp.RequestCtx)
 	GetByEmail(ctx *fasthttp.RequestCtx)
 	// GetCompanyById(ctx *fasthttp.RequestCtx)
@@ -41,6 +42,7 @@ func NewUserHandler(UserUseCase domain.UserUseCase, CookieHandler ccd.CookieHand
 
 func CreateDelivery(db *pgxpool.Pool) UserHandler {
 	cookieLayer := ccd.CreateDelivery(db)
+	//companyLayer := NewCompanyHandler(cu.NewCompanyUseCase(cr.NewCompanyStorage(db)), cookieLayer)
 	userLayer := NewUserHandler(uu.NewUserUseCase(ur.NewUserStorage(db)), cookieLayer)
 	return userLayer
 }
@@ -50,6 +52,7 @@ func SetUpUserRouter(db *pgxpool.Pool, r *router.Router) *router.Router {
 	r.POST(cnst.LoginURL, userHandler.Login)
 	r.POST(cnst.RegisterURL, userHandler.Registration)
 	r.POST(cnst.CheckEmailURL, userHandler.GetByEmail)
+	r.POST(cnst.FastRegistrationURL, userHandler.FastRegistration)
 	// r.GET(cnst.CompanyURL, companyHandler.GetCompanyById)
 	// r.GET(cnst.CategoryURL, companyHandler.GetCompaniesByCategoryId)
 	// r.POST(cnst.CompanySearchURL, companyHandler.SearchCompanies)
@@ -100,6 +103,43 @@ func (s *userHandler) Registration(ctx *fasthttp.RequestCtx) {
 	с := fmt.Sprint(uuid.NewMD5(uuid.UUID{}, []byte(user.Email)))
 	newUser, _ := s.UserUseCase.GetByEmail(user.Email)
 	s.CookieHandler.SetCookieAndToken(ctx, с, newUser.Id)
+}
+
+func (s *userHandler) FastRegistration(ctx *fasthttp.RequestCtx) {
+	form := new(domain.FastRegistrationForm)
+	if err := json.Unmarshal(ctx.PostBody(), &form); err != nil {
+		log.Printf("error while unmarshalling JSON: %s", err)
+		ctx.SetStatusCode(fasthttp.StatusBadRequest)
+		return
+	}
+
+	user := new(domain.User)
+	user.Email = form.Email
+	user.Password = form.Password
+	user.Name = form.OwnerName
+	user.Surname = form.Surname
+	user.Patronymic = form.Patronymic
+	user.Country = form.Country
+
+	code, err := s.UserUseCase.Registration(user)
+	ctx.SetStatusCode(code)
+	if err != nil {
+		log.Printf("error while registering user in", err)
+		return
+	}
+	company := new(domain.Company)
+	company.Name = form.Name
+	company.LegalName = form.LegalName
+	company.Itn = form.Itn
+	company.Email = form.Email
+	newUser, _ := s.UserUseCase.GetByEmail(user.Email)
+	company.OwnerId = newUser.Id
+
+	code, err = s.UserUseCase.RegistrationCompany(company)
+	if err != nil {
+		log.Printf("error while registering user in", err)
+		return
+	}
 }
 
 func (s *userHandler) Logout(ctx *fasthttp.RequestCtx) {

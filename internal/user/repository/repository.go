@@ -25,13 +25,34 @@ func (u *UserStorage) Add(value domain.User) error {
 	defer conn.Release()
 	log.Printf("User ", value)
 	_, err = conn.Exec(context.Background(),
-		`INSERT INTO Users ("name", "surname", "email", "password", "group_id") VALUES ($1, $2, $3, $4, $5)`,
+		`INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ($1, $2, $3, $4, $5, $6)`,
 
 		value.Name,
 		value.Surname,
+		value.Patronymic,
 		value.Email,
 		value.Password,
-		value.GroupId,
+		value.Country,
+	)
+	return err
+}
+
+func (u *UserStorage) AddCompany(value domain.Company) error {
+	conn, err := u.dataHolder.Acquire(context.Background())
+	if err != nil {
+		log.Printf("Connection error while adding user ", err)
+		return err
+	}
+	defer conn.Release()
+
+	_, err = conn.Exec(context.Background(),
+		`INSERT INTO Companies ("name", "legal_name", "itn", "email", "owner_id") VALUES ($1, $2, $3, $4, $5)`,
+
+		value.Name,
+		value.LegalName,
+		value.Itn,
+		value.Email,
+		value.OwnerId,
 	)
 	return err
 }
@@ -47,10 +68,10 @@ func (u *UserStorage) GetByEmail(key string) (value domain.User, err error) {
 	defer conn.Release()
 
 	err = conn.QueryRow(context.Background(),
-		`SELECT id, "name", "surname", "email","password", "group_id"
+		`SELECT id, "name", "surname", "patronymic", "email","password", "group_id"
 		FROM Users WHERE email = $1`,
 		key,
-	).Scan(&user.Id, &user.Name, &user.Surname, &user.Email, &user.Password, &user.GroupId)
+	).Scan(&user.Id, &user.Name, &user.Surname, &user.Patronymic, &user.Email, &user.Password, &user.GroupId)
 	return user, err
 }
 
@@ -65,10 +86,10 @@ func (u *UserStorage) GetPublicUserByEmail(key string) (value domain.PublicUser,
 	defer conn.Release()
 
 	err = conn.QueryRow(context.Background(),
-		`SELECT name, surname, email
+		`SELECT name, surname, patronymic,  email
 		FROM Users WHERE email = $1`,
 		key,
-	).Scan(&user.Name, &user.Surname, &user.Email)
+	).Scan(&user.Name, &user.Surname, &user.Patronymic, &user.Email)
 	return user, err
 }
 
