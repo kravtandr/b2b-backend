@@ -5,5 +5,5 @@ CREATE USER b2b WITH PASSWORD 'b2b';
 create database b2b;
 psql -U b2b -d b2b 
 
-cd main
+cd cmd
 go run amin.go
