@@ -16,8 +16,6 @@ type Company struct {
 	OwnerId      int      `json:"owner_id"`
 	Rating       int      `json:"rating"`
 	Docks        []string `json:"docs"`
-
-	Password string `json:"password"`
 }
 type CompanySearch struct {
 	Name string `json:"name"`
@@ -28,8 +26,9 @@ type Companies []Company
 type CompanyStorage interface {
 	Add(value Company) error
 	GetByEmail(key string) (value Company, err error)
+	GetCompanyById(key string) (value Company, err error)
 	//SearchCompanies(key string) (value Companies, err error)
-	//GetCompanyById(key string) (value Company, err error)
+
 	//GetCompaniesByCategoryId(key string) (value Companies, err error)
 
 }
@@ -37,8 +36,9 @@ type CompanyStorage interface {
 type CompanyUseCase interface {
 	Add(value *Company) error
 	GetByEmail(key string) (value Company, err error)
+	GetCompanyById(key string) (value []byte, err error)
 	//SearchCompanies(key CompanySearch) (value []byte, err error)
-	//GetCompanyById(key string) (value []byte, err error)
+
 	//GetCompaniesByCategoryId(key string) (value []byte, err error)
 	//Validate(company *Company) bool
 	//Login(company *Company) (int, error)

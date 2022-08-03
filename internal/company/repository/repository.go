@@ -63,6 +63,25 @@ func (u *CompanyStorage) GetByEmail(key string) (value domain.Company, err error
 	return company, err
 }
 
+func (u *CompanyStorage) GetCompanyById(key string) (value domain.Company, err error) {
+	var company domain.Company
+
+	conn, err := u.dataHolder.Acquire(context.Background())
+	if err != nil {
+		log.Printf("Error while getting user")
+		return company, err
+	}
+	defer conn.Release()
+	log.Printf("key = ", key)
+	err = conn.QueryRow(context.Background(),
+		`SELECT "id", "name", "description", "legal_name", "itn", "psrn", "address","legal_address","email", "phone", "link", "activity", "owner_id", "rating"  
+	FROM Companies WHERE id = $1`,
+		key,
+	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId, &company.Rating)
+
+	return company, err
+}
+
 // func (u *CompanyStorage) SearchCompanies(key string) (value domain.Companies, err error) {
 // 	companies := make([]domain.Company, 0)
 // 	param := "^" + key
@@ -94,25 +113,6 @@ func (u *CompanyStorage) GetByEmail(key string) (value domain.Company, err error
 // 		return companies, err
 // 	}
 // 	return companies, err
-// }
-
-// func (u *CompanyStorage) GetCompanyById(key string) (value domain.Company, err error) {
-// 	var company domain.Company
-
-// 	conn, err := u.dataHolder.Acquire(context.Background())
-// 	if err != nil {
-// 		log.Printf("Error while getting user")
-// 		return company, err
-// 	}
-// 	defer conn.Release()
-// 	log.Printf("key = ", key)
-// 	err = conn.QueryRow(context.Background(),
-// 		`SELECT id, email, name, legal_name, itn, psrn, adress, phone, link, category_id
-// 		FROM Company WHERE id = $1`,
-// 		key,
-// 	).Scan(&company.Id, &company.Email, &company.Name, &company.LegalName, &company.Itn, &company.Psrn, &company.Adress, &company.Phone, &company.Link, &company.CategoryId)
-
-// 	return company, err
 // }
 
 // // func (u *CompanyStorage) GetCompaniesByCategoryTitle(key string) (value domain.Companies, err error) {

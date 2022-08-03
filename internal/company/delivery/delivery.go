@@ -12,7 +12,6 @@ import (
 	ccd "b2b/m/internal/cookie/delivery"
 
 	"github.com/fasthttp/router"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
 )
@@ -21,7 +20,7 @@ type CompanyHandler interface {
 	Add(ctx *fasthttp.RequestCtx)
 	// Registration(ctx *fasthttp.RequestCtx)
 	// Logout(ctx *fasthttp.RequestCtx)
-	// GetCompanyById(ctx *fasthttp.RequestCtx)
+	GetCompanyById(ctx *fasthttp.RequestCtx)
 	// GetCompaniesByCategoryId(ctx *fasthttp.RequestCtx)
 	// SearchCompanies(ctx *fasthttp.RequestCtx)
 }
@@ -47,7 +46,21 @@ func CreateDelivery(db *pgxpool.Pool) CompanyHandler {
 func SetUpCompanyRouter(db *pgxpool.Pool, r *router.Router) *router.Router {
 	companyHandler := CreateDelivery(db)
 	r.POST(cnst.RegisterCompanyURL, companyHandler.Add)
+	r.GET(cnst.CompanyURL, companyHandler.GetCompanyById)
 	return r
+}
+
+func (s *companyHandler) GetCompanyById(ctx *fasthttp.RequestCtx) {
+	param, _ := ctx.UserValue("id").(string)
+	bytes, err := s.CompanyUseCase.GetCompanyById(param)
+	if err != nil {
+		ctx.SetStatusCode(fasthttp.StatusNotFound)
+		log.Printf(": %s", err)
+		ctx.Write([]byte("{}"))
+		return
+	}
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.Write(bytes)
 }
 
 func (s *companyHandler) Add(ctx *fasthttp.RequestCtx) {
@@ -66,23 +79,20 @@ func (s *companyHandler) Add(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	с := fmt.Sprint(uuid.NewMD5(uuid.UUID{}, []byte(company.Email)))
-	newUser, _ := s.CompanyUseCase.GetByEmail(company.Email)
-	s.CookieHandler.SetCookieAndToken(ctx, с, newUser.Id)
-}
+	//с := fmt.Sprint(uuid.NewMD5(uuid.UUID{}, []byte(company.Email)))
+	newCompany, _ := s.CompanyUseCase.GetByEmail(company.Email)
+	//s.CookieHandler.SetCookieAndToken(ctx, с, newCompany.Id)
+	bytes, err := s.CompanyUseCase.GetCompanyById(fmt.Sprint(newCompany.Id))
+	if err != nil {
+		ctx.SetStatusCode(fasthttp.StatusNotFound)
+		log.Printf(": %s", err)
+		ctx.Write([]byte("{}"))
+		return
+	}
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.Write(bytes)
 
-// func (s *companyHandler) GetCompanyById(ctx *fasthttp.RequestCtx) {
-// 	param, _ := ctx.UserValue("id").(string)
-// 	bytes, err := s.CompanyUseCase.GetCompanyById(param)
-// 	if err != nil {
-// 		ctx.SetStatusCode(fasthttp.StatusNotFound)
-// 		log.Printf(": %s", err)
-// 		ctx.Write([]byte("{}"))
-// 		return
-// 	}
-// 	ctx.SetStatusCode(fasthttp.StatusOK)
-// 	ctx.Write(bytes)
-// }
+}
 
 // func (s *companyHandler) SearchCompanies(ctx *fasthttp.RequestCtx) {
 // 	//var request = &domain.CompanySearch{}

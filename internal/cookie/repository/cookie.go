@@ -32,7 +32,7 @@ func (c *cookieStorage) Add(key string, userId int) error {
 	return err
 }
 
-func (c *cookieStorage) Get(value string) (user domain.Company, err error) {
+func (c *cookieStorage) Get(value string) (user domain.User, err error) {
 	conn, err := c.dataHolder.Acquire(context.Background())
 	if err != nil {
 		fmt.Printf("Error while getting cookie")

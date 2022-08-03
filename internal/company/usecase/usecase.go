@@ -1,7 +1,9 @@
 package companyUseCase
 
 import (
+	chttp "b2b/m/pkg/customhttp"
 	"b2b/m/pkg/domain"
+	"log"
 )
 
 func NewCompanyUseCase(companyStorage domain.CompanyStorage) domain.CompanyUseCase {
@@ -20,24 +22,24 @@ func (c companyUseCase) GetByEmail(key string) (value domain.Company, err error)
 	return c.companyStorage.GetByEmail(key)
 }
 
+func (c companyUseCase) GetCompanyById(key string) (value []byte, err error) {
+	company, err := c.companyStorage.GetCompanyById(key)
+	if err != nil {
+		return []byte{}, err
+	}
+	bytes, err := chttp.ApiResp(company)
+	if err != nil {
+		log.Printf("error while marshalling JSON: %s", err)
+	}
+	return bytes, err
+}
+
 // func (c companyUseCase) SearchCompanies(key domain.CompanySearch) (value []byte, err error) {
 // 	companies, err := c.companyStorage.SearchCompanies(key.Name)
 // 	if err != nil {
 // 		return []byte{}, err
 // 	}
 // 	bytes, err := chttp.ApiResp(companies)
-// 	if err != nil {
-// 		log.Printf("error while marshalling JSON: %s", err)
-// 	}
-// 	return bytes, err
-// }
-
-// func (c companyUseCase) GetCompanyById(key string) (value []byte, err error) {
-// 	company, err := c.companyStorage.GetCompanyById(key)
-// 	if err != nil {
-// 		return []byte{}, err
-// 	}
-// 	bytes, err := chttp.ApiResp(company)
 // 	if err != nil {
 // 		log.Printf("error while marshalling JSON: %s", err)
 // 	}
