@@ -1,4 +1,3 @@
-
 -- drop table subcategories ;
 -- drop table productssubcategories ;
 -- drop table orderproducts;
@@ -30,7 +29,7 @@ $$
 CREATE TABLE Categories
 (
     id          SERIAL      NOT NULL PRIMARY KEY,
-    name        TEXT        NOT NULL,
+    name        TEXT        NOT NULL ,
     description TEXT
 );
 
@@ -96,13 +95,13 @@ CREATE TABLE Companies
 (
     id              SERIAL      NOT NULL PRIMARY KEY,
     name            TEXT        NOT NULL,
-    description     TEXT,
+    description     TEXT        DEFAULT '',
     legal_name      TEXT        NOT NULL,
     itn             TEXT        NOT NULL,
     psrn            TEXT        DEFAULT '',
     address         TEXT        DEFAULT '',
     legal_address   TEXT        DEFAULT '',
-    email           TEXT        ,
+    email           TEXT        NOT NULL,
     phone           TEXT        DEFAULT '',
     link            TEXT        DEFAULT '',
     activity        TEXT        DEFAULT '',
