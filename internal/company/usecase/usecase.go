@@ -18,6 +18,10 @@ func (c companyUseCase) Add(company *domain.Company) error {
 	return c.companyStorage.Add(*company)
 }
 
+func (c companyUseCase) AddBaseCompany(company *domain.Company, post string) error {
+	return c.companyStorage.AddBaseCompany(*company, post)
+}
+
 func (c companyUseCase) GetByEmail(key string) (value domain.Company, err error) {
 	return c.companyStorage.GetByEmail(key)
 }

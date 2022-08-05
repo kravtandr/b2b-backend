@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 
+	cr "b2b/m/internal/company/repository"
+	cu "b2b/m/internal/company/usecase"
 	ccd "b2b/m/internal/cookie/delivery"
 	ur "b2b/m/internal/user/repository"
 	uu "b2b/m/internal/user/usecase"
@@ -22,28 +24,31 @@ type UserHandler interface {
 	Registration(ctx *fasthttp.RequestCtx)
 	FastRegistration(ctx *fasthttp.RequestCtx)
 	Logout(ctx *fasthttp.RequestCtx)
-	GetByEmail(ctx *fasthttp.RequestCtx)
+	GetPublicUserByEmail(ctx *fasthttp.RequestCtx)
+	GetPublicUserById(ctx *fasthttp.RequestCtx)
 	// GetCompanyById(ctx *fasthttp.RequestCtx)
 	// GetCompaniesByCategoryId(ctx *fasthttp.RequestCtx)
 	// SearchCompanies(ctx *fasthttp.RequestCtx)
 }
 
 type userHandler struct {
-	UserUseCase   domain.UserUseCase
-	CookieHandler ccd.CookieHandler
+	UserUseCase    domain.UserUseCase
+	CompanyUseCase domain.CompanyUseCase
+	CookieHandler  ccd.CookieHandler
 }
 
-func NewUserHandler(UserUseCase domain.UserUseCase, CookieHandler ccd.CookieHandler) UserHandler {
+func NewUserHandler(UserUseCase domain.UserUseCase, CookieHandler ccd.CookieHandler, CompanyUseCase domain.CompanyUseCase) UserHandler {
 	return &userHandler{
-		UserUseCase:   UserUseCase,
-		CookieHandler: CookieHandler,
+		UserUseCase:    UserUseCase,
+		CompanyUseCase: CompanyUseCase,
+		CookieHandler:  CookieHandler,
 	}
 }
 
 func CreateDelivery(db *pgxpool.Pool) UserHandler {
 	cookieLayer := ccd.CreateDelivery(db)
-	//companyLayer := NewCompanyHandler(cu.NewCompanyUseCase(cr.NewCompanyStorage(db)), cookieLayer)
-	userLayer := NewUserHandler(uu.NewUserUseCase(ur.NewUserStorage(db)), cookieLayer)
+	companyLayer := cu.NewCompanyUseCase(cr.NewCompanyStorage(db))
+	userLayer := NewUserHandler(uu.NewUserUseCase(ur.NewUserStorage(db)), cookieLayer, companyLayer)
 	return userLayer
 }
 
@@ -51,8 +56,9 @@ func SetUpUserRouter(db *pgxpool.Pool, r *router.Router) *router.Router {
 	userHandler := CreateDelivery(db)
 	r.POST(cnst.LoginURL, userHandler.Login)
 	r.POST(cnst.RegisterURL, userHandler.Registration)
-	r.POST(cnst.CheckEmailURL, userHandler.GetByEmail)
+	r.POST(cnst.CheckEmailURL, userHandler.GetPublicUserByEmail)
 	r.POST(cnst.FastRegistrationURL, userHandler.FastRegistration)
+	r.GET(cnst.UserURL, userHandler.GetPublicUserById)
 	// r.GET(cnst.CompanyURL, companyHandler.GetCompanyById)
 	// r.GET(cnst.CategoryURL, companyHandler.GetCompaniesByCategoryId)
 	// r.POST(cnst.CompanySearchURL, companyHandler.SearchCompanies)
@@ -124,7 +130,7 @@ func (s *userHandler) FastRegistration(ctx *fasthttp.RequestCtx) {
 	code, err := s.UserUseCase.Registration(user)
 	ctx.SetStatusCode(code)
 	if err != nil {
-		log.Printf("error while registering user in", err)
+		log.Printf("error while registering user", err)
 		return
 	}
 	company := new(domain.Company)
@@ -132,12 +138,16 @@ func (s *userHandler) FastRegistration(ctx *fasthttp.RequestCtx) {
 	company.LegalName = form.LegalName
 	company.Itn = form.Itn
 	company.Email = form.Email
-	newUser, _ := s.UserUseCase.GetByEmail(user.Email)
+	newUser, err := s.UserUseCase.GetByEmail(user.Email)
+	if err != nil {
+		log.Printf("error while UserUseCase GetByEmail", err)
+		return
+	}
 	company.OwnerId = newUser.Id
 
-	code, err = s.UserUseCase.RegistrationCompany(company)
+	err = s.CompanyUseCase.AddBaseCompany(company, form.Post)
 	if err != nil {
-		log.Printf("error while registering user in", err)
+		log.Printf("error while AddBaseCompany", err)
 		return
 	}
 }
@@ -147,7 +157,7 @@ func (s *userHandler) Logout(ctx *fasthttp.RequestCtx) {
 	s.CookieHandler.DeleteCookie(ctx, string(ctx.Request.Header.Cookie(cnst.CookieName)))
 }
 
-func (s *userHandler) GetByEmail(ctx *fasthttp.RequestCtx) {
+func (s *userHandler) GetPublicUserByEmail(ctx *fasthttp.RequestCtx) {
 	request := new(domain.UserEmail)
 	if err := json.Unmarshal(ctx.Request.Body(), &request); err != nil {
 		ctx.SetStatusCode(fasthttp.StatusBadRequest)
@@ -164,37 +174,32 @@ func (s *userHandler) GetByEmail(ctx *fasthttp.RequestCtx) {
 	ctx.Write(bytes)
 }
 
-// func (s *userHandler) GetByEmail(ctx *fasthttp.RequestCtx) {
-// 	email := new(string)
-// 	if err := json.Unmarshal(ctx.PostBody(), &email); err != nil {
+func (s *userHandler) GetPublicUserById(ctx *fasthttp.RequestCtx) {
+	param, _ := ctx.UserValue("id").(string)
+	bytes, err := s.UserUseCase.GetPublicUserById(param)
+	if err != nil {
+		ctx.SetStatusCode(fasthttp.StatusNotFound)
+		ctx.SetBody([]byte{})
+		return
+	}
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.Write(bytes)
+}
+
+// func (s *userHandler) UpdateUserInfo(ctx *fasthttp.RequestCtx) {
+// 	user := new(domain.User)
+// 	if err := json.Unmarshal(ctx.PostBody(), &user); err != nil {
 // 		log.Printf("error while unmarshalling JSON: %s", err)
 // 		ctx.SetStatusCode(fasthttp.StatusBadRequest)
 // 		return
 // 	}
-// 	user, err := s.UserUseCase.GetByEmail(*email)
-// 	if err != nil {
-// 		log.Printf("error while GetByEmail user", err)
-// 		ctx.SetStatusCode(fasthttp.StatusNotFound)
-// 		return
-// 	}
-// 	if (user == domain.User{}) {
-// 		ctx.SetStatusCode(fasthttp.StatusNotFound)
-// 	} else {
-// 		ctx.SetStatusCode(fasthttp.StatusOK)
-// 	}
-// }
 
-// func (s *companyHandler) GetCompanyById(ctx *fasthttp.RequestCtx) {
-// 	param, _ := ctx.UserValue("id").(string)
-// 	bytes, err := s.CompanyUseCase.GetCompanyById(param)
+// 	code, err := s.UserUseCase.UpdateUserInfo(user)
+// 	ctx.SetStatusCode(code)
 // 	if err != nil {
-// 		ctx.SetStatusCode(fasthttp.StatusNotFound)
-// 		log.Printf(": %s", err)
-// 		ctx.Write([]byte("{}"))
+// 		log.Printf("error while registering user in", err)
 // 		return
 // 	}
-// 	ctx.SetStatusCode(fasthttp.StatusOK)
-// 	ctx.Write(bytes)
 // }
 
 // func (s *companyHandler) SearchCompanies(ctx *fasthttp.RequestCtx) {
@@ -213,19 +218,6 @@ func (s *userHandler) GetByEmail(ctx *fasthttp.RequestCtx) {
 // 		return
 // 	}
 
-// 	ctx.SetStatusCode(fasthttp.StatusOK)
-// 	ctx.Write(bytes)
-// }
-
-// func (s *companyHandler) GetCompaniesByCategoryId(ctx *fasthttp.RequestCtx) {
-// 	param, _ := ctx.UserValue("id").(string)
-// 	bytes, err := s.CompanyUseCase.GetCompaniesByCategoryId(param)
-// 	if err != nil {
-// 		ctx.SetStatusCode(fasthttp.StatusNotFound)
-// 		log.Printf("companyHandler error while getting list: %s", err)
-// 		ctx.Write([]byte("{}"))
-// 		return
-// 	}
 // 	ctx.SetStatusCode(fasthttp.StatusOK)
 // 	ctx.Write(bytes)
 // }

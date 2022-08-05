@@ -25,6 +25,8 @@ type Companies []Company
 
 type CompanyStorage interface {
 	Add(value Company) error
+	AddBaseCompany(value Company, post string) error
+	CompaniesUsersLink(value Company, post string) error
 	GetByEmail(key string) (value Company, err error)
 	GetCompanyById(key string) (value Company, err error)
 	//SearchCompanies(key string) (value Companies, err error)
@@ -35,6 +37,7 @@ type CompanyStorage interface {
 
 type CompanyUseCase interface {
 	Add(value *Company) error
+	AddBaseCompany(value *Company, post string) error
 	GetByEmail(key string) (value Company, err error)
 	GetCompanyById(key string) (value []byte, err error)
 	//SearchCompanies(key CompanySearch) (value []byte, err error)

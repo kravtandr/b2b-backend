@@ -73,8 +73,9 @@ func (s *companyHandler) Add(ctx *fasthttp.RequestCtx) {
 	}
 
 	err := s.CompanyUseCase.Add(company)
-	//ctx.SetStatusCode(code)
+
 	if err != nil {
+		ctx.SetStatusCode(fasthttp.StatusBadRequest)
 		log.Printf("error while registering user in", err)
 		return
 	}

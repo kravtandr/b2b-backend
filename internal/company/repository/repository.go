@@ -44,6 +44,62 @@ func (u *CompanyStorage) Add(value domain.Company) error {
 	return err
 }
 
+func (u *CompanyStorage) AddBaseCompany(value domain.Company, post string) error {
+	conn, err := u.dataHolder.Acquire(context.Background())
+	if err != nil {
+		log.Printf("Connection error while AddBaseCompany ", err)
+		return err
+	}
+	defer conn.Release()
+
+	_, err = conn.Exec(context.Background(),
+		`INSERT INTO Companies ("name", "legal_name", "itn", "email", "owner_id") VALUES ($1, $2, $3, $4, $5)`,
+
+		value.Name,
+		value.LegalName,
+		value.Itn,
+		value.Email,
+		value.OwnerId,
+	)
+	if err != nil {
+		log.Printf("Connection error while AddBaseCompany ", err)
+		return err
+	}
+	err = u.CompaniesUsersLink(value, post)
+	if err != nil {
+		log.Printf("Connection error while CompaniesUsersLink ", err)
+		return err
+	}
+	return err
+}
+
+func (u *CompanyStorage) CompaniesUsersLink(value domain.Company, post string) error {
+	conn, err := u.dataHolder.Acquire(context.Background())
+	if err != nil {
+		log.Printf("Connection error while AddBaseCompany ", err)
+		return err
+	}
+	defer conn.Release()
+	value, err = u.GetByEmail(value.Email)
+	if err != nil {
+		log.Printf("Connection error while GetByEmail ", err)
+		return err
+	}
+	_, err = conn.Exec(context.Background(),
+		`INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ($1, $2, $3)`,
+
+		post,
+		value.Id,
+		value.OwnerId,
+	)
+	if err != nil {
+		log.Printf("Connection error while adding user ", err)
+		return err
+	}
+	return err
+
+}
+
 func (u *CompanyStorage) GetByEmail(key string) (value domain.Company, err error) {
 	var company domain.Company
 
@@ -55,7 +111,7 @@ func (u *CompanyStorage) GetByEmail(key string) (value domain.Company, err error
 	defer conn.Release()
 
 	err = conn.QueryRow(context.Background(),
-		`SELECT id, name, description, legal_name, itn, psrn, adress, legal_adress,"email", "phone", "link", "activity", "owner_id"
+		`SELECT id, name, description, legal_name, itn, psrn, address, legal_address, email, phone, link, activity, owner_id
 		FROM Companies WHERE email = $1`,
 		key,
 	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId)

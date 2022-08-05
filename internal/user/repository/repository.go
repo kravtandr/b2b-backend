@@ -37,26 +37,6 @@ func (u *UserStorage) Add(value domain.User) error {
 	return err
 }
 
-func (u *UserStorage) AddCompany(value domain.Company) error {
-	conn, err := u.dataHolder.Acquire(context.Background())
-	if err != nil {
-		log.Printf("Connection error while adding user ", err)
-		return err
-	}
-	defer conn.Release()
-
-	_, err = conn.Exec(context.Background(),
-		`INSERT INTO Companies ("name", "legal_name", "itn", "email", "owner_id") VALUES ($1, $2, $3, $4, $5)`,
-
-		value.Name,
-		value.LegalName,
-		value.Itn,
-		value.Email,
-		value.OwnerId,
-	)
-	return err
-}
-
 func (u *UserStorage) GetByEmail(key string) (value domain.User, err error) {
 	var user domain.User
 
@@ -89,6 +69,24 @@ func (u *UserStorage) GetPublicUserByEmail(key string) (value domain.PublicUser,
 		`SELECT name, surname, patronymic,  email
 		FROM Users WHERE email = $1`,
 		key,
+	).Scan(&user.Name, &user.Surname, &user.Patronymic, &user.Email)
+	return user, err
+}
+
+func (u *UserStorage) GetPublicUserById(id string) (value domain.PublicUser, err error) {
+	var user domain.PublicUser
+
+	conn, err := u.dataHolder.Acquire(context.Background())
+	if err != nil {
+		log.Printf("Error while getting user")
+		return user, err
+	}
+	defer conn.Release()
+
+	err = conn.QueryRow(context.Background(),
+		`SELECT name, surname, patronymic,  email
+		FROM Users WHERE id = $1`,
+		id,
 	).Scan(&user.Name, &user.Surname, &user.Patronymic, &user.Email)
 	return user, err
 }

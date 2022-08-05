@@ -7,6 +7,7 @@ type FastRegistrationForm struct {
 	OwnerName  string `json:"owner_name"`
 	Surname    string `json:"surname"`
 	Patronymic string `json:"patronymic"`
+	Post       string `json:"post"`
 	Email      string `json:"email"`
 	Password   string `json:"password"`
 	Country    string `json:"country"`
