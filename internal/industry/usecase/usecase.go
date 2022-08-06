@@ -19,7 +19,7 @@ func (c industryUseCase) GetAllIndustries() (value []byte, err error) {
 	if err != nil {
 		return []byte{}, err
 	}
-	bytes, err := chttp.ApiResp(category)
+	bytes, err := chttp.ApiResp(category, err)
 	if err != nil {
 		log.Printf("error while marshalling JSON: %s", err)
 	}

@@ -19,7 +19,7 @@ func (c categoryUseCase) GetCategoryById(key string) (value []byte, err error) {
 	if err != nil {
 		return []byte{}, err
 	}
-	bytes, err := chttp.ApiResp(category)
+	bytes, err := chttp.ApiResp(category, err)
 	if err != nil {
 		log.Printf("error while marshalling JSON: %s", err)
 	}
@@ -31,7 +31,7 @@ func (c categoryUseCase) GetCategoriesInIndustry(key string) (value []byte, err 
 	if err != nil {
 		return []byte{}, err
 	}
-	bytes, err := chttp.ApiResp(category)
+	bytes, err := chttp.ApiResp(category, err)
 	if err != nil {
 		log.Printf("error while marshalling JSON: %s", err)
 	}

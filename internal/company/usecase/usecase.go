@@ -28,12 +28,19 @@ func (c companyUseCase) GetByEmail(key string) (value domain.Company, err error)
 
 func (c companyUseCase) GetCompanyById(key string) (value []byte, err error) {
 	company, err := c.companyStorage.GetCompanyById(key)
-	if err != nil {
-		return []byte{}, err
-	}
-	bytes, err := chttp.ApiResp(company)
+	bytes, err := chttp.ApiResp(company, err)
 	if err != nil {
 		log.Printf("error while marshalling JSON: %s", err)
+	}
+	return bytes, err
+}
+
+func (c companyUseCase) GetCompanyEmployees(id string) (value []byte, err error) {
+	company, err := c.companyStorage.GetCompanyEmployees(id)
+	bytes, Marchalerr := chttp.ApiResp(company, err)
+	if Marchalerr != nil {
+		log.Printf("error while marshalling JSON: %s", err)
+		return bytes, Marchalerr
 	}
 	return bytes, err
 }

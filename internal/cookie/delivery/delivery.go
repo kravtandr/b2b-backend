@@ -5,6 +5,7 @@ import (
 	cu "b2b/m/internal/cookie/usecase"
 	ent "b2b/m/internal/entities"
 	cnst "b2b/m/pkg/constants"
+	chttp "b2b/m/pkg/customhttp"
 	"b2b/m/pkg/domain"
 	"encoding/json"
 	"log"
@@ -66,13 +67,11 @@ func (s *cookieHandler) DeleteCookie(ctx *fasthttp.RequestCtx, cookie string) {
 
 func setToken(ctx *fasthttp.RequestCtx, hash string) {
 	t := ent.Token{Token: hash}
-	bytes, err := json.Marshal(t)
-
+	r := chttp.Resp{Data: t, Msg: "OK"}
+	bytes, err := json.Marshal(r)
 	if err != nil {
+		r.Msg = "error while marshalling JSON"
 		log.Printf("error while marshalling JSON: %s", err)
-		ctx.Write([]byte("{}"))
-		return
 	}
-
 	ctx.Write(bytes)
 }

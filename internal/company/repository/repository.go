@@ -3,6 +3,7 @@ package companyRepository
 import (
 	"b2b/m/pkg/domain"
 	"context"
+	"errors"
 	"log"
 
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -136,6 +137,40 @@ func (u *CompanyStorage) GetCompanyById(key string) (value domain.Company, err e
 	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId, &company.Rating)
 
 	return company, err
+}
+
+func (u *CompanyStorage) GetCompanyEmployees(key string) (value domain.Employees, err error) {
+	var employees domain.Employees
+
+	conn, err := u.dataHolder.Acquire(context.Background())
+	if err != nil {
+		log.Printf("Error while getting user")
+		return employees, err
+	}
+	defer conn.Release()
+	rows, err := conn.Query(context.Background(),
+		`SELECT   cu.post, cu.user_id, u.name, u.surname, u.patronymic, u.email, u.country, u.group_id
+	FROM companiesusers AS cu  JOIN Users u on u.id = cu.user_id WHERE cu.company_id = $1`,
+		key)
+	if err != nil {
+		log.Printf("Error while getting employees")
+		return employees, err
+	}
+	var employee domain.Employee
+	for rows.Next() {
+		rows.Scan(&employee.Post, &employee.Id, &employee.Name, &employee.Surname, &employee.Patronymic, &employee.Email, &employee.Country, &employee.Group_id)
+		employees = append(employees, employee)
+	}
+	if rows.Err() != nil || len(employees) == 0 {
+		log.Printf("Error while scanning employees", rows.Err())
+		return employees, errors.New("no such company")
+	}
+	if len(employees) == 0 {
+		log.Printf("Error no employees", rows.Err())
+		return employees, errors.New("no employees")
+	}
+
+	return employees, err
 }
 
 // func (u *CompanyStorage) SearchCompanies(key string) (value domain.Companies, err error) {

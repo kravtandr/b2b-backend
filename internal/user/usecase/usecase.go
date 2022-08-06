@@ -79,7 +79,7 @@ func (c userUseCase) GetPublicUserById(id string) (value []byte, err error) {
 	if (user == domain.PublicUser{}) {
 		return []byte{}, err
 	} else {
-		bytes, err := chttp.ApiResp(user)
+		bytes, err := chttp.ApiResp(user, err)
 		if err != nil {
 			log.Printf("error while marshalling JSON: %s", err)
 		}
@@ -95,7 +95,7 @@ func (c userUseCase) GetPublicUserByEmail(key string) (value []byte, err error) 
 	if (user == domain.PublicUser{}) {
 		return []byte{}, err
 	} else {
-		bytes, err := chttp.ApiResp(user)
+		bytes, err := chttp.ApiResp(user, err)
 		if err != nil {
 			log.Printf("error while marshalling JSON: %s", err)
 		}

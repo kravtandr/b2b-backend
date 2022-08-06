@@ -21,6 +21,19 @@ type CompanySearch struct {
 	Name string `json:"name"`
 }
 
+type Employee struct {
+	Post       string `json:"post"`
+	Id         int    `json:"id"`
+	Name       string `json:"name"`
+	Surname    string `json:"surname"`
+	Patronymic string `json:"patronymic"`
+	Email      string `json:"email"`
+	Country    string `json:"country"`
+	Group_id   int    `json:"group_id"`
+}
+
+type Employees []Employee
+
 type Companies []Company
 
 type CompanyStorage interface {
@@ -29,6 +42,7 @@ type CompanyStorage interface {
 	CompaniesUsersLink(value Company, post string) error
 	GetByEmail(key string) (value Company, err error)
 	GetCompanyById(key string) (value Company, err error)
+	GetCompanyEmployees(key string) (value Employees, err error)
 	//SearchCompanies(key string) (value Companies, err error)
 
 	//GetCompaniesByCategoryId(key string) (value Companies, err error)
@@ -40,10 +54,8 @@ type CompanyUseCase interface {
 	AddBaseCompany(value *Company, post string) error
 	GetByEmail(key string) (value Company, err error)
 	GetCompanyById(key string) (value []byte, err error)
-	//SearchCompanies(key CompanySearch) (value []byte, err error)
+	GetCompanyEmployees(key string) (value []byte, err error)
 
-	//GetCompaniesByCategoryId(key string) (value []byte, err error)
+	//SearchCompanies(key CompanySearch) (value []byte, err error)
 	//Validate(company *Company) bool
-	//Login(company *Company) (int, error)
-	//Registration(company *Company) (int, error)
 }

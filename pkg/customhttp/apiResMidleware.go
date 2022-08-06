@@ -2,16 +2,17 @@ package customhttp
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 )
 
-type resp struct {
+type Resp struct {
 	Data interface{} `json:"data"`
 	Msg  string      `json:"msg"`
 }
 
-func ApiResp(value interface{}) ([]byte, error) {
-	r := resp{Data: value, Msg: "OK"}
+func ApiResp(value interface{}, err error) ([]byte, error) {
+	r := Resp{Data: value, Msg: fmt.Sprintln(err)}
 	bytes, err := json.Marshal(r)
 	if err != nil {
 		r.Msg = "error while marshalling JSON"
