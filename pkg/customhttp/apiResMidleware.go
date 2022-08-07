@@ -12,7 +12,13 @@ type Resp struct {
 }
 
 func ApiResp(value interface{}, err error) ([]byte, error) {
-	r := Resp{Data: value, Msg: fmt.Sprintln(err)}
+	var r Resp
+	if err != nil {
+		r = Resp{Data: value, Msg: fmt.Sprintln(err)}
+	} else {
+		r = Resp{Data: value, Msg: "OK"}
+
+	}
 	bytes, err := json.Marshal(r)
 	if err != nil {
 		r.Msg = "error while marshalling JSON"

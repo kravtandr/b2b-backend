@@ -36,6 +36,11 @@ type Employees []Employee
 
 type Companies []Company
 
+type CompanyFullInfo struct {
+	Company   Company   `json:"company"`
+	Employees Employees `json:"employees"`
+}
+
 type CompanyStorage interface {
 	Add(value Company) error
 	AddBaseCompany(value Company, post string) error
@@ -43,6 +48,7 @@ type CompanyStorage interface {
 	GetByEmail(key string) (value Company, err error)
 	GetCompanyById(key string) (value Company, err error)
 	GetCompanyEmployees(key string) (value Employees, err error)
+	GetCompanyFullInfo(key string) (value CompanyFullInfo, err error)
 	//SearchCompanies(key string) (value Companies, err error)
 
 	//GetCompaniesByCategoryId(key string) (value Companies, err error)
@@ -55,6 +61,7 @@ type CompanyUseCase interface {
 	GetByEmail(key string) (value Company, err error)
 	GetCompanyById(key string) (value []byte, err error)
 	GetCompanyEmployees(key string) (value []byte, err error)
+	GetCompanyFullInfo(key string) (value []byte, err error)
 
 	//SearchCompanies(key CompanySearch) (value []byte, err error)
 	//Validate(company *Company) bool

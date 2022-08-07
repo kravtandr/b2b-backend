@@ -9,6 +9,7 @@ const LogoutURL = "/user/logout"
 const CheckEmailURL = "/user/check"
 
 const CompanyURL = "/company/{id}"
+const CompanyInfoURL = "/company/{id}/fullinfo"
 const CompanyEmployeesURL = "/company/{id}/employees"
 const RegisterCompanyURL = "/company/register"
 

@@ -20,6 +20,7 @@ type CompanyHandler interface {
 	Add(ctx *fasthttp.RequestCtx)
 	GetCompanyEmployees(ctx *fasthttp.RequestCtx)
 	GetCompanyById(ctx *fasthttp.RequestCtx)
+	GetCompanyFullInfo(ctx *fasthttp.RequestCtx)
 	// SearchCompanies(ctx *fasthttp.RequestCtx)
 }
 
@@ -46,6 +47,7 @@ func SetUpCompanyRouter(db *pgxpool.Pool, r *router.Router) *router.Router {
 	r.POST(cnst.RegisterCompanyURL, companyHandler.Add)
 	r.GET(cnst.CompanyEmployeesURL, companyHandler.GetCompanyEmployees)
 	r.GET(cnst.CompanyURL, companyHandler.GetCompanyById)
+	r.GET(cnst.CompanyInfoURL, companyHandler.GetCompanyFullInfo)
 	return r
 }
 
@@ -65,6 +67,19 @@ func (s *companyHandler) GetCompanyById(ctx *fasthttp.RequestCtx) {
 func (s *companyHandler) GetCompanyEmployees(ctx *fasthttp.RequestCtx) {
 	param, _ := ctx.UserValue("id").(string)
 	bytes, err := s.CompanyUseCase.GetCompanyEmployees(param)
+	if err != nil {
+		ctx.SetStatusCode(fasthttp.StatusNotFound)
+		log.Printf(": %s", err)
+		ctx.Write(bytes)
+		return
+	}
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.Write(bytes)
+}
+
+func (s *companyHandler) GetCompanyFullInfo(ctx *fasthttp.RequestCtx) {
+	param, _ := ctx.UserValue("id").(string)
+	bytes, err := s.CompanyUseCase.GetCompanyFullInfo(param)
 	if err != nil {
 		ctx.SetStatusCode(fasthttp.StatusNotFound)
 		log.Printf(": %s", err)

@@ -173,6 +173,17 @@ func (u *CompanyStorage) GetCompanyEmployees(key string) (value domain.Employees
 	return employees, err
 }
 
+func (u *CompanyStorage) GetCompanyFullInfo(key string) (value domain.CompanyFullInfo, err error) {
+	var companyFullInfo domain.CompanyFullInfo
+	companyFullInfo.Company, err = u.GetCompanyById(key)
+	companyFullInfo.Employees, err = u.GetCompanyEmployees(key)
+	if err != nil {
+		log.Printf("Error while getting GetCompanyFullInfo")
+		return companyFullInfo, err
+	}
+	return companyFullInfo, err
+}
+
 // func (u *CompanyStorage) SearchCompanies(key string) (value domain.Companies, err error) {
 // 	companies := make([]domain.Company, 0)
 // 	param := "^" + key
