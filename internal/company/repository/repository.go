@@ -112,10 +112,10 @@ func (u *CompanyStorage) GetByEmail(key string) (value domain.Company, err error
 	defer conn.Release()
 
 	err = conn.QueryRow(context.Background(),
-		`SELECT id, name, description, legal_name, itn, psrn, address, legal_address, email, phone, link, activity, owner_id
+		`SELECT id, name, description, legal_name, itn, psrn, address, legal_address, email, phone, link, activity, owner_id, rating, verified
 		FROM Companies WHERE email = $1`,
 		key,
-	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId)
+	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId, &company.Rating, &company.Verified)
 
 	return company, err
 }
@@ -131,10 +131,10 @@ func (u *CompanyStorage) GetCompanyById(key string) (value domain.Company, err e
 	defer conn.Release()
 	log.Printf("key = ", key)
 	err = conn.QueryRow(context.Background(),
-		`SELECT "id", "name", "description", "legal_name", "itn", "psrn", "address","legal_address","email", "phone", "link", "activity", "owner_id", "rating"  
+		`SELECT id, name, description, legal_name, itn, psrn, address,legal_address,email, phone, link, activity, owner_id, rating , verified 
 	FROM Companies WHERE id = $1`,
 		key,
-	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId, &company.Rating)
+	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId, &company.Rating, &company.Verified)
 
 	return company, err
 }

@@ -15,6 +15,7 @@ type Company struct {
 	Activity     string   `json:"activity"`
 	OwnerId      int      `json:"owner_id"`
 	Rating       int      `json:"rating"`
+	Verified     int      `json:"verified"`
 	Docks        []string `json:"docs"`
 }
 type CompanySearch struct {

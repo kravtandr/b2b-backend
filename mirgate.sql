@@ -107,6 +107,7 @@ CREATE TABLE Companies
     activity        TEXT        DEFAULT '',
     owner_id        INT         NOT NULL,
     rating          INT         DEFAULT 0,
+    verified        INT         DEFAULT 0,
     docs            TEXT[]      ,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -170,7 +171,23 @@ CREATE TABLE CompaniesProducts
 
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
-
+INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Иван', 'Иванович','Иванов','ivan@mail.ru','password123','Россия');
+INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Петр', 'Петрович','Петров','petr@mail.ru','password123','Россия');
+INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Алексндр', 'Александров','Александрович','alex@mail.ru','password123','Россия');
+INSERT INTO Companies ("name", "description", "legal_name", "itn", "psrn", "address","legal_address","email", "phone", "link", "activity", "owner_id", "rating"  ) VALUES ('Весна',
+'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+'ООО Весна',
+ '7727563379', '1162225076155',
+'656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
+'656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
+'tsvetiu@mail.ru',
+'89031223451',
+'tsvetiu.ru',
+'Розничная торговля',
+1,5);
+INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('CEO',1,1);
+INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('Manager',1,2);
+INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('Driver',1,3);
 --
 -- INSERT INTO Industry(title) VALUES('Машиностроение');
 -- INSERT INTO Industry(title) VALUES('MetalProd');
@@ -187,3 +204,5 @@ INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
 -- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id)  VALUES('test6@mail.ru', 'password123','Последний','ООО Последний','7727463779','1057749631995','Москва','8(915)9399998','yandex.ru',3);
 
 
+-- SELECT   cu.post, cu.user_id, u.name, u.surname, u.patronymic, u.email, u.country, u.group_id
+-- FROM companiesusers AS cu  JOIN Users u on u.id = cu.user_id WHERE cu.company_id = 1
