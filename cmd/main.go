@@ -27,21 +27,18 @@ func SetUpRouter(db *pgxpool.Pool) *router.Router {
 
 func corsMiddleware(handler func(ctx *fasthttp.RequestCtx)) func(ctx *fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
-		ctx.Response.Header.Set("Access-Control-Allow-Origin",
-			`http://localhost:3000, http://localhost:80, http://localhost:443,
-			https://bi-tu-bi.ru:443, https://bi-tu-bi.ru:80, https://bi-tu-bi.ru,
-			http://bi-tu-bi.ru:443, http://bi-tu-bi.ru:80, http://bi-tu-bi.ru`,
-		) // set domain
+		ctx.Response.Header.Set("Access-Control-Allow-Origin", `http://bi-tu-bi.ru`) // set domain
 		ctx.Response.Header.Set("Content-Type", "application/json; charset=utf8")
 		ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
-		ctx.Response.Header.Set(
-			"Access-Control-Allow-Headers",
-			"Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers",
-		)
+		ctx.Response.Header.Set("Access-Control-Allow-Headers", "Origin, Content-Type")
 		ctx.Response.Header.Set("Access-Control-Expose-Headers", "Authorization")
 		ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
 		ctx.Response.Header.Set("Access-Control-Max-Age", "3600")
 
+		// ctx.Response.Header.Set(
+		// 	"Access-Control-Allow-Headers",
+		// 	"Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers",
+		// )
 		if bytes.Equal(ctx.Method(), []byte(fasthttp.MethodOptions)) {
 			ctx.SetStatusCode(fasthttp.StatusOK)
 			return
