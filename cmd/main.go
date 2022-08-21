@@ -4,6 +4,7 @@ import (
 	catd "b2b/m/internal/category/delivery"
 	comd "b2b/m/internal/company/delivery"
 	indd "b2b/m/internal/industry/delivery"
+	ordford "b2b/m/internal/orderForm/delivery"
 	ud "b2b/m/internal/user/delivery"
 	"bytes"
 	"context"
@@ -22,15 +23,14 @@ func SetUpRouter(db *pgxpool.Pool) *router.Router {
 	r = comd.SetUpCompanyRouter(db, r)
 	r = catd.SetUpCategoryRouter(db, r)
 	r = indd.SetUpIndustryRouter(db, r)
+	r = ordford.SetUpOrderFormRouter(db, r)
 	return r
 }
 
 func corsMiddleware(handler func(ctx *fasthttp.RequestCtx)) func(ctx *fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 		ctx.Response.Header.Set("Access-Control-Allow-Origin",
-			`http://localhost:3000, http://localhost:80, http://localhost:443,
-			https://bi-tu-bi.ru:443, https://bi-tu-bi.ru:80, https://bi-tu-bi.ru,
-			http://bi-tu-bi.ru:443, http://bi-tu-bi.ru:80, http://bi-tu-bi.ru`,
+			`http://localhost:3000`,
 		) // set domain
 		ctx.Response.Header.Set("Content-Type", "application/json; charset=utf8")
 		ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS")
