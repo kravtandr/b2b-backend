@@ -20,3 +20,5 @@ const CategoryTestURL = "/categorytest/{id}"
 
 const CompanySearchURL = "/search"
 const CategoryURL = "/category/{id}"
+
+const FastOrderURL = "/fastOrder"
