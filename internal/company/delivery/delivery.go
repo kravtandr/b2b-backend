@@ -14,6 +14,7 @@ import (
 	"github.com/fasthttp/router"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
+	"gopkg.in/webdeskltd/dadata.v2"
 )
 
 type CompanyHandler interface {
@@ -21,6 +22,7 @@ type CompanyHandler interface {
 	GetCompanyEmployees(ctx *fasthttp.RequestCtx)
 	GetCompanyById(ctx *fasthttp.RequestCtx)
 	GetCompanyFullInfo(ctx *fasthttp.RequestCtx)
+	GetCompanyByItnDaData(ctx *fasthttp.RequestCtx)
 	// SearchCompanies(ctx *fasthttp.RequestCtx)
 }
 
@@ -36,18 +38,19 @@ func NewCompanyHandler(CompanyUseCase domain.CompanyUseCase, CookieHandler ccd.C
 	}
 }
 
-func CreateDelivery(db *pgxpool.Pool) CompanyHandler {
+func CreateDelivery(db *pgxpool.Pool, daData *dadata.DaData) CompanyHandler {
 	cookieLayer := ccd.CreateDelivery(db)
-	userLayer := NewCompanyHandler(cu.NewCompanyUseCase(cr.NewCompanyStorage(db)), cookieLayer)
+	userLayer := NewCompanyHandler(cu.NewCompanyUseCase(cr.NewCompanyStorage(db, daData)), cookieLayer)
 	return userLayer
 }
 
-func SetUpCompanyRouter(db *pgxpool.Pool, r *router.Router) *router.Router {
-	companyHandler := CreateDelivery(db)
+func SetUpCompanyRouter(db *pgxpool.Pool, daData *dadata.DaData, r *router.Router) *router.Router {
+	companyHandler := CreateDelivery(db, daData)
 	r.POST(cnst.RegisterCompanyURL, companyHandler.Add)
 	r.GET(cnst.CompanyEmployeesURL, companyHandler.GetCompanyEmployees)
 	r.GET(cnst.CompanyURL, companyHandler.GetCompanyById)
 	r.GET(cnst.CompanyInfoURL, companyHandler.GetCompanyFullInfo)
+	r.POST(cnst.CompanyFindByItnURL, companyHandler.GetCompanyByItnDaData)
 	return r
 }
 
@@ -120,6 +123,19 @@ func (s *companyHandler) Add(ctx *fasthttp.RequestCtx) {
 	ctx.SetStatusCode(fasthttp.StatusOK)
 	ctx.Write(bytes)
 
+}
+
+func (s *companyHandler) GetCompanyByItnDaData(ctx *fasthttp.RequestCtx) {
+	param, _ := ctx.UserValue("itn").(string)
+	bytes, err := s.CompanyUseCase.GetCompanyByItnDaData(param)
+	if err != nil {
+		ctx.SetStatusCode(fasthttp.StatusNotFound)
+		log.Printf(": %s", err)
+		ctx.Write(bytes)
+		return
+	}
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.Write(bytes)
 }
 
 // func (s *companyHandler) SearchCompanies(ctx *fasthttp.RequestCtx) {

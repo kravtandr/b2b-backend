@@ -4,17 +4,20 @@ import (
 	"b2b/m/pkg/domain"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/jackc/pgx/v4/pgxpool"
+	"gopkg.in/webdeskltd/dadata.v2"
 )
 
 type CompanyStorage struct {
 	dataHolder *pgxpool.Pool
+	daData     *dadata.DaData
 }
 
-func NewCompanyStorage(DB *pgxpool.Pool) domain.CompanyStorage {
-	return &CompanyStorage{dataHolder: DB}
+func NewCompanyStorage(DB *pgxpool.Pool, daData *dadata.DaData) domain.CompanyStorage {
+	return &CompanyStorage{dataHolder: DB, daData: daData}
 }
 
 func (u *CompanyStorage) Add(value domain.Company) error {
@@ -176,9 +179,23 @@ func (u *CompanyStorage) GetCompanyEmployees(key string) (value domain.Employees
 func (u *CompanyStorage) GetCompanyFullInfo(key string) (value domain.CompanyFullInfo, err error) {
 	var companyFullInfo domain.CompanyFullInfo
 	companyFullInfo.Company, err = u.GetCompanyById(key)
+	if err != nil {
+		log.Printf("Error while getting GetCompanyFullInfo")
+		return companyFullInfo, err
+	}
 	companyFullInfo.Employees, err = u.GetCompanyEmployees(key)
 	if err != nil {
 		log.Printf("Error while getting GetCompanyFullInfo")
+		return companyFullInfo, err
+	}
+	return companyFullInfo, err
+}
+
+func (u *CompanyStorage) GetCompanyByItnDaData(key string) (value []dadata.ResponseParty, err error) {
+	var companyFullInfo []dadata.ResponseParty
+	companyFullInfo, err = u.daData.SuggestParties(dadata.SuggestRequestParams{Query: "\"" + fmt.Sprint(key) + "\""})
+	if err != nil {
+		log.Printf("Error while getting GetCompanyByItnDaData")
 		return companyFullInfo, err
 	}
 	return companyFullInfo, err

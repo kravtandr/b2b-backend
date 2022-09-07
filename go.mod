@@ -38,5 +38,6 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/net v0.0.0-20220728211354-c7608f3a8462
+	gopkg.in/webdeskltd/dadata.v2 v2.0.0-20190503150402-ba1c2deb8492 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

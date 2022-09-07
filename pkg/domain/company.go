@@ -1,5 +1,7 @@
 package domain
 
+import "gopkg.in/webdeskltd/dadata.v2"
+
 type Company struct {
 	Id           int      `json:"id"`
 	Name         string   `json:"name"`
@@ -50,6 +52,7 @@ type CompanyStorage interface {
 	GetCompanyById(key string) (value Company, err error)
 	GetCompanyEmployees(key string) (value Employees, err error)
 	GetCompanyFullInfo(key string) (value CompanyFullInfo, err error)
+	GetCompanyByItnDaData(key string) (value []dadata.ResponseParty, err error)
 	//SearchCompanies(key string) (value Companies, err error)
 
 	//GetCompaniesByCategoryId(key string) (value Companies, err error)
@@ -63,6 +66,7 @@ type CompanyUseCase interface {
 	GetCompanyById(key string) (value []byte, err error)
 	GetCompanyEmployees(key string) (value []byte, err error)
 	GetCompanyFullInfo(key string) (value []byte, err error)
+	GetCompanyByItnDaData(key string) (value []byte, err error)
 
 	//SearchCompanies(key CompanySearch) (value []byte, err error)
 	//Validate(company *Company) bool
