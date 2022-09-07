@@ -11,6 +11,7 @@
 -- drop table groups ;
 -- drop table groupaccessrights ;
 -- drop function trigger_set_timestamp();
+-- drop table OrderForm;
 
 
 CREATE
@@ -168,6 +169,30 @@ CREATE TABLE CompaniesProducts
     FOREIGN KEY (company_id) REFERENCES Companies (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
 );
+
+CREATE TABLE OrderForm
+(
+    id                SERIAL      NOT NULL PRIMARY KEY,
+    role              boolean     NOT NULL,
+    product_category  TEXT        NOT NULL,
+    product_name      TEXT        DEFAULT 'empty',
+    order_text        TEXT        DEFAULT 'empty',
+    order_comments    TEXT        DEFAULT 'empty',
+    fio               TEXT        NOT NULL,
+    email             TEXT        NOT NULL,
+    phone             TEXT        DEFAULT 'empty',
+    company_name      TEXT        NOT NULL,
+    itn               TEXT        NOT NULL,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TRIGGER set_timestamp
+    BEFORE UPDATE
+    ON OrderForm
+    FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();
+
 
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);

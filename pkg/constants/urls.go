@@ -12,6 +12,7 @@ const CompanyURL = "/company/{id}"
 const CompanyInfoURL = "/company/{id}/fullinfo"
 const CompanyEmployeesURL = "/company/{id}/employees"
 const RegisterCompanyURL = "/company/register"
+const CompanyFindByItnURL = "/company/{itn}"
 
 const IndustryURL = "/industry/{id}"
 const IndustriesURL = "/industries"

@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/valyala/fasthttp"
+	"gopkg.in/webdeskltd/dadata.v2"
 )
 
 type UserHandler interface {
@@ -45,15 +46,15 @@ func NewUserHandler(UserUseCase domain.UserUseCase, CookieHandler ccd.CookieHand
 	}
 }
 
-func CreateDelivery(db *pgxpool.Pool) UserHandler {
+func CreateDelivery(db *pgxpool.Pool, daData *dadata.DaData) UserHandler {
 	cookieLayer := ccd.CreateDelivery(db)
-	companyLayer := cu.NewCompanyUseCase(cr.NewCompanyStorage(db))
+	companyLayer := cu.NewCompanyUseCase(cr.NewCompanyStorage(db, daData))
 	userLayer := NewUserHandler(uu.NewUserUseCase(ur.NewUserStorage(db)), cookieLayer, companyLayer)
 	return userLayer
 }
 
-func SetUpUserRouter(db *pgxpool.Pool, r *router.Router) *router.Router {
-	userHandler := CreateDelivery(db)
+func SetUpUserRouter(db *pgxpool.Pool, daData *dadata.DaData, r *router.Router) *router.Router {
+	userHandler := CreateDelivery(db, daData)
 	r.POST(cnst.LoginURL, userHandler.Login)
 	r.POST(cnst.RegisterURL, userHandler.Registration)
 	r.POST(cnst.CheckEmailURL, userHandler.GetPublicUserByEmail)

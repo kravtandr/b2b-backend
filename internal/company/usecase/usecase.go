@@ -55,6 +55,16 @@ func (c companyUseCase) GetCompanyFullInfo(id string) (value []byte, err error) 
 	return bytes, err
 }
 
+func (c companyUseCase) GetCompanyByItnDaData(id string) (value []byte, err error) {
+	company, err := c.companyStorage.GetCompanyByItnDaData(id)
+	bytes, Marchalerr := chttp.ApiResp(company, err)
+	if Marchalerr != nil {
+		log.Printf("error while marshalling JSON: %s", err)
+		return bytes, Marchalerr
+	}
+	return bytes, err
+}
+
 // func (c companyUseCase) SearchCompanies(key domain.CompanySearch) (value []byte, err error) {
 // 	companies, err := c.companyStorage.SearchCompanies(key.Name)
 // 	if err != nil {
