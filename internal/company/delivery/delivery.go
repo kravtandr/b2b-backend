@@ -110,9 +110,7 @@ func (s *companyHandler) Add(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	//с := fmt.Sprint(uuid.NewMD5(uuid.UUID{}, []byte(company.Email)))
 	newCompany, _ := s.CompanyUseCase.GetByEmail(company.Email)
-	//s.CookieHandler.SetCookieAndToken(ctx, с, newCompany.Id)
 	bytes, err := s.CompanyUseCase.GetCompanyById(fmt.Sprint(newCompany.Id))
 	if err != nil {
 		ctx.SetStatusCode(fasthttp.StatusNotFound)
