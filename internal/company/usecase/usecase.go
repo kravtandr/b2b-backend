@@ -3,6 +3,7 @@ package companyUseCase
 import (
 	chttp "b2b/m/pkg/customhttp"
 	"b2b/m/pkg/domain"
+	"fmt"
 	"log"
 )
 
@@ -57,6 +58,8 @@ func (c companyUseCase) GetCompanyFullInfo(id string) (value []byte, err error) 
 
 func (c companyUseCase) GetCompanyByItnDaData(id string) (value []byte, err error) {
 	company, err := c.companyStorage.GetCompanyByItnDaData(id)
+	test := fmt.Sprint(company)
+	log.Printf("GET FROM DADATA: %s", test)
 	bytes, Marchalerr := chttp.ApiResp(company, err)
 	if Marchalerr != nil {
 		log.Printf("error while marshalling JSON: %s", err)
