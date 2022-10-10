@@ -17,7 +17,8 @@ const CompanyFindByItnURL = "/company/itn/{itn}"
 const IndustryURL = "/industry/{id}"
 const IndustriesURL = "/industries"
 
-const CategoryTestURL = "/categorytest/{id}"
+const CategoriesSearchURL = "/search/categories"
+const CategoriesURL = "/categories"
 
 const CompanySearchURL = "/search"
 const CategoryURL = "/category/{id}"
