@@ -12,3 +12,7 @@ type FastRegistrationForm struct {
 	Password   string `json:"password"`
 	Country    string `json:"country"`
 }
+
+type Search struct {
+	Name string `json:"name"`
+}
