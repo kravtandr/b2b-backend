@@ -16,3 +16,7 @@ type FastRegistrationForm struct {
 type Search struct {
 	Name string `json:"name"`
 }
+
+type ValidateErrors struct {
+	Errors []string `json:"erros"`
+}

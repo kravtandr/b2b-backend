@@ -231,3 +231,23 @@ INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('Driver',1,
 
 -- SELECT   cu.post, cu.user_id, u.name, u.surname, u.patronymic, u.email, u.country, u.group_id
 -- FROM companiesusers AS cu  JOIN Users u on u.id = cu.user_id WHERE cu.company_id = 1
+
+
+-- 
+-- COPY categories(name)
+-- FROM '/var/lib/postgresql/backend/b2b-backend/export_base_categories.csv'
+-- DELIMITER ','
+-- CSV HEADER;
+-- 
+-- 
+-- SELECT name, description
+-- 	FROM categories
+-- 	WHERE name ~ $1;
+-- 
+-- 
+-- 
+
+
+
+
+

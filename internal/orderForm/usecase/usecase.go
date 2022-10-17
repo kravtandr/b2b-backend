@@ -1,10 +1,12 @@
 package OrderFormUseCase
 
 import (
-	// chttp "b2b/m/pkg/customhttp"
+	cnst "b2b/m/pkg/constants"
+	chttp "b2b/m/pkg/customhttp"
 	"b2b/m/pkg/domain"
 	"log"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/valyala/fasthttp"
 )
 
@@ -16,94 +18,8 @@ type OrderFormUseCase struct {
 	OrderFormStorage domain.OrderFormStorage
 }
 
-// func (c userUseCase) SearchCompanies(key domain.CompanySearch) (value []byte, err error) {
-// 	companies, err := c.companyStorage.SearchCompanies(key.Name)
-// 	if err != nil {
-// 		return []byte{}, err
-// 	}
-// 	bytes, err := chttp.ApiResp(companies)
-// 	if err != nil {
-// 		log.Printf("error while marshalling JSON: %s", err)
-// 	}
-// 	return bytes, err
-// }
-
-// func (u userUseCase) Login(user *domain.User) (int, error) {
-// 	foundUser, err := u.GetByEmail(user.Email)
-// 	if err != nil {
-// 		log.Printf("error while login-GetByEmail")
-// 		log.Print(err)
-// 		return fasthttp.StatusNotFound, err
-// 	}
-
-// 	if foundUser.Password != user.Password {
-// 		return fasthttp.StatusBadRequest, err
-// 	}
-
-// 	return fasthttp.StatusOK, err
-// }
-
-// func (u userUseCase) Registration(user *domain.User) (int, error) {
-// 	_, err := govalidator.ValidateStruct(user)
-// 	if err != nil {
-// 		log.Printf("error while validating user")
-// 		return fasthttp.StatusBadRequest, err
-// 	}
-// 	log.Printf(user.Email)
-
-// 	_, err = u.GetByEmail(user.Email)
-// 	if err == nil {
-// 		log.Printf("user with this email already exists")
-// 		return fasthttp.StatusBadRequest, err
-// 	}
-
-// 	err = u.Add(*user)
-// 	if err != nil {
-// 		log.Printf("error while adding user")
-// 		return fasthttp.StatusBadRequest, err
-// 	}
-
-// 	return fasthttp.StatusOK, err
-// }
-
-// func (c userUseCase) GetByEmail(key string) (value domain.User, err error) {
-// 	return c.userStorage.GetByEmail(key)
-// }
-
-// func (c userUseCase) GetPublicUserById(id string) (value []byte, err error) {
-// 	user, err := c.userStorage.GetPublicUserById(id)
-// 	if err != nil {
-// 		log.Printf("error while GetPublicUserByEmail: %s", err)
-// 	}
-// 	if (user == domain.PublicUser{}) {
-// 		return []byte{}, err
-// 	} else {
-// 		bytes, err := chttp.ApiResp(user, err)
-// 		if err != nil {
-// 			log.Printf("error while marshalling JSON: %s", err)
-// 		}
-// 		return bytes, err
-// 	}
-// }
-
-// func (c userUseCase) GetPublicUserByEmail(key string) (value []byte, err error) {
-// 	user, err := c.userStorage.GetPublicUserByEmail(key)
-// 	if err != nil {
-// 		log.Printf("error while GetPublicUserByEmail: %s", err)
-// 	}
-// 	if (user == domain.PublicUser{}) {
-// 		return []byte{}, err
-// 	} else {
-// 		bytes, err := chttp.ApiResp(user, err)
-// 		if err != nil {
-// 			log.Printf("error while marshalling JSON: %s", err)
-// 		}
-// 		return bytes, err
-// 	}
-
-// }
-
 func (c OrderFormUseCase) Add(orderForm domain.OrderForm) (int, error) {
+
 	err := c.OrderFormStorage.Add(orderForm)
 	if err != nil {
 		log.Printf("error while adding user")
@@ -113,53 +29,50 @@ func (c OrderFormUseCase) Add(orderForm domain.OrderForm) (int, error) {
 	return fasthttp.StatusOK, err
 }
 
-// func (c userUseCase) AddCompany(company domain.Company) error {
-// 	return c.userStorage.AddCompany(company)
-// }
-
-func (c OrderFormUseCase) Validate(user *domain.OrderForm) bool {
-	// if !govalidator.IsEmail(company.Email) ||
-	// 	!govalidator.StringLength(company.Password, cnst.MinPasswordLength, cnst.MaxPasswordLength) ||
-	// 	!govalidator.MaxStringLength(company.Email, cnst.MaxEmailLength) {
-	// 	return false
-	// }
-	return true
+func (c OrderFormUseCase) Validate(orderForm *domain.OrderForm) (bool, []byte) {
+	var validate_errors domain.ValidateErrors
+	_, err := govalidator.ValidateStruct(orderForm)
+	if err != nil {
+		log.Printf("error while validating orderForm")
+		validate_errors.Errors = append(validate_errors.Errors, "Ошибка неверная структура")
+	}
+	if !govalidator.IsEmail(orderForm.Email) {
+		validate_errors.Errors = append(validate_errors.Errors, "Некорректный Email")
+	}
+	if !govalidator.StringLength(orderForm.Product_category, cnst.MinCategoryLength, cnst.MaxCategoryLength) {
+		validate_errors.Errors = append(validate_errors.Errors, "Некорректная категория")
+	}
+	if !govalidator.StringLength(orderForm.Product_name, cnst.MinProductNameLength, cnst.MaxProductNameLength) {
+		validate_errors.Errors = append(validate_errors.Errors, "Некорректное имя товара")
+	}
+	if !govalidator.StringLength(orderForm.Order_text, cnst.MinOrderTextLength, cnst.MaxOrderTextLength) {
+		validate_errors.Errors = append(validate_errors.Errors, "Некорректный текст заказа")
+	}
+	if !govalidator.StringLength(orderForm.Order_comments, cnst.MinOrderCommentsLength, cnst.MaxOrderCommentsLength) {
+		validate_errors.Errors = append(validate_errors.Errors, "Некорректный комменатрий заказа")
+	}
+	if !govalidator.StringLength(orderForm.Phone, cnst.MinPhoneLength, cnst.MaxPhoneLength) {
+		validate_errors.Errors = append(validate_errors.Errors, "Некорректный телефон")
+	}
+	if !govalidator.StringLength(orderForm.Company_name, cnst.MinCompanyNameLength, cnst.MaxCompanyNameLength) {
+		validate_errors.Errors = append(validate_errors.Errors, "Некорректное имя компании")
+	}
+	if !govalidator.StringLength(orderForm.Itn, cnst.MinItnLength, cnst.MaxItnLength) {
+		validate_errors.Errors = append(validate_errors.Errors, "Некорректный ИНН")
+	}
+	if !govalidator.StringLength(orderForm.Fio, cnst.MinFioLength, cnst.MaxFioLength) {
+		validate_errors.Errors = append(validate_errors.Errors, "Некорректное ФИО")
+	}
+	if !govalidator.MaxStringLength(orderForm.Email, cnst.MaxEmailLength) {
+		validate_errors.Errors = append(validate_errors.Errors, "Email слишком длинный")
+	}
+	bytes, Marchalerr := chttp.ApiResp(validate_errors, err)
+	if Marchalerr != nil {
+		log.Printf("error while marshalling JSON: %s", err)
+		return false, bytes
+	}
+	if len(validate_errors.Errors) > 0 {
+		return false, bytes
+	}
+	return true, bytes
 }
-
-// func (c companyUseCase) GetCompanyById(key string) (value []byte, err error) {
-// 	company, err := c.companyStorage.GetCompanyById(key)
-// 	if err != nil {
-// 		return []byte{}, err
-// 	}
-// 	bytes, err := chttp.ApiResp(company)
-// 	if err != nil {
-// 		log.Printf("error while marshalling JSON: %s", err)
-// 	}
-// 	return bytes, err
-// }
-
-// func (c companyUseCase) GetCompaniesByCategoryId(key string) (value []byte, err error) {
-// 	companies, err := c.companyStorage.GetCompaniesByCategoryId(key)
-// 	if err != nil {
-// 		return []byte{}, err
-// 	}
-// 	bytes, err := chttp.ApiResp(companies)
-// 	if err != nil {
-// 		log.Printf("error while marshalling JSON: %s", err)
-// 	}
-// 	return bytes, err
-// }
-
-// func (u CompanyUseCase) Update(id int, updatedUser domain.User) error {
-
-// 	user, err := u.GetByEmail(updatedUser.Email)
-// 	if err == nil && user.Id != id {
-// 		return errors.New("user with this email already exists") // change later
-// 	}
-
-// 	return u.companyStorage.Update(id, updatedUser)
-// }
-
-// func (u CompanyUseCase) Delete(id int) error {
-// 	return u.companyStorage.Delete(id)
-// }

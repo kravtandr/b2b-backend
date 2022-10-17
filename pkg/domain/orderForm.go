@@ -44,7 +44,7 @@ type OrderFormStorage interface {
 type OrderFormUseCase interface {
 	Add(orderForm OrderForm) (int, error)
 	// Login(user *User) (int, error)
-	Validate(orderForm *OrderForm) bool
+	Validate(orderForm *OrderForm) (bool, []byte)
 	// Registration(user *User) (int, error)
 	//RegistrationCompany(company *Company) (int, error)
 	// GetByEmail(key string) (value User, err error)
