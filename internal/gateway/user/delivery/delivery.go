@@ -9,6 +9,7 @@ import (
 	"b2b/m/internal/gateway/user/usecase"
 	"b2b/m/internal/models"
 	cnst "b2b/m/pkg/constants"
+	chttp "b2b/m/pkg/customhttp"
 	"b2b/m/pkg/error_adapter"
 
 	"github.com/valyala/fasthttp"
@@ -45,7 +46,7 @@ func (u *userDelivery) Login(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, _ := json.Marshal(response)
+	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 
@@ -86,7 +87,7 @@ func (u *userDelivery) Register(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, _ := json.Marshal(response)
+	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 
@@ -109,7 +110,7 @@ func (u *userDelivery) GetProfile(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, _ := json.Marshal(response)
+	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
@@ -131,22 +132,21 @@ func (u *userDelivery) UpdateProfile(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, _ := json.Marshal(response)
+	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
 
 func (u *userDelivery) GetUserInfo(ctx *fasthttp.RequestCtx) {
 	param, _ := strconv.Atoi(ctx.UserValue("id").(string))
-	responce, err := u.manager.GetUserInfo(ctx, param)
+	response, err := u.manager.GetUserInfo(ctx, param)
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)
 		ctx.SetStatusCode(httpError.Code)
 		ctx.SetBody([]byte(httpError.MSG))
 		return
 	}
-
-	b, _ := json.Marshal(responce)
+	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
