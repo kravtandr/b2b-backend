@@ -76,23 +76,24 @@ func (l *loggingMiddleware) CreateUser(ctx context.Context, user *models.User) (
 
 	return l.next.CreateUser(ctx, user)
 }
-func (l *loggingMiddleware) UpdateUser(ctx context.Context, user *models.User) (u *models.User, err error) {
-	l.logger.Infow(module,
-		"Action", "UpdateUser",
-		"Request", user,
-	)
-	defer func() {
-		if err != nil {
-			l.logger.Infow(module,
-				"Action", "UpdateUser",
-				"Request", user,
-				"Error", err,
-			)
-		}
-	}()
 
-	return l.next.UpdateUser(ctx, user)
-}
+//func (l *loggingMiddleware) UpdateUser(ctx context.Context, user *models.User) (u *models.User, err error) {
+//	l.logger.Infow(module,
+//		"Action", "UpdateUser",
+//		"Request", user,
+//	)
+//	defer func() {
+//		if err != nil {
+//			l.logger.Infow(module,
+//				"Action", "UpdateUser",
+//				"Request", user,
+//				"Error", err,
+//			)
+//		}
+//	}()
+//
+//	return l.next.UpdateUser(ctx, user)
+//}
 func (l *loggingMiddleware) CreateUserSession(ctx context.Context, userID int64, hash string) (err error) {
 	l.logger.Infow(module,
 		"Action", "CreateUserSession",

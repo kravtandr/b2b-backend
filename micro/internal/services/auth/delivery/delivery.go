@@ -69,36 +69,32 @@ func (a *authDelivery) GetUser(ctx context.Context, request *auth_service.GetUse
 	}
 
 	return &auth_service.GetUserResponse{
-		Name:        response.Name,
-		Surname:     response.Surname,
-		Email:       response.Email,
-		Image:       response.Image,
-		Description: response.Description,
+		Name:    response.Name,
+		Surname: response.Surname,
+		Email:   response.Email,
 	}, nil
 }
 
-func (a *authDelivery) UpdateUser(ctx context.Context, request *auth_service.UpdateUserRequest) (*auth_service.GetUserResponse, error) {
-	response, err := a.authUsecase.UpdateUser(ctx, &models.User{
-		ID:          request.Id,
-		Name:        request.Name,
-		Surname:     request.Surname,
-		Email:       request.Email,
-		Password:    request.Password,
-		Image:       request.Image,
-		Description: request.Description,
-	})
-	if err != nil {
-		return &auth_service.GetUserResponse{}, a.errorAdapter.AdaptError(err)
-	}
-
-	return &auth_service.GetUserResponse{
-		Name:        response.Name,
-		Surname:     response.Surname,
-		Email:       response.Email,
-		Image:       response.Image,
-		Description: response.Description,
-	}, nil
-}
+//func (a *authDelivery) UpdateUser(ctx context.Context, request *auth_service.UpdateUserRequest) (*auth_service.GetUserResponse, error) {
+//	response, err := a.authUsecase.UpdateUser(ctx, &models.User{
+//		Id:          request.Id,
+//		Name:        request.Name,
+//		Surname:     request.Surname,
+//		Email:       request.Email,
+//		Password:    request.Password,
+//	})
+//	if err != nil {
+//		return &auth_service.GetUserResponse{}, a.errorAdapter.AdaptError(err)
+//	}
+//
+//	return &auth_service.GetUserResponse{
+//		Name:        response.Name,
+//		Surname:     response.Surname,
+//		Email:       response.Email,
+//		Image:       response.Image,
+//		Description: response.Description,
+//	}, nil
+//}
 
 func (a *authDelivery) GetUserInfo(ctx context.Context, request *auth_service.GetUserRequest) (*auth_service.UserInfo, error) {
 	responce, err := a.authUsecase.GetUserInfo(ctx, int(request.Id))
@@ -107,10 +103,9 @@ func (a *authDelivery) GetUserInfo(ctx context.Context, request *auth_service.Ge
 	}
 
 	return &auth_service.UserInfo{
-		UserId:  responce.ID,
+		UserId:  responce.Id,
 		Name:    responce.Name,
 		Surname: responce.Surname,
-		Image:   responce.Image,
 	}, nil
 }
 
@@ -120,7 +115,7 @@ func (a *authDelivery) GetUserByEmail(ctx context.Context, request *auth_service
 		return &auth_service.UserId{}, a.errorAdapter.AdaptError(err)
 	}
 
-	return &auth_service.UserId{Id: responce.ID}, nil
+	return &auth_service.UserId{Id: responce.Id}, nil
 }
 
 func NewAuthDelivery(

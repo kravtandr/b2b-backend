@@ -1,7 +1,7 @@
 package constants
 
-const LoginURL = "/login"
-const RegisterURL = "/register"
+const LoginURL = "/user/login"
+const RegisterURL = "/user/register"
 const ProfileURL = "/profile"
 const LogoutURL = "/logout"
 const UserInfoURL = "/user/{id}"

@@ -17,7 +17,7 @@ type AuthUseCase interface {
 
 	RegisterUser(ctx context.Context, user *models.User) (models.Session, error)
 	GetUser(ctx context.Context, ID int64) (*models.User, error)
-	UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
+	//UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
 	GetUserInfo(ctx context.Context, id int) (*models.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 }
@@ -40,7 +40,7 @@ func (a *authUseCase) LoginUser(ctx context.Context, user *models.User) (models.
 	}
 
 	cookie := a.uuidGen.GenerateString()
-	if err = a.repo.CreateUserSession(ctx, repoUser.ID, cookie); err != nil {
+	if err = a.repo.CreateUserSession(ctx, repoUser.Id, cookie); err != nil {
 		return models.Session{}, err
 	}
 
@@ -75,7 +75,7 @@ func (a *authUseCase) RegisterUser(ctx context.Context, user *models.User) (mode
 	}
 
 	cookie := a.uuidGen.GenerateString()
-	if err = a.repo.CreateUserSession(ctx, user.ID, cookie); err != nil {
+	if err = a.repo.CreateUserSession(ctx, user.Id, cookie); err != nil {
 		return models.Session{}, err
 	}
 
@@ -89,13 +89,13 @@ func (a *authUseCase) GetUser(ctx context.Context, ID int64) (*models.User, erro
 	return a.repo.GetUserByID(ctx, ID)
 }
 
-func (a *authUseCase) UpdateUser(ctx context.Context, user *models.User) (*models.User, error) {
-	if user.Password != "" {
-		user.Password = a.hashGenerator.EncodeString(user.Password)
-	}
-
-	return a.repo.UpdateUser(ctx, user)
-}
+//func (a *authUseCase) UpdateUser(ctx context.Context, user *models.User) (*models.User, error) {
+//	if user.Password != "" {
+//		user.Password = a.hashGenerator.EncodeString(user.Password)
+//	}
+//
+//	return a.repo.UpdateUser(ctx, user)
+//}
 
 func (a *authUseCase) GetUserInfo(ctx context.Context, id int) (*models.User, error) {
 	return a.repo.GetUserInfo(ctx, id)
