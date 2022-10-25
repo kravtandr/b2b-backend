@@ -2,6 +2,8 @@ package setup
 
 import (
 	"b2b/m/internal/gateway/config"
+	fod "b2b/m/internal/gateway/fastOrder/delivery"
+	fastOrder_usecase "b2b/m/internal/gateway/fastOrder/usecase"
 	"b2b/m/internal/gateway/router"
 	ud "b2b/m/internal/gateway/user/delivery"
 	uu "b2b/m/internal/gateway/user/usecase"
@@ -10,6 +12,7 @@ import (
 	"b2b/m/pkg/grpc_errors"
 	"b2b/m/pkg/helpers"
 	auth_service "b2b/m/pkg/services/auth"
+	fastOrder_service "b2b/m/pkg/services/fastOrder"
 
 	"google.golang.org/grpc"
 )
@@ -33,10 +36,24 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		userUsecase,
 	)
 
+	fastOrderConn, err := grpc.Dial(cfg.FastOrderServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return p, stopFunc, err
+	}
+	fastOrderGRPC := fastOrder_service.NewFastOrderServiceClient(fastOrderConn)
+	fastOrderUseCase := fastOrder_usecase.NewFastOrderUseCase(fastOrderGRPC)
+	fastOrderDelivery := fod.NewFastOrderDelivery(
+		error_adapter.NewGrpcToHttpAdapter(
+			grpc_errors.UserGatewayError, grpc_errors.CommonError,
+		),
+		fastOrderUseCase,
+	)
+
 	p = router.SetupRouter(router.RouterConfig{
-		AuthGRPC:     userGRPC,
-		UserDelivery: userDelivery,
-		Logger:       cfg.Logger,
+		AuthGRPC:          userGRPC,
+		UserDelivery:      userDelivery,
+		FastOrderDelivery: fastOrderDelivery,
+		Logger:            cfg.Logger,
 	})
 
 	stopFunc = func() {

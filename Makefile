@@ -11,6 +11,9 @@ protogen-api-with-validator:
 protogen-api-auth-service:
 	make protogen-api-with-validator path=pkg/services/auth
 
+protogen-api-fastOrder-service:
+	make protogen-api-with-validator path=pkg/services/fastOrder
+
 protogen-api-trip-service:
 	make protogen-api-with-validator path=pkg/services/trip
 

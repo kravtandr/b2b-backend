@@ -6,6 +6,8 @@ const ProfileURL = "/profile"
 const LogoutURL = "/logout"
 const UserInfoURL = "/user/{id}"
 
+const FastOrderURL = "/fastOrder"
+
 const CountryNameURL = "/country/{name}"
 const CountryIdURL = "/country/id/{id}"
 const CountryListURL = "/country/list"

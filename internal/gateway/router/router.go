@@ -1,6 +1,7 @@
 package router
 
 import (
+	fod "b2b/m/internal/gateway/fastOrder/delivery"
 	ud "b2b/m/internal/gateway/user/delivery"
 	cnst "b2b/m/pkg/constants"
 	"b2b/m/pkg/error_adapter"
@@ -16,7 +17,8 @@ import (
 type RouterConfig struct {
 	AuthGRPC auth_service.AuthServiceClient
 
-	UserDelivery ud.UserDelivery
+	UserDelivery      ud.UserDelivery
+	FastOrderDelivery fod.FastOrderDelivery
 
 	Logger *zap.Logger
 }
@@ -37,6 +39,8 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.PATCH(cnst.ProfileURL, lgrMw(authMw(cfg.UserDelivery.UpdateProfile)))
 	p.POST(cnst.RegisterURL, lgrMw(cfg.UserDelivery.Register))
 	p.GET(cnst.UserInfoURL, lgrMw(cfg.UserDelivery.GetUserInfo))
+
+	p.POST(cnst.FastOrderURL, lgrMw(cfg.FastOrderDelivery.FastOrder))
 
 	return
 }

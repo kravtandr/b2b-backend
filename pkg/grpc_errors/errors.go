@@ -18,6 +18,9 @@ var (
 	PreparedSightServiceErrorMap = map[error]error{
 		errors.SightDoesNotExist: status.Error(codes.NotFound, "sight not found"),
 	}
+	PreparedFastOrderServiceErrorMap = map[error]error{
+		errors.SightDoesNotExist: status.Error(codes.NotFound, "xi"),
+	}
 )
 
 var (
