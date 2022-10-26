@@ -1,6 +1,6 @@
 package constants
 
-const CookieName = "SnakeAlive"
+const CookieName = "B2B_Cookie"
 
 const DefaultSkip = 10
 
