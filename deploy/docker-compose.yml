@@ -11,7 +11,7 @@ services:
       - "10123:10123"
       - "11123:8080"
     environment:
-      - USER_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - USER_DB_URL=postgres://b2b:b2b@127.0.0.1:5432/b2b
       - USER_GRPC_PORT=10123
       - USER_PREFIX_LEN=3
     extra_hosts:
@@ -28,7 +28,7 @@ services:
       - "10124:10124"
       - "11124:8080"
     environment:
-      - FASTORDER_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - FASTORDER_DB_URL=postgres://b2b:b2b@127.0.0.1:5432/b2b
       - FASTORDER_GRPC_PORT=10124
     extra_hosts:
       - "host.docker.internal:194.67.67.59"
@@ -50,6 +50,6 @@ services:
       - GATEWAY_HTTP_PORT=:8081
       - GATEWAY_AUTH_ENDPOINT=host.docker.internal:10123
       - GATEWAY_FASTORDER_ENDPOINT=host.docker.internal:10124
-      - GATEWAY_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - GATEWAY_DB_URL=postgres://b2b:b2b@127.0.0.1:5432/b2b
     extra_hosts:
       - "host.docker.internal:194.67.67.59"
