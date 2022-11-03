@@ -3,7 +3,7 @@ services:
   auth_service:
     build:
       dockerfile: Dockerfile.auth_service
-      context: .
+      context: ../.
       args:
         - APP_PKG_NAME=b2b/m
         - GOOS=linux
@@ -20,7 +20,7 @@ services:
   fastorder_service:
     build:
       dockerfile: Dockerfile.fastOrder_service
-      context: .
+      context: ../.
       args:
         - APP_PKG_NAME=b2b/m
         - GOOS=linux
@@ -39,7 +39,7 @@ services:
       - fastorder_service
     build:
       dockerfile: Dockerfile.gateway
-      context: .
+      context: ../.
       args:
         - APP_PKG_NAME=b2b/m
         - GOOS=linux
