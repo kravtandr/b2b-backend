@@ -52,4 +52,4 @@ services:
       - GATEWAY_FASTORDER_ENDPOINT=host.docker.internal:10124
       - GATEWAY_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
     extra_hosts:
-      - host.docker.internal:172.17.0.1"
+      - "host.docker.internal:172.17.0.1"
