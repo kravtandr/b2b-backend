@@ -13,18 +13,17 @@ ENV CGO_ENABLED=0 \
 
 ARG APP_PKG_NAME
 WORKDIR /go/src/$APP_PKG_NAME
-COPY ./cmd ./cmd
-COPY ./internal ./internal
-COPY ./pkg ./pkg
 COPY ./third_party ./third_party
 COPY go.mod go.mod
+COPY ./cmd ./cmd
+COPY ./pkg ./pkg
+COPY ./internal ./internal
 
 RUN go mod vendor
 
 RUN go build -v \
     -o /out/service \
     ./cmd/auth_service/main.go
-RUN ls -la
 
 FROM alpine:3.8
 WORKDIR /app
