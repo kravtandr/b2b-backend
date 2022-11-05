@@ -12,6 +12,7 @@ import (
 type Config struct {
 	AuthServiceEndpoint      string `envconfig:"AUTH_ENDPOINT" required:"true"`
 	FastOrderServiceEndpoint string `envconfig:"FASTORDER_ENDPOINT" required:"true"`
+	CompanyServiceEndpoint   string `envconfig:"COMPANY_ENDPOINT" required:"true"`
 	// SightServiceEndpoint  string `envconfig:"SIGHT_ENDPOINT" required:"true"`
 	// ReviewServiceEndpoint string `envconfig:"REVIEW_ENDPOINT" required:"true"`
 	HTTPPort string `envconfig:"HTTP_PORT" required:"true"`

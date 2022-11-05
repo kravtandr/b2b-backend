@@ -7,6 +7,7 @@ const LogoutURL = "/logout"
 const UserInfoURL = "/user/{id}"
 
 const FastOrderURL = "/fastOrder"
+const CompanyURL = "/company/{id}"
 
 const CountryNameURL = "/country/{name}"
 const CountryIdURL = "/country/id/{id}"

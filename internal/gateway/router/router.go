@@ -1,6 +1,7 @@
 package router
 
 import (
+	cd "b2b/m/internal/gateway/company/delivery"
 	fod "b2b/m/internal/gateway/fastOrder/delivery"
 	ud "b2b/m/internal/gateway/user/delivery"
 	cnst "b2b/m/pkg/constants"
@@ -19,6 +20,7 @@ type RouterConfig struct {
 
 	UserDelivery      ud.UserDelivery
 	FastOrderDelivery fod.FastOrderDelivery
+	CompanyDelivery   cd.CompanyDelivery
 
 	Logger *zap.Logger
 }
@@ -41,6 +43,8 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.GET(cnst.UserInfoURL, lgrMw(cfg.UserDelivery.GetUserInfo))
 
 	p.POST(cnst.FastOrderURL, lgrMw(cfg.FastOrderDelivery.FastOrder))
+
+	p.GET(cnst.CompanyURL, lgrMw(cfg.CompanyDelivery.GetCompanyById))
 
 	return
 }

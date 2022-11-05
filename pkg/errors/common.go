@@ -8,6 +8,7 @@ var (
 	WrongUserPassword   = errors.New("wrong user password")
 	SightDoesNotExist   = errors.New("sight does not exist")
 	CountryDoesNotExist = errors.New("country does not exist")
+	CompanyDoesNotExist = errors.New("company does not exist")
 )
 
 var DeniedAccess = errors.New("user doesn't have permission for this action")

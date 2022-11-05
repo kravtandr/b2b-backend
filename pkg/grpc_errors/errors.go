@@ -21,6 +21,9 @@ var (
 	PreparedFastOrderServiceErrorMap = map[error]error{
 		errors.SightDoesNotExist: status.Error(codes.NotFound, "xi"),
 	}
+	PreparedCompanyServiceErrorMap = map[error]error{
+		errors.SightDoesNotExist: status.Error(codes.NotFound, "xi"),
+	}
 )
 
 var (
@@ -51,6 +54,10 @@ var (
 	}
 	CommonError = error_adapter.HttpError{
 		MSG:  "произошла ошибка обращения во внутренний сервис",
+		Code: http.StatusBadRequest,
+	}
+	Fail = error_adapter.HttpError{
+		MSG:  "fuck",
 		Code: http.StatusBadRequest,
 	}
 
