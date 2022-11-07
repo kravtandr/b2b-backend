@@ -42,4 +42,5 @@ require (
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	gopkg.in/webdeskltd/dadata.v2 v2.0.0-20190503150402-ba1c2deb8492
 )

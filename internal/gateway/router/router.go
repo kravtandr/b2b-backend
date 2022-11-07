@@ -46,6 +46,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.POST(cnst.FastOrderURL, lgrMw(cfg.FastOrderDelivery.FastOrder))
 
 	p.GET(cnst.CompanyURL, lgrMw(cfg.CompanyDelivery.GetCompanyById))
+	p.POST(cnst.CompanyByInnFromDaDataURL, lgrMw(cfg.CompanyDelivery.GetCompanyByItnFromDaData))
 
 	return
 }

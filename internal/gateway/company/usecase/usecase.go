@@ -1,26 +1,38 @@
 package usecase
 
 import (
+	"b2b/m/internal/models"
 	company_service "b2b/m/pkg/services/company"
 	"context"
 	"fmt"
-
-	"b2b/m/internal/models"
+	"gopkg.in/webdeskltd/dadata.v2"
+	"log"
 )
 
 type CompanyUseCase interface {
 	GetCompanyById(ctx context.Context, Id int64) (*models.Company, error)
+	GetCompanyByItnFromDaData(ctx context.Context, itn string) ([]dadata.ResponseParty, error)
 }
 
 type companyUseCase struct {
 	companyGRPC companyGRPC
+	daData      *dadata.DaData
+}
+
+func (u *companyUseCase) GetCompanyByItnFromDaData(ctx context.Context, itn string) ([]dadata.ResponseParty, error) {
+	var companyFullInfo []dadata.ResponseParty
+	reqParams := dadata.SuggestRequestParams{Query: "\"" + fmt.Sprint(itn) + "\""}
+	companyFullInfo, err := u.daData.SuggestParties(reqParams)
+	if err != nil {
+		log.Printf("Error while getting GetCompanyByItnDaData")
+		return companyFullInfo, err
+	}
+	return companyFullInfo, nil
 }
 
 func (u *companyUseCase) GetCompanyById(ctx context.Context, id int64) (*models.Company, error) {
-	fmt.Println("FUCKKKKKKKK companyUseCase")
 	responce, err := u.companyGRPC.GetCompanyById(ctx, &company_service.GetCompanyRequestById{Id: int64(id)})
 	if err != nil {
-		fmt.Println("PIZDIC  err", err)
 		return nil, err
 	}
 
@@ -42,6 +54,6 @@ func (u *companyUseCase) GetCompanyById(ctx context.Context, id int64) (*models.
 	}, nil
 }
 
-func NewCompanyUseCase(grpc companyGRPC) CompanyUseCase {
-	return &companyUseCase{companyGRPC: grpc}
+func NewCompanyUseCase(grpc companyGRPC, daData *dadata.DaData) CompanyUseCase {
+	return &companyUseCase{companyGRPC: grpc, daData: daData}
 }

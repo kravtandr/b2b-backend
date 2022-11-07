@@ -9,6 +9,7 @@ const FastOrderURL = "/fastOrder"
 
 const FastRegisterURL = "/fastregister"
 const CompanyURL = "/company/{id}"
+const CompanyByInnFromDaDataURL = "/company/{itn}"
 
 const CountryNameURL = "/country/{name}"
 const CountryIdURL = "/country/id/{id}"
