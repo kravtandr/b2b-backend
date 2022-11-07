@@ -2,6 +2,7 @@ package repository
 
 import (
 	"b2b/m/internal/services/auth/models"
+	company_models "b2b/m/internal/services/company/models"
 	"b2b/m/pkg/errors"
 	"context"
 
@@ -13,6 +14,8 @@ type AuthRepository interface {
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	GetUserByID(ctx context.Context, ID int64) (*models.User, error)
 	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
+	GetUserCompany(ctx context.Context, id int64) (*company_models.Company, error)
+	FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) error
 	//UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
 	CreateUserSession(ctx context.Context, userID int64, hash string) error
 	ValidateUserSession(ctx context.Context, hash string) (int64, error)
@@ -20,21 +23,22 @@ type AuthRepository interface {
 	GetUserInfo(ctx context.Context, id int) (*models.User, error)
 }
 
-//type AuthRepository interface {
-//	Add(user User) error
-//	//AddCompany(company Company) error
-//	GetByEmail(key string) (value User, err error)
-//	GetPublicUserByEmail(key string) (value PublicUser, err error)
-//	GetPublicUserById(id string) (value PublicUser, err error)
-//	//SearchCompanies(key string) (value Companies, err error)
-//	//GetCompanyById(key string) (value Company, err error)
-//	//GetCompaniesByCategoryId(key string) (value Companies, err error)
-//
-//}
-
 type authRepository struct {
 	queryFactory QueryFactory
 	conn         *pgxpool.Pool
+}
+
+func (a *authRepository) FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) error {
+	query := a.queryFactory.CreateCreateCompany(user, newCompany)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+
+	if err := row.Scan(&newCompany.Id); err != nil {
+		return err
+	}
+
+	query = a.queryFactory.CreateCreateUserCompanyLink(user, newCompany, post)
+	row = a.conn.QueryRow(ctx, query.Request, query.Params...)
+	return nil
 }
 
 func (a *authRepository) GetUserByID(ctx context.Context, ID int64) (*models.User, error) {
@@ -108,6 +112,25 @@ func (a *authRepository) CreateUserSession(ctx context.Context, userID int64, ha
 	}
 
 	return nil
+}
+
+func (a *authRepository) GetUserCompany(ctx context.Context, id int64) (*company_models.Company, error) {
+	conn, err := a.conn.Acquire(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Release()
+
+	var company company_models.Company
+	err = conn.QueryRow(context.Background(),
+		createCompanyByUserId,
+		id,
+	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId, &company.Rating, &company.Verified)
+	if err != nil {
+		return nil, err
+	}
+
+	return &company, nil
 }
 
 func (a *authRepository) ValidateUserSession(ctx context.Context, hash string) (int64, error) {

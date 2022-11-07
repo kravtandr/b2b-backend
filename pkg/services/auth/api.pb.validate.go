@@ -217,6 +217,109 @@ var _ interface {
 	ErrorName() string
 } = LoginRequestValidationError{}
 
+// Validate checks the field values on RegisterResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *RegisterResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RegisterResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RegisterResponseMultiError, or nil if none found.
+func (m *RegisterResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RegisterResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Cookie
+
+	// no validation rules for Token
+
+	if len(errors) > 0 {
+		return RegisterResponseMultiError(errors)
+	}
+	return nil
+}
+
+// RegisterResponseMultiError is an error wrapping multiple validation errors
+// returned by RegisterResponse.ValidateAll() if the designated constraints
+// aren't met.
+type RegisterResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RegisterResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RegisterResponseMultiError) AllErrors() []error { return m }
+
+// RegisterResponseValidationError is the validation error returned by
+// RegisterResponse.Validate if the designated constraints aren't met.
+type RegisterResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RegisterResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RegisterResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RegisterResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RegisterResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RegisterResponseValidationError) ErrorName() string { return "RegisterResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e RegisterResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRegisterResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RegisterResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RegisterResponseValidationError{}
+
 // Validate checks the field values on LoginResponse with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -242,6 +345,34 @@ func (m *LoginResponse) validate(all bool) error {
 	// no validation rules for Cookie
 
 	// no validation rules for Token
+
+	// no validation rules for Name
+
+	// no validation rules for Description
+
+	// no validation rules for LegalName
+
+	// no validation rules for Itn
+
+	// no validation rules for Psrn
+
+	// no validation rules for Address
+
+	// no validation rules for LegalAddress
+
+	// no validation rules for Email
+
+	// no validation rules for Phone
+
+	// no validation rules for Link
+
+	// no validation rules for Activity
+
+	// no validation rules for OwnerId
+
+	// no validation rules for Rating
+
+	// no validation rules for Verified
 
 	if len(errors) > 0 {
 		return LoginResponseMultiError(errors)
@@ -667,6 +798,127 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetUserRequestValidationError{}
+
+// Validate checks the field values on FastRegisterRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *FastRegisterRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FastRegisterRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// FastRegisterRequestMultiError, or nil if none found.
+func (m *FastRegisterRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FastRegisterRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Name
+
+	// no validation rules for LegalName
+
+	// no validation rules for Itn
+
+	// no validation rules for Email
+
+	// no validation rules for Password
+
+	// no validation rules for OwnerName
+
+	// no validation rules for Surname
+
+	// no validation rules for Patronymic
+
+	// no validation rules for Country
+
+	// no validation rules for Post
+
+	if len(errors) > 0 {
+		return FastRegisterRequestMultiError(errors)
+	}
+	return nil
+}
+
+// FastRegisterRequestMultiError is an error wrapping multiple validation
+// errors returned by FastRegisterRequest.ValidateAll() if the designated
+// constraints aren't met.
+type FastRegisterRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FastRegisterRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FastRegisterRequestMultiError) AllErrors() []error { return m }
+
+// FastRegisterRequestValidationError is the validation error returned by
+// FastRegisterRequest.Validate if the designated constraints aren't met.
+type FastRegisterRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FastRegisterRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FastRegisterRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FastRegisterRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FastRegisterRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FastRegisterRequestValidationError) ErrorName() string {
+	return "FastRegisterRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e FastRegisterRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFastRegisterRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FastRegisterRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FastRegisterRequestValidationError{}
 
 // Validate checks the field values on GetUserResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, the

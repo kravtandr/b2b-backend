@@ -1,13 +1,11 @@
 package delivery
 
 import (
-	"context"
-
 	"b2b/m/internal/services/auth/models"
 	"b2b/m/internal/services/auth/usecase"
 	"b2b/m/pkg/error_adapter"
 	auth_service "b2b/m/pkg/services/auth"
-
+	"context"
 	"github.com/golang/protobuf/ptypes/empty"
 )
 
@@ -40,12 +38,63 @@ func (a *authDelivery) LoginUser(ctx context.Context, request *auth_service.Logi
 	}
 
 	return &auth_service.LoginResponse{
-		Cookie: response.Cookie,
-		Token:  response.Token,
+		Cookie:       response.Cookie,
+		Token:        response.Token,
+		Name:         response.Name,
+		Description:  response.Description,
+		LegalName:    response.LegalName,
+		Itn:          response.Itn,
+		Psrn:         response.Psrn,
+		Address:      response.Address,
+		LegalAddress: response.LegalAddress,
+		Email:        response.Email,
+		Phone:        response.Phone,
+		Link:         response.Link,
+		Activity:     response.Activity,
+		OwnerId:      response.OwnerId,
+		Rating:       response.Rating,
+		Verified:     response.Verified,
 	}, nil
 }
 
-func (a *authDelivery) RegisterUser(ctx context.Context, request *auth_service.RegisterRequest) (*auth_service.LoginResponse, error) {
+func (a *authDelivery) FastRegister(ctx context.Context, request *auth_service.FastRegisterRequest) (*auth_service.LoginResponse, error) {
+	response, err := a.authUsecase.FastRegistration(ctx, &models.FastRegistrationForm{
+		Name:       request.Name,
+		LegalName:  request.LegalName,
+		Itn:        request.Itn,
+		Email:      request.Email,
+		Password:   request.Password,
+		OwnerName:  request.OwnerName,
+		Surname:    request.Surname,
+		Patronymic: request.Patronymic,
+		Country:    request.Country,
+		Post:       request.Post,
+	})
+	if err != nil {
+		return &auth_service.LoginResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.LoginResponse{
+		Cookie:       response.Cookie,
+		Token:        response.Token,
+		Name:         response.Name,
+		Description:  response.Description,
+		LegalName:    response.LegalName,
+		Itn:          response.Itn,
+		Psrn:         response.Psrn,
+		Address:      response.Address,
+		LegalAddress: response.LegalAddress,
+		Email:        response.Email,
+		Phone:        response.Phone,
+		Link:         response.Link,
+		Activity:     response.Activity,
+		OwnerId:      response.OwnerId,
+		Rating:       response.Rating,
+		Verified:     response.Verified,
+	}, nil
+}
+
+func (a *authDelivery) RegisterUser(ctx context.Context, request *auth_service.RegisterRequest) (*auth_service.RegisterResponse, error) {
 	response, err := a.authUsecase.RegisterUser(ctx, &models.User{
 		Name:     request.Name,
 		Surname:  request.Surname,
@@ -53,10 +102,10 @@ func (a *authDelivery) RegisterUser(ctx context.Context, request *auth_service.R
 		Password: request.Password,
 	})
 	if err != nil {
-		return &auth_service.LoginResponse{}, a.errorAdapter.AdaptError(err)
+		return &auth_service.RegisterResponse{}, a.errorAdapter.AdaptError(err)
 	}
 
-	return &auth_service.LoginResponse{
+	return &auth_service.RegisterResponse{
 		Cookie: response.Cookie,
 		Token:  response.Token,
 	}, nil

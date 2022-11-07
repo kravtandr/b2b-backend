@@ -18,9 +18,29 @@ message LoginRequest {
   }];
 }
 
+
+message  RegisterResponse {
+  string cookie = 1;
+  string token = 2;
+}
+
 message LoginResponse {
   string cookie = 1;
   string token = 2;
+  string name = 3;
+  string description = 4;
+  string legal_name = 5;
+  string itn = 6;
+  string psrn = 7;
+  string address = 8;
+  string legal_address = 9;
+  string email = 10;
+  string phone = 11;
+  string link = 12;
+  string activity = 13;
+  int64 owner_id = 14;
+  int64 rating = 15;
+  int64 verified = 16;
 }
 
 message RegisterRequest {
@@ -48,6 +68,21 @@ message GetUserRequest {
     gt: 0,
   }];
 }
+
+message FastRegisterRequest {
+  string name = 1;
+  string legal_name = 2;
+  string itn = 3;
+  string email = 4;
+  string password = 5;
+  string owner_name = 6;
+  string surname = 7;
+  string patronymic = 8;
+  string country = 9;
+  string post = 10;
+}
+
+
 
 message GetUserResponse {
   string name = 1;
@@ -112,12 +147,10 @@ service AuthService {
   rpc ValidateSession (Session) returns (ValidateSessionResponse) {}
   rpc LogoutUser(Session) returns (google.protobuf.Empty) {}
   rpc LoginUser(LoginRequest) returns (LoginResponse) {}
-
-  rpc RegisterUser(RegisterRequest) returns (LoginResponse) {}
+  rpc FastRegister(FastRegisterRequest) returns (LoginResponse) {}
+  rpc RegisterUser(RegisterRequest) returns (RegisterResponse) {}
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
   rpc UpdateUser(UpdateUserRequest) returns (GetUserResponse) {}
   rpc GetUserInfo(GetUserRequest) returns (UserInfo) {}
-
-
   rpc GetUserByEmail(UserEmailRequest) returns (UserId) {}
 }

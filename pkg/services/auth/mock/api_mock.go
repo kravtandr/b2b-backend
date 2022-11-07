@@ -5,9 +5,9 @@
 package mock_auth_service
 
 import (
+	auth_service "b2b/m/pkg/services/auth"
 	context "context"
 	reflect "reflect"
-	auth_service "b2b/m/pkg/services/auth"
 
 	gomock "github.com/golang/mock/gomock"
 	grpc "google.golang.org/grpc"
@@ -35,6 +35,26 @@ func NewMockAuthServiceClient(ctrl *gomock.Controller) *MockAuthServiceClient {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockAuthServiceClient) EXPECT() *MockAuthServiceClientMockRecorder {
 	return m.recorder
+}
+
+// FastRegister mocks base method.
+func (m *MockAuthServiceClient) FastRegister(ctx context.Context, in *auth_service.FastRegisterRequest, opts ...grpc.CallOption) (*auth_service.LoginResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "FastRegister", varargs...)
+	ret0, _ := ret[0].(*auth_service.LoginResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FastRegister indicates an expected call of FastRegister.
+func (mr *MockAuthServiceClientMockRecorder) FastRegister(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FastRegister", reflect.TypeOf((*MockAuthServiceClient)(nil).FastRegister), varargs...)
 }
 
 // GetUser mocks base method.
@@ -138,14 +158,14 @@ func (mr *MockAuthServiceClientMockRecorder) LogoutUser(ctx, in interface{}, opt
 }
 
 // RegisterUser mocks base method.
-func (m *MockAuthServiceClient) RegisterUser(ctx context.Context, in *auth_service.RegisterRequest, opts ...grpc.CallOption) (*auth_service.LoginResponse, error) {
+func (m *MockAuthServiceClient) RegisterUser(ctx context.Context, in *auth_service.RegisterRequest, opts ...grpc.CallOption) (*auth_service.RegisterResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "RegisterUser", varargs...)
-	ret0, _ := ret[0].(*auth_service.LoginResponse)
+	ret0, _ := ret[0].(*auth_service.RegisterResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -218,6 +238,21 @@ func NewMockAuthServiceServer(ctrl *gomock.Controller) *MockAuthServiceServer {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockAuthServiceServer) EXPECT() *MockAuthServiceServerMockRecorder {
 	return m.recorder
+}
+
+// FastRegister mocks base method.
+func (m *MockAuthServiceServer) FastRegister(arg0 context.Context, arg1 *auth_service.FastRegisterRequest) (*auth_service.LoginResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FastRegister", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.LoginResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FastRegister indicates an expected call of FastRegister.
+func (mr *MockAuthServiceServerMockRecorder) FastRegister(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FastRegister", reflect.TypeOf((*MockAuthServiceServer)(nil).FastRegister), arg0, arg1)
 }
 
 // GetUser mocks base method.
@@ -296,10 +331,10 @@ func (mr *MockAuthServiceServerMockRecorder) LogoutUser(arg0, arg1 interface{}) 
 }
 
 // RegisterUser mocks base method.
-func (m *MockAuthServiceServer) RegisterUser(arg0 context.Context, arg1 *auth_service.RegisterRequest) (*auth_service.LoginResponse, error) {
+func (m *MockAuthServiceServer) RegisterUser(arg0 context.Context, arg1 *auth_service.RegisterRequest) (*auth_service.RegisterResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RegisterUser", arg0, arg1)
-	ret0, _ := ret[0].(*auth_service.LoginResponse)
+	ret0, _ := ret[0].(*auth_service.RegisterResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

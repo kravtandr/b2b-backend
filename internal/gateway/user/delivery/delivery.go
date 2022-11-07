@@ -20,7 +20,7 @@ type UserDelivery interface {
 	Logout(ctx *fasthttp.RequestCtx)
 	Register(ctx *fasthttp.RequestCtx)
 	GetUserInfo(ctx *fasthttp.RequestCtx)
-
+	FastRegister(ctx *fasthttp.RequestCtx)
 	GetProfile(ctx *fasthttp.RequestCtx)
 	UpdateProfile(ctx *fasthttp.RequestCtx)
 }
@@ -69,6 +69,35 @@ func (u *userDelivery) Logout(ctx *fasthttp.RequestCtx) {
 	}
 
 	ctx.SetStatusCode(http.StatusOK)
+}
+
+func (u *userDelivery) FastRegister(ctx *fasthttp.RequestCtx) {
+	var request = &models.FastRegistrationForm{}
+	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+
+	response, err := u.manager.FastRegister(ctx, request)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+
+	b, err := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+
+	var c fasthttp.Cookie
+	c.SetKey(cnst.CookieName)
+	c.SetValue(response.Cookie)
+	c.SetMaxAge(int(time.Hour))
+	c.SetHTTPOnly(true)
+	c.SetSameSite(fasthttp.CookieSameSiteStrictMode)
+	ctx.Response.Header.SetCookie(&c)
 }
 
 func (u *userDelivery) Register(ctx *fasthttp.RequestCtx) {

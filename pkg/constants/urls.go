@@ -5,8 +5,9 @@ const RegisterURL = "/user/register"
 const ProfileURL = "/profile"
 const LogoutURL = "/logout"
 const UserInfoURL = "/user/{id}"
-
 const FastOrderURL = "/fastOrder"
+
+const FastRegisterURL = "/fastregister"
 const CompanyURL = "/company/{id}"
 
 const CountryNameURL = "/country/{name}"

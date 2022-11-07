@@ -1,6 +1,7 @@
 package repository
 
 import (
+	company_models "b2b/m/internal/services/company/models"
 	"context"
 
 	"b2b/m/internal/services/auth/models"
@@ -59,6 +60,24 @@ func (l *loggingMiddleware) GetUserByID(ctx context.Context, ID int64) (u *model
 
 	return l.next.GetUserByID(ctx, ID)
 }
+
+func (l *loggingMiddleware) GetUserCompany(ctx context.Context, ID int64) (u *company_models.Company, err error) {
+	l.logger.Infow(module,
+		"Action", "GetUserCompany",
+		"Request", ID,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetUserCompany",
+				"Request", ID,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetUserCompany(ctx, ID)
+}
 func (l *loggingMiddleware) CreateUser(ctx context.Context, user *models.User) (u *models.User, err error) {
 	l.logger.Infow(module,
 		"Action", "CreateUser",
@@ -75,6 +94,24 @@ func (l *loggingMiddleware) CreateUser(ctx context.Context, user *models.User) (
 	}()
 
 	return l.next.CreateUser(ctx, user)
+}
+
+func (l *loggingMiddleware) FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) (err error) {
+	l.logger.Infow(module,
+		"Action", "FastRegistration",
+		"Request", user,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "FastRegistration",
+				"Request", newCompany, user, post,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.FastRegistration(ctx, newCompany, user, post)
 }
 
 //func (l *loggingMiddleware) UpdateUser(ctx context.Context, user *models.User) (u *models.User, err error) {

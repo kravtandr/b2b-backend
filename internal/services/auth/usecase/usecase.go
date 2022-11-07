@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	company_models "b2b/m/internal/services/company/models"
 	"context"
 
 	"b2b/m/internal/services/auth/models"
@@ -11,10 +12,10 @@ import (
 )
 
 type AuthUseCase interface {
-	LoginUser(ctx context.Context, user *models.User) (models.Session, error)
+	LoginUser(ctx context.Context, user *models.User) (models.CompanyWithCookie, error)
 	LogoutUser(ctx context.Context, session string) error
 	ValidateSession(ctx context.Context, session string) (int64, error)
-
+	FastRegistration(ctx context.Context, form *models.FastRegistrationForm) (models.CompanyWithCookie, error)
 	RegisterUser(ctx context.Context, user *models.User) (models.Session, error)
 	GetUser(ctx context.Context, ID int64) (*models.User, error)
 	//UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
@@ -28,25 +29,44 @@ type authUseCase struct {
 	uuidGen       generator.UUIDGenerator
 }
 
-func (a *authUseCase) LoginUser(ctx context.Context, user *models.User) (models.Session, error) {
+func (a *authUseCase) LoginUser(ctx context.Context, user *models.User) (models.CompanyWithCookie, error) {
 	repoUser, err := a.repo.GetUserByEmail(ctx, user.Email)
 	if err != nil {
-		return models.Session{}, err
+		return models.CompanyWithCookie{}, err
 	}
 
 	pass, _ := a.hashGenerator.DecodeString(repoUser.Password)
 	if pass != user.Password {
-		return models.Session{}, errors.WrongUserPassword
+		return models.CompanyWithCookie{}, errors.WrongUserPassword
 	}
 
 	cookie := a.uuidGen.GenerateString()
 	if err = a.repo.CreateUserSession(ctx, repoUser.Id, cookie); err != nil {
-		return models.Session{}, err
+		return models.CompanyWithCookie{}, err
 	}
 
-	return models.Session{
-		Cookie: cookie,
-		Token:  "??",
+	userCompany, err := a.repo.GetUserCompany(ctx, repoUser.Id)
+	if err != nil {
+		return models.CompanyWithCookie{}, err
+	}
+
+	return models.CompanyWithCookie{
+		Cookie:       cookie,
+		Token:        "??",
+		Name:         userCompany.Name,
+		Description:  userCompany.Description,
+		LegalName:    userCompany.LegalName,
+		Itn:          userCompany.Itn,
+		Psrn:         userCompany.Psrn,
+		Address:      userCompany.Address,
+		LegalAddress: userCompany.LegalAddress,
+		Email:        userCompany.Email,
+		Phone:        userCompany.Phone,
+		Link:         userCompany.Link,
+		Activity:     userCompany.Activity,
+		OwnerId:      userCompany.OwnerId,
+		Rating:       userCompany.Rating,
+		Verified:     userCompany.Verified,
 	}, nil
 }
 
@@ -57,6 +77,57 @@ func (a *authUseCase) GetUserByEmail(ctx context.Context, email string) (*models
 	}
 
 	return user, nil
+}
+
+func (a *authUseCase) FastRegistration(ctx context.Context, form *models.FastRegistrationForm) (models.CompanyWithCookie, error) {
+	form.Password = a.hashGenerator.EncodeString(form.Password)
+	newUser := models.User{
+		Name:       form.OwnerName,
+		Email:      form.Email,
+		Password:   form.Password,
+		Surname:    form.Surname,
+		Patronymic: form.Patronymic,
+		Country:    form.Country,
+	}
+	user, err := a.repo.CreateUser(ctx, &newUser)
+	if err != nil {
+		return models.CompanyWithCookie{}, err
+	}
+
+	cookie := a.uuidGen.GenerateString()
+	if err = a.repo.CreateUserSession(ctx, user.Id, cookie); err != nil {
+		return models.CompanyWithCookie{}, err
+	}
+
+	newCompany := company_models.Company{
+		Name:      form.Name,
+		LegalName: form.LegalName,
+		Itn:       form.Itn,
+	}
+
+	err = a.repo.FastRegistration(ctx, &newCompany, user, form.Post)
+	if err != nil {
+		return models.CompanyWithCookie{}, err
+	}
+
+	return models.CompanyWithCookie{
+		Cookie: cookie,
+		Token:  "??",
+		Name:   newCompany.Name,
+		//Description:  userCompany.Description,
+		LegalName: newCompany.LegalName,
+		Itn:       newCompany.Itn,
+		//Psrn:         userCompany.Psrn,
+		//Address:      userCompany.Address,
+		//LegalAddress: userCompany.LegalAddress,
+		//Email:        userCompany.Email,
+		//Phone:        userCompany.Phone,
+		//Link:         userCompany.Link,
+		//Activity:     userCompany.Activity,
+		OwnerId: user.Id,
+		//Rating:       userCompany.Rating,
+		//Verified:     userCompany.Verified,
+	}, nil
 }
 
 func (a *authUseCase) LogoutUser(ctx context.Context, session string) error {
