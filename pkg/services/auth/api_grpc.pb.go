@@ -29,9 +29,10 @@ type AuthServiceClient interface {
 	FastRegister(ctx context.Context, in *FastRegisterRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	RegisterUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
-	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error)
 	GetUserInfo(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserInfo, error)
 	GetUserByEmail(ctx context.Context, in *UserEmailRequest, opts ...grpc.CallOption) (*UserId, error)
+	GetUserIdByCookie(ctx context.Context, in *GetUserIdByCookieRequest, opts ...grpc.CallOption) (*UserId, error)
 }
 
 type authServiceClient struct {
@@ -96,8 +97,8 @@ func (c *authServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opt
 	return out, nil
 }
 
-func (c *authServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error) {
-	out := new(GetUserResponse)
+func (c *authServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error) {
+	out := new(GetPublicUserResponse)
 	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/UpdateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -123,6 +124,15 @@ func (c *authServiceClient) GetUserByEmail(ctx context.Context, in *UserEmailReq
 	return out, nil
 }
 
+func (c *authServiceClient) GetUserIdByCookie(ctx context.Context, in *GetUserIdByCookieRequest, opts ...grpc.CallOption) (*UserId, error) {
+	out := new(UserId)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/GetUserIdByCookie", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -133,9 +143,10 @@ type AuthServiceServer interface {
 	FastRegister(context.Context, *FastRegisterRequest) (*LoginResponse, error)
 	RegisterUser(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
-	UpdateUser(context.Context, *UpdateUserRequest) (*GetUserResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*GetPublicUserResponse, error)
 	GetUserInfo(context.Context, *GetUserRequest) (*UserInfo, error)
 	GetUserByEmail(context.Context, *UserEmailRequest) (*UserId, error)
+	GetUserIdByCookie(context.Context, *GetUserIdByCookieRequest) (*UserId, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -161,7 +172,7 @@ func (UnimplementedAuthServiceServer) RegisterUser(context.Context, *RegisterReq
 func (UnimplementedAuthServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedAuthServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*GetUserResponse, error) {
+func (UnimplementedAuthServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*GetPublicUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedAuthServiceServer) GetUserInfo(context.Context, *GetUserRequest) (*UserInfo, error) {
@@ -169,6 +180,9 @@ func (UnimplementedAuthServiceServer) GetUserInfo(context.Context, *GetUserReque
 }
 func (UnimplementedAuthServiceServer) GetUserByEmail(context.Context, *UserEmailRequest) (*UserId, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByEmail not implemented")
+}
+func (UnimplementedAuthServiceServer) GetUserIdByCookie(context.Context, *GetUserIdByCookieRequest) (*UserId, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserIdByCookie not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -345,6 +359,24 @@ func _AuthService_GetUserByEmail_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetUserIdByCookie_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserIdByCookieRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetUserIdByCookie(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/GetUserIdByCookie",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetUserIdByCookie(ctx, req.(*GetUserIdByCookieRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -387,6 +419,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserByEmail",
 			Handler:    _AuthService_GetUserByEmail_Handler,
+		},
+		{
+			MethodName: "GetUserIdByCookie",
+			Handler:    _AuthService_GetUserIdByCookie_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

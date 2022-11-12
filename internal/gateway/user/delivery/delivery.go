@@ -145,21 +145,21 @@ func (u *userDelivery) GetProfile(ctx *fasthttp.RequestCtx) {
 }
 
 func (u *userDelivery) UpdateProfile(ctx *fasthttp.RequestCtx) {
-	var request = &models.UpdateProfileRequest{}
+	var request = &models.PublicCompanyAndOwner{}
 	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
 		ctx.SetStatusCode(http.StatusBadRequest)
 		ctx.SetBody([]byte(cnst.WrongRequestBody))
 		return
 	}
 
-	userID := ctx.UserValue(cnst.UserIDContextKey).(int)
-	response, err := u.manager.UpdateProfile(ctx, userID, request)
+	userID, err := u.manager.GetUserIdByCookie(ctx, string(ctx.Request.Header.Cookie(cnst.CookieName)))
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)
 		ctx.SetStatusCode(httpError.Code)
 		ctx.SetBody([]byte(httpError.MSG))
 		return
 	}
+	response, err := u.manager.UpdateProfile(ctx, userID, request)
 
 	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)

@@ -1,5 +1,7 @@
 package models
 
+import "b2b/m/internal/services/auth/models"
+
 type Company struct {
 	Id           int64  `json:"id"`
 	Name         string `json:"name"`
@@ -17,6 +19,17 @@ type Company struct {
 	Rating       int64  `json:"rating"`
 	Verified     int64  `json:"verified"`
 	//Docks        []string `json:"docs"`
+}
+
+type CompanyUpdateProfileRequest struct {
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Address      string `json:"address"`
+	LegalAddress string `json:"legal_address"`
+	Itn          string `json:"itn"`
+	Phone        string `json:"phone"`
+	Link         string `json:"link"`
+	Activity     string `json:"activity"`
 }
 
 //тотальный кал, переделать
@@ -40,4 +53,16 @@ type CompanyWithCookie struct {
 	Rating       int64  `json:"rating"`
 	Verified     int64  `json:"verified"`
 	//Docks        []string `json:"docs"`
+}
+
+type CompanyAndOwner struct {
+	Owner   models.User `json:"owner"`
+	Company Company     `json:"company"`
+	Post    string      `json:"post"`
+}
+
+type PublicCompanyAndOwner struct {
+	Owner   UpdateUserRequest           `json:"owner"`
+	Company CompanyUpdateProfileRequest `json:"company"`
+	Post    string                      `json:"post"`
 }

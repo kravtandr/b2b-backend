@@ -369,3 +369,255 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetCompanyResponseValidationError{}
+
+// Validate checks the field values on GetCompanyAndPostResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetCompanyAndPostResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetCompanyAndPostResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetCompanyAndPostResponseMultiError, or nil if none found.
+func (m *GetCompanyAndPostResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetCompanyAndPostResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Name
+
+	// no validation rules for Description
+
+	// no validation rules for LegalName
+
+	// no validation rules for Itn
+
+	// no validation rules for Psrn
+
+	// no validation rules for Address
+
+	// no validation rules for LegalAddress
+
+	// no validation rules for Email
+
+	// no validation rules for Phone
+
+	// no validation rules for Link
+
+	// no validation rules for Activity
+
+	// no validation rules for OwnerId
+
+	// no validation rules for Rating
+
+	// no validation rules for Verified
+
+	// no validation rules for Post
+
+	if len(errors) > 0 {
+		return GetCompanyAndPostResponseMultiError(errors)
+	}
+	return nil
+}
+
+// GetCompanyAndPostResponseMultiError is an error wrapping multiple validation
+// errors returned by GetCompanyAndPostResponse.ValidateAll() if the
+// designated constraints aren't met.
+type GetCompanyAndPostResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetCompanyAndPostResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetCompanyAndPostResponseMultiError) AllErrors() []error { return m }
+
+// GetCompanyAndPostResponseValidationError is the validation error returned by
+// GetCompanyAndPostResponse.Validate if the designated constraints aren't met.
+type GetCompanyAndPostResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetCompanyAndPostResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetCompanyAndPostResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetCompanyAndPostResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetCompanyAndPostResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetCompanyAndPostResponseValidationError) ErrorName() string {
+	return "GetCompanyAndPostResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetCompanyAndPostResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetCompanyAndPostResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetCompanyAndPostResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetCompanyAndPostResponseValidationError{}
+
+// Validate checks the field values on UpdateCompanyRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateCompanyRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateCompanyRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateCompanyRequestMultiError, or nil if none found.
+func (m *UpdateCompanyRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateCompanyRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Name
+
+	// no validation rules for Description
+
+	// no validation rules for Address
+
+	// no validation rules for LegalAddress
+
+	// no validation rules for Itn
+
+	// no validation rules for Phone
+
+	// no validation rules for Link
+
+	// no validation rules for Activity
+
+	// no validation rules for OwnerId
+
+	// no validation rules for Post
+
+	if len(errors) > 0 {
+		return UpdateCompanyRequestMultiError(errors)
+	}
+	return nil
+}
+
+// UpdateCompanyRequestMultiError is an error wrapping multiple validation
+// errors returned by UpdateCompanyRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateCompanyRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateCompanyRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateCompanyRequestMultiError) AllErrors() []error { return m }
+
+// UpdateCompanyRequestValidationError is the validation error returned by
+// UpdateCompanyRequest.Validate if the designated constraints aren't met.
+type UpdateCompanyRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateCompanyRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateCompanyRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateCompanyRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateCompanyRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateCompanyRequestValidationError) ErrorName() string {
+	return "UpdateCompanyRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateCompanyRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateCompanyRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateCompanyRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateCompanyRequestValidationError{}

@@ -5,7 +5,7 @@ import (
 	company_models "b2b/m/internal/services/company/models"
 	"b2b/m/pkg/errors"
 	"context"
-
+	"fmt"
 	"github.com/jackc/pgx/v4"
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
 )
@@ -16,7 +16,7 @@ type AuthRepository interface {
 	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
 	GetUserCompany(ctx context.Context, id int64) (*company_models.Company, error)
 	FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) error
-	//UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
+	UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
 	CreateUserSession(ctx context.Context, userID int64, hash string) error
 	ValidateUserSession(ctx context.Context, hash string) (int64, error)
 	RemoveUserSession(ctx context.Context, hash string) error
@@ -47,7 +47,7 @@ func (a *authRepository) GetUserByID(ctx context.Context, ID int64) (*models.Use
 
 	user := &models.User{}
 	if err := row.Scan(
-		&user.Name, &user.Surname, &user.Email,
+		&user.Id, &user.Name, &user.Surname, &user.Patronymic, &user.Email, &user.Password, &user.GroupId,
 	); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.UserDoesNotExist
@@ -154,6 +154,24 @@ func (a *authRepository) RemoveUserSession(ctx context.Context, hash string) err
 	}
 
 	return nil
+}
+
+func (a *authRepository) UpdateUser(ctx context.Context, user *models.User) (*models.User, error) {
+	query := a.queryFactory.CreateUpdateUser(user)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+
+	updatedUser := &models.User{}
+	if err := row.Scan(
+		&updatedUser.Id, &updatedUser.Name, &updatedUser.Surname, &updatedUser.Patronymic, &updatedUser.Email, &updatedUser.Password,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			fmt.Println("Error", err)
+			return &models.User{}, errors.UserDoesNotExist
+		}
+
+		return &models.User{}, err
+	}
+	return updatedUser, nil
 }
 
 func NewAuthRepository(

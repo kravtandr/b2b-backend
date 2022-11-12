@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-type companyGRPC interface {
+type CompanyGRPC interface {
 	GetCompanyById(ctx context.Context, in *company_service.GetCompanyRequestById, opts ...grpc.CallOption) (*company_service.GetCompanyResponse, error)
+	UpdateCompanyByOwnerId(ctx context.Context, in *company_service.UpdateCompanyRequest, opts ...grpc.CallOption) (*company_service.GetCompanyAndPostResponse, error)
 }

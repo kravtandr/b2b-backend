@@ -56,6 +56,26 @@ func (mr *MockCompanyServiceClientMockRecorder) GetCompanyById(ctx, in interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyById", reflect.TypeOf((*MockCompanyServiceClient)(nil).GetCompanyById), varargs...)
 }
 
+// UpdateCompanyByOwnerId mocks base method.
+func (m *MockCompanyServiceClient) UpdateCompanyByOwnerId(ctx context.Context, in *company_service.UpdateCompanyRequest, opts ...grpc.CallOption) (*company_service.GetCompanyAndPostResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UpdateCompanyByOwnerId", varargs...)
+	ret0, _ := ret[0].(*company_service.GetCompanyAndPostResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateCompanyByOwnerId indicates an expected call of UpdateCompanyByOwnerId.
+func (mr *MockCompanyServiceClientMockRecorder) UpdateCompanyByOwnerId(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCompanyByOwnerId", reflect.TypeOf((*MockCompanyServiceClient)(nil).UpdateCompanyByOwnerId), varargs...)
+}
+
 // MockCompanyServiceServer is a mock of CompanyServiceServer interface.
 type MockCompanyServiceServer struct {
 	ctrl     *gomock.Controller
@@ -92,6 +112,21 @@ func (m *MockCompanyServiceServer) GetCompanyById(arg0 context.Context, arg1 *co
 func (mr *MockCompanyServiceServerMockRecorder) GetCompanyById(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyById", reflect.TypeOf((*MockCompanyServiceServer)(nil).GetCompanyById), arg0, arg1)
+}
+
+// UpdateCompanyByOwnerId mocks base method.
+func (m *MockCompanyServiceServer) UpdateCompanyByOwnerId(arg0 context.Context, arg1 *company_service.UpdateCompanyRequest) (*company_service.GetCompanyAndPostResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateCompanyByOwnerId", arg0, arg1)
+	ret0, _ := ret[0].(*company_service.GetCompanyAndPostResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateCompanyByOwnerId indicates an expected call of UpdateCompanyByOwnerId.
+func (mr *MockCompanyServiceServerMockRecorder) UpdateCompanyByOwnerId(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCompanyByOwnerId", reflect.TypeOf((*MockCompanyServiceServer)(nil).UpdateCompanyByOwnerId), arg0, arg1)
 }
 
 // mustEmbedUnimplementedCompanyServiceServer mocks base method.

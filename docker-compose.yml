@@ -43,12 +43,27 @@ services:
       - COMPANY_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
       - COMPANY_GRPC_PORT=10125
 
+  productscategories_service:
+    build:
+      dockerfile: Dockerfile.productsCategories_service
+      context: .
+      args:
+        - APP_PKG_NAME=b2b/m
+        - GOOS=linux
+    ports:
+      - "10126:10126"
+      - "11126:8080"
+    environment:
+      - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - PRODUCTSCATEGORIES_GRPC_PORT=10126
+
 
   gateway:
     depends_on:
       - auth_service
       - fastorder_service
       - company_service
+      - productscategories_service
     build:
       dockerfile: Dockerfile.gateway
       context: .
@@ -63,6 +78,7 @@ services:
       - GATEWAY_AUTH_ENDPOINT=host.docker.internal:10123
       - GATEWAY_FASTORDER_ENDPOINT=host.docker.internal:10124
       - GATEWAY_COMPANY_ENDPOINT=host.docker.internal:10125
+      - GATEWAY_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
       - GATEWAY_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
 
 

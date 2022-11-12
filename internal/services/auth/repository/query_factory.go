@@ -15,6 +15,7 @@ type QueryFactory interface {
 	CreateCreateUserSession(userID int64, hash string) *query.Query
 	CreateValidateUserSession(hash string) *query.Query
 	CreateRemoveUserSession(hash string) *query.Query
+	CreateUpdateUser(user *models.User) *query.Query
 }
 
 type queryFactory struct{}
@@ -23,6 +24,15 @@ func (q *queryFactory) CreateGetCompanyByUserId(Id int64) *query.Query {
 	return &query.Query{
 		Request: createCompanyByUserId,
 		Params:  []interface{}{Id},
+	}
+}
+
+func (q *queryFactory) CreateUpdateUser(user *models.User) *query.Query {
+	return &query.Query{
+		Request: createCreateUpdateUser,
+		Params: []interface{}{
+			user.Id, user.Name, user.Surname, user.Patronymic, user.Email, user.Password,
+		},
 	}
 }
 
@@ -39,7 +49,7 @@ func (q *queryFactory) CreateCreateUserCompanyLink(user *models.User, company *c
 	return &query.Query{
 		Request: createCreateUserCompanyLink,
 		Params: []interface{}{
-			post, company.Id, user.Id,
+			post, company.Id, user.Id, company.Itn,
 		},
 	}
 }

@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"b2b/m/internal/services/company/models"
 	"b2b/m/internal/services/company/usecase"
 	"b2b/m/pkg/error_adapter"
 	company_service "b2b/m/pkg/services/company"
@@ -34,6 +35,42 @@ func (a *companyDelivery) GetCompanyById(ctx context.Context, request *company_s
 		OwnerId:      company.OwnerId,
 		Rating:       company.Rating,
 		Verified:     company.Verified,
+	}, nil
+}
+
+func (a *companyDelivery) UpdateCompanyByOwnerId(ctx context.Context, request *company_service.UpdateCompanyRequest) (*company_service.GetCompanyAndPostResponse, error) {
+	company, post, err := a.companyUseCase.UpdateCompanyById(ctx, models.Company{
+		Name:         request.Name,
+		Description:  request.Description,
+		Address:      request.Address,
+		LegalAddress: request.LegalAddress,
+		Itn:          request.Itn,
+		Phone:        request.Phone,
+		Link:         request.Link,
+		Activity:     request.Activity,
+		OwnerId:      request.OwnerId,
+	}, request.Post)
+
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+
+	return &company_service.GetCompanyAndPostResponse{
+		Name:         company.Name,
+		Description:  company.Description,
+		LegalName:    company.LegalName,
+		Itn:          company.Itn,
+		Psrn:         company.Psrn,
+		Address:      company.Address,
+		LegalAddress: company.LegalAddress,
+		Email:        company.Email,
+		Phone:        company.Phone,
+		Link:         company.Link,
+		Activity:     company.Activity,
+		OwnerId:      company.OwnerId,
+		Rating:       company.Rating,
+		Verified:     company.Verified,
+		Post:         post,
 	}, nil
 }
 

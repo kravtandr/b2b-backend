@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CompanyServiceClient interface {
 	GetCompanyById(ctx context.Context, in *GetCompanyRequestById, opts ...grpc.CallOption) (*GetCompanyResponse, error)
+	UpdateCompanyByOwnerId(ctx context.Context, in *UpdateCompanyRequest, opts ...grpc.CallOption) (*GetCompanyAndPostResponse, error)
 }
 
 type companyServiceClient struct {
@@ -42,11 +43,21 @@ func (c *companyServiceClient) GetCompanyById(ctx context.Context, in *GetCompan
 	return out, nil
 }
 
+func (c *companyServiceClient) UpdateCompanyByOwnerId(ctx context.Context, in *UpdateCompanyRequest, opts ...grpc.CallOption) (*GetCompanyAndPostResponse, error) {
+	out := new(GetCompanyAndPostResponse)
+	err := c.cc.Invoke(ctx, "/services.company_service.CompanyService/UpdateCompanyByOwnerId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CompanyServiceServer is the server API for CompanyService service.
 // All implementations must embed UnimplementedCompanyServiceServer
 // for forward compatibility
 type CompanyServiceServer interface {
 	GetCompanyById(context.Context, *GetCompanyRequestById) (*GetCompanyResponse, error)
+	UpdateCompanyByOwnerId(context.Context, *UpdateCompanyRequest) (*GetCompanyAndPostResponse, error)
 	mustEmbedUnimplementedCompanyServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedCompanyServiceServer struct {
 
 func (UnimplementedCompanyServiceServer) GetCompanyById(context.Context, *GetCompanyRequestById) (*GetCompanyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCompanyById not implemented")
+}
+func (UnimplementedCompanyServiceServer) UpdateCompanyByOwnerId(context.Context, *UpdateCompanyRequest) (*GetCompanyAndPostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCompanyByOwnerId not implemented")
 }
 func (UnimplementedCompanyServiceServer) mustEmbedUnimplementedCompanyServiceServer() {}
 
@@ -88,6 +102,24 @@ func _CompanyService_GetCompanyById_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CompanyService_UpdateCompanyByOwnerId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCompanyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CompanyServiceServer).UpdateCompanyByOwnerId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.company_service.CompanyService/UpdateCompanyByOwnerId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CompanyServiceServer).UpdateCompanyByOwnerId(ctx, req.(*UpdateCompanyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CompanyService_ServiceDesc is the grpc.ServiceDesc for CompanyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var CompanyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCompanyById",
 			Handler:    _CompanyService_GetCompanyById_Handler,
+		},
+		{
+			MethodName: "UpdateCompanyByOwnerId",
+			Handler:    _CompanyService_UpdateCompanyByOwnerId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

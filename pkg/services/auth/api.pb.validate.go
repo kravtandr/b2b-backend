@@ -1051,28 +1051,17 @@ func (m *UpdateUserRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetId() <= 0 {
-		err := UpdateUserRequestValidationError{
-			field:  "Id",
-			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for Id
 
 	// no validation rules for Name
 
 	// no validation rules for Surname
 
+	// no validation rules for Patronymic
+
 	// no validation rules for Email
 
-	// no validation rules for Description
-
 	// no validation rules for Password
-
-	// no validation rules for Image
 
 	if len(errors) > 0 {
 		return UpdateUserRequestMultiError(errors)
@@ -1813,3 +1802,215 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = UserIdValidationError{}
+
+// Validate checks the field values on GetUserIdByCookieRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetUserIdByCookieRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetUserIdByCookieRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetUserIdByCookieRequestMultiError, or nil if none found.
+func (m *GetUserIdByCookieRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserIdByCookieRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Hash
+
+	if len(errors) > 0 {
+		return GetUserIdByCookieRequestMultiError(errors)
+	}
+	return nil
+}
+
+// GetUserIdByCookieRequestMultiError is an error wrapping multiple validation
+// errors returned by GetUserIdByCookieRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetUserIdByCookieRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserIdByCookieRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserIdByCookieRequestMultiError) AllErrors() []error { return m }
+
+// GetUserIdByCookieRequestValidationError is the validation error returned by
+// GetUserIdByCookieRequest.Validate if the designated constraints aren't met.
+type GetUserIdByCookieRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserIdByCookieRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserIdByCookieRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetUserIdByCookieRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserIdByCookieRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserIdByCookieRequestValidationError) ErrorName() string {
+	return "GetUserIdByCookieRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserIdByCookieRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserIdByCookieRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserIdByCookieRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserIdByCookieRequestValidationError{}
+
+// Validate checks the field values on GetPublicUserResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetPublicUserResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetPublicUserResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetPublicUserResponseMultiError, or nil if none found.
+func (m *GetPublicUserResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetPublicUserResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Name
+
+	// no validation rules for Surname
+
+	// no validation rules for Patronymic
+
+	// no validation rules for Email
+
+	if len(errors) > 0 {
+		return GetPublicUserResponseMultiError(errors)
+	}
+	return nil
+}
+
+// GetPublicUserResponseMultiError is an error wrapping multiple validation
+// errors returned by GetPublicUserResponse.ValidateAll() if the designated
+// constraints aren't met.
+type GetPublicUserResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetPublicUserResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetPublicUserResponseMultiError) AllErrors() []error { return m }
+
+// GetPublicUserResponseValidationError is the validation error returned by
+// GetPublicUserResponse.Validate if the designated constraints aren't met.
+type GetPublicUserResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetPublicUserResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetPublicUserResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetPublicUserResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetPublicUserResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetPublicUserResponseValidationError) ErrorName() string {
+	return "GetPublicUserResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetPublicUserResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetPublicUserResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetPublicUserResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetPublicUserResponseValidationError{}

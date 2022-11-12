@@ -1,12 +1,11 @@
 package usecase
 
 import (
-	company_models "b2b/m/internal/services/company/models"
-	"context"
-
 	"b2b/m/internal/services/auth/models"
+	company_models "b2b/m/internal/services/company/models"
 	"b2b/m/pkg/errors"
 	"b2b/m/pkg/generator"
+	"context"
 
 	"github.com/gofrs/uuid"
 )
@@ -18,7 +17,7 @@ type AuthUseCase interface {
 	FastRegistration(ctx context.Context, form *models.FastRegistrationForm) (models.CompanyWithCookie, error)
 	RegisterUser(ctx context.Context, user *models.User) (models.Session, error)
 	GetUser(ctx context.Context, ID int64) (*models.User, error)
-	//UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
+	UpdateUser(ctx context.Context, user *models.User) (*models.PublicUser, error)
 	GetUserInfo(ctx context.Context, id int) (*models.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 }
@@ -160,13 +159,26 @@ func (a *authUseCase) GetUser(ctx context.Context, ID int64) (*models.User, erro
 	return a.repo.GetUserByID(ctx, ID)
 }
 
-//func (a *authUseCase) UpdateUser(ctx context.Context, user *models.User) (*models.User, error) {
-//	if user.Password != "" {
-//		user.Password = a.hashGenerator.EncodeString(user.Password)
-//	}
-//
-//	return a.repo.UpdateUser(ctx, user)
-//}
+func (a *authUseCase) UpdateUser(ctx context.Context, user *models.User) (*models.PublicUser, error) {
+	currentUser, err := a.repo.GetUserByID(ctx, user.Id)
+	if user.Password != "" {
+		user.Password = a.hashGenerator.EncodeString(user.Password)
+	} else {
+		user.Password = currentUser.Password
+	}
+	user.GroupId = currentUser.GroupId
+	updatedUser, err := a.repo.UpdateUser(ctx, user)
+	if err != nil {
+		return &models.PublicUser{}, err
+	}
+
+	return &models.PublicUser{
+		Name:       updatedUser.Name,
+		Surname:    updatedUser.Surname,
+		Patronymic: updatedUser.Patronymic,
+		Email:      updatedUser.Email,
+	}, nil
+}
 
 func (a *authUseCase) GetUserInfo(ctx context.Context, id int) (*models.User, error) {
 	return a.repo.GetUserInfo(ctx, id)

@@ -97,6 +97,26 @@ func (mr *MockAuthServiceClientMockRecorder) GetUserByEmail(ctx, in interface{},
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockAuthServiceClient)(nil).GetUserByEmail), varargs...)
 }
 
+// GetUserIdByCookie mocks base method.
+func (m *MockAuthServiceClient) GetUserIdByCookie(ctx context.Context, in *auth_service.GetUserIdByCookieRequest, opts ...grpc.CallOption) (*auth_service.UserId, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetUserIdByCookie", varargs...)
+	ret0, _ := ret[0].(*auth_service.UserId)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserIdByCookie indicates an expected call of GetUserIdByCookie.
+func (mr *MockAuthServiceClientMockRecorder) GetUserIdByCookie(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserIdByCookie", reflect.TypeOf((*MockAuthServiceClient)(nil).GetUserIdByCookie), varargs...)
+}
+
 // GetUserInfo mocks base method.
 func (m *MockAuthServiceClient) GetUserInfo(ctx context.Context, in *auth_service.GetUserRequest, opts ...grpc.CallOption) (*auth_service.UserInfo, error) {
 	m.ctrl.T.Helper()
@@ -178,14 +198,14 @@ func (mr *MockAuthServiceClientMockRecorder) RegisterUser(ctx, in interface{}, o
 }
 
 // UpdateUser mocks base method.
-func (m *MockAuthServiceClient) UpdateUser(ctx context.Context, in *auth_service.UpdateUserRequest, opts ...grpc.CallOption) (*auth_service.GetUserResponse, error) {
+func (m *MockAuthServiceClient) UpdateUser(ctx context.Context, in *auth_service.UpdateUserRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "UpdateUser", varargs...)
-	ret0, _ := ret[0].(*auth_service.GetUserResponse)
+	ret0, _ := ret[0].(*auth_service.GetPublicUserResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -285,6 +305,21 @@ func (mr *MockAuthServiceServerMockRecorder) GetUserByEmail(arg0, arg1 interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockAuthServiceServer)(nil).GetUserByEmail), arg0, arg1)
 }
 
+// GetUserIdByCookie mocks base method.
+func (m *MockAuthServiceServer) GetUserIdByCookie(arg0 context.Context, arg1 *auth_service.GetUserIdByCookieRequest) (*auth_service.UserId, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserIdByCookie", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.UserId)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserIdByCookie indicates an expected call of GetUserIdByCookie.
+func (mr *MockAuthServiceServerMockRecorder) GetUserIdByCookie(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserIdByCookie", reflect.TypeOf((*MockAuthServiceServer)(nil).GetUserIdByCookie), arg0, arg1)
+}
+
 // GetUserInfo mocks base method.
 func (m *MockAuthServiceServer) GetUserInfo(arg0 context.Context, arg1 *auth_service.GetUserRequest) (*auth_service.UserInfo, error) {
 	m.ctrl.T.Helper()
@@ -346,10 +381,10 @@ func (mr *MockAuthServiceServerMockRecorder) RegisterUser(arg0, arg1 interface{}
 }
 
 // UpdateUser mocks base method.
-func (m *MockAuthServiceServer) UpdateUser(arg0 context.Context, arg1 *auth_service.UpdateUserRequest) (*auth_service.GetUserResponse, error) {
+func (m *MockAuthServiceServer) UpdateUser(arg0 context.Context, arg1 *auth_service.UpdateUserRequest) (*auth_service.GetPublicUserResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateUser", arg0, arg1)
-	ret0, _ := ret[0].(*auth_service.GetUserResponse)
+	ret0, _ := ret[0].(*auth_service.GetPublicUserResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

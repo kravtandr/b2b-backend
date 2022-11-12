@@ -61,6 +61,24 @@ func (l *loggingMiddleware) GetUserByID(ctx context.Context, ID int64) (u *model
 	return l.next.GetUserByID(ctx, ID)
 }
 
+func (l *loggingMiddleware) UpdateUser(ctx context.Context, user *models.User) (u *models.User, err error) {
+	l.logger.Infow(module,
+		"Action", "UpdateUser",
+		"Request", user,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "UpdateUser",
+				"Request", user,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.UpdateUser(ctx, user)
+}
+
 func (l *loggingMiddleware) GetUserCompany(ctx context.Context, ID int64) (u *company_models.Company, err error) {
 	l.logger.Infow(module,
 		"Action", "GetUserCompany",

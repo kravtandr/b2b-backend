@@ -124,26 +124,26 @@ func (a *authDelivery) GetUser(ctx context.Context, request *auth_service.GetUse
 	}, nil
 }
 
-//func (a *authDelivery) UpdateUser(ctx context.Context, request *auth_service.UpdateUserRequest) (*auth_service.GetUserResponse, error) {
-//	response, err := a.authUsecase.UpdateUser(ctx, &models.User{
-//		Id:          request.Id,
-//		Name:        request.Name,
-//		Surname:     request.Surname,
-//		Email:       request.Email,
-//		Password:    request.Password,
-//	})
-//	if err != nil {
-//		return &auth_service.GetUserResponse{}, a.errorAdapter.AdaptError(err)
-//	}
-//
-//	return &auth_service.GetUserResponse{
-//		Name:        response.Name,
-//		Surname:     response.Surname,
-//		Email:       response.Email,
-//		Image:       response.Image,
-//		Description: response.Description,
-//	}, nil
-//}
+func (a *authDelivery) UpdateUser(ctx context.Context, request *auth_service.UpdateUserRequest) (*auth_service.GetPublicUserResponse, error) {
+	response, err := a.authUsecase.UpdateUser(ctx, &models.User{
+		Id:         request.Id,
+		Name:       request.Name,
+		Surname:    request.Surname,
+		Patronymic: request.Patronymic,
+		Email:      request.Email,
+		Password:   request.Password,
+	})
+	if err != nil {
+		return &auth_service.GetPublicUserResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.GetPublicUserResponse{
+		Name:       response.Name,
+		Surname:    response.Surname,
+		Patronymic: response.Patronymic,
+		Email:      response.Email,
+	}, nil
+}
 
 func (a *authDelivery) GetUserInfo(ctx context.Context, request *auth_service.GetUserRequest) (*auth_service.UserInfo, error) {
 	responce, err := a.authUsecase.GetUserInfo(ctx, int(request.Id))
@@ -165,6 +165,15 @@ func (a *authDelivery) GetUserByEmail(ctx context.Context, request *auth_service
 	}
 
 	return &auth_service.UserId{Id: responce.Id}, nil
+}
+
+func (a *authDelivery) GetUserIdByCookie(ctx context.Context, request *auth_service.GetUserIdByCookieRequest) (*auth_service.UserId, error) {
+	responce, err := a.authUsecase.ValidateSession(ctx, request.Hash)
+	if err != nil {
+		return &auth_service.UserId{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.UserId{Id: responce}, nil
 }
 
 func NewAuthDelivery(

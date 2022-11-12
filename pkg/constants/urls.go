@@ -11,6 +11,8 @@ const FastRegisterURL = "/fastregister"
 const CompanyURL = "/company/{id}"
 const CompanyByInnFromDaDataURL = "/company/{itn}"
 
+const CategoryURL = "/category"
+
 const CountryNameURL = "/country/{name}"
 const CountryIdURL = "/country/id/{id}"
 const CountryListURL = "/country/list"

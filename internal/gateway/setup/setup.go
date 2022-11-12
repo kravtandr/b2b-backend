@@ -6,6 +6,8 @@ import (
 	"b2b/m/internal/gateway/config"
 	fod "b2b/m/internal/gateway/fastOrder/delivery"
 	fastOrder_usecase "b2b/m/internal/gateway/fastOrder/usecase"
+	pcd "b2b/m/internal/gateway/productsCategories/delivery"
+	productsCategories_usecase "b2b/m/internal/gateway/productsCategories/usecase"
 	"b2b/m/internal/gateway/router"
 	ud "b2b/m/internal/gateway/user/delivery"
 	uu "b2b/m/internal/gateway/user/usecase"
@@ -16,6 +18,7 @@ import (
 	auth_service "b2b/m/pkg/services/auth"
 	company_service "b2b/m/pkg/services/company"
 	fastOrder_service "b2b/m/pkg/services/fastOrder"
+	productsCategories_service "b2b/m/pkg/services/productsCategories"
 	"gopkg.in/webdeskltd/dadata.v2"
 
 	"google.golang.org/grpc"
@@ -27,12 +30,26 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		return p, stopFunc, err
 	}
 
+	companyConn, err := grpc.Dial(cfg.CompanyServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
+	daData := dadata.NewDaData("42e877cc6e66e3cc70c47a2f42966120cfcea751", "984e0c50d52dd2611b98609eaa7c82268e46297e")
+	if err != nil {
+		return p, stopFunc, err
+	}
+	companyGRPC := company_service.NewCompanyServiceClient(companyConn)
+	companyUseCase := company_usecase.NewCompanyUseCase(companyGRPC, daData)
+	companyDelivery := cd.NewCompanyDelivery(
+		error_adapter.NewGrpcToHttpAdapter(
+			grpc_errors.UserGatewayError, grpc_errors.Fail,
+		),
+		companyUseCase,
+	)
+
 	conn, err := grpc.Dial(cfg.AuthServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		return p, stopFunc, err
 	}
 	userGRPC := auth_service.NewAuthServiceClient(conn)
-	userUsecase := uu.NewUserUsecase(userGRPC)
+	userUsecase := uu.NewUserUsecase(userGRPC, companyGRPC)
 	userDelivery := ud.NewUserDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
@@ -53,26 +70,26 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		fastOrderUseCase,
 	)
 
-	companyConn, err := grpc.Dial(cfg.CompanyServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
-	daData := dadata.NewDaData("42e877cc6e66e3cc70c47a2f42966120cfcea751", "984e0c50d52dd2611b98609eaa7c82268e46297e")
+	productsCategoriesConn, err := grpc.Dial(cfg.ProductsCategoriesServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		return p, stopFunc, err
 	}
-	companyGRPC := company_service.NewCompanyServiceClient(companyConn)
-	companyUseCase := company_usecase.NewCompanyUseCase(companyGRPC, daData)
-	companyDelivery := cd.NewCompanyDelivery(
+	productsCategoriesGRPC := productsCategories_service.NewProductsCategoriesServiceClient(productsCategoriesConn)
+	productsCategoriesUseCase := productsCategories_usecase.NewProductsCategoriesUseCase(productsCategoriesGRPC)
+	productsCategoriesDelivery := pcd.NewProductsCategoriesDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
-			grpc_errors.UserGatewayError, grpc_errors.Fail,
+			grpc_errors.UserGatewayError, grpc_errors.CommonError,
 		),
-		companyUseCase,
+		productsCategoriesUseCase,
 	)
 
 	p = router.SetupRouter(router.RouterConfig{
-		AuthGRPC:          userGRPC,
-		UserDelivery:      userDelivery,
-		CompanyDelivery:   companyDelivery,
-		FastOrderDelivery: fastOrderDelivery,
-		Logger:            cfg.Logger,
+		AuthGRPC:                   userGRPC,
+		UserDelivery:               userDelivery,
+		CompanyDelivery:            companyDelivery,
+		FastOrderDelivery:          fastOrderDelivery,
+		ProductsCategoriesDelivery: productsCategoriesDelivery,
+		Logger:                     cfg.Logger,
 	})
 
 	stopFunc = func() {

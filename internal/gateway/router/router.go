@@ -3,6 +3,7 @@ package router
 import (
 	cd "b2b/m/internal/gateway/company/delivery"
 	fod "b2b/m/internal/gateway/fastOrder/delivery"
+	pcd "b2b/m/internal/gateway/productsCategories/delivery"
 	ud "b2b/m/internal/gateway/user/delivery"
 	cnst "b2b/m/pkg/constants"
 	"b2b/m/pkg/error_adapter"
@@ -18,9 +19,10 @@ import (
 type RouterConfig struct {
 	AuthGRPC auth_service.AuthServiceClient
 
-	UserDelivery      ud.UserDelivery
-	FastOrderDelivery fod.FastOrderDelivery
-	CompanyDelivery   cd.CompanyDelivery
+	UserDelivery               ud.UserDelivery
+	FastOrderDelivery          fod.FastOrderDelivery
+	CompanyDelivery            cd.CompanyDelivery
+	ProductsCategoriesDelivery pcd.ProductsCategoriesDelivery
 
 	Logger *zap.Logger
 }
@@ -47,6 +49,8 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 
 	p.GET(cnst.CompanyURL, lgrMw(cfg.CompanyDelivery.GetCompanyById))
 	p.POST(cnst.CompanyByInnFromDaDataURL, lgrMw(cfg.CompanyDelivery.GetCompanyByItnFromDaData))
+
+	p.GET(cnst.CategoryURL, lgrMw(cfg.ProductsCategoriesDelivery.GetAllcategories))
 
 	return
 }

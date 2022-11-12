@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package services.productsCategories_service;
+option go_package = "b2b/m/pkg/services/productsCategories;productsCategories_service";
+
+import "third_party/go-proto-validators/validator.proto";
+import "google/protobuf/empty.proto";
+
+
+message GetCategoryByID {
+  int64 id = 1;
+}
+
+message GetCategory {
+  int64 id = 1;
+  string name = 2;
+}
+
+service ProductsCategoriesService {
+  rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
+}

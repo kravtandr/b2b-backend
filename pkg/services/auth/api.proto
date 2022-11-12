@@ -93,15 +93,12 @@ message GetUserResponse {
 }
 
 message UpdateUserRequest {
-  int64 id = 1 [(validate.rules).int64 = {
-    gt: 0,
-  }];
-  string name = 2;
-  string surname = 3;
-  string email = 4;
-  string description = 5;
-  string password = 6;
-  string image = 7;
+  int64 Id = 1;
+  string Name = 2;
+  string Surname = 3;
+  string Patronymic = 4;
+  string Email = 5;
+  string Password = 6;
 }
 
 message Session {
@@ -140,8 +137,21 @@ message UserEmailRequest {
 }
 
 message UserId {
-  int64 id = 1 ;
+  int64 id = 1;
 }
+message GetUserIdByCookieRequest{
+  string hash = 1;
+}
+
+message GetPublicUserResponse{
+  string Name = 1;
+  string Surname = 2;
+  string Patronymic = 3;
+  string Email = 4;
+}
+
+
+
 
 service AuthService {
   rpc ValidateSession (Session) returns (ValidateSessionResponse) {}
@@ -150,7 +160,8 @@ service AuthService {
   rpc FastRegister(FastRegisterRequest) returns (LoginResponse) {}
   rpc RegisterUser(RegisterRequest) returns (RegisterResponse) {}
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
-  rpc UpdateUser(UpdateUserRequest) returns (GetUserResponse) {}
+  rpc UpdateUser(UpdateUserRequest) returns (GetPublicUserResponse) {}
   rpc GetUserInfo(GetUserRequest) returns (UserInfo) {}
   rpc GetUserByEmail(UserEmailRequest) returns (UserId) {}
+  rpc GetUserIdByCookie(GetUserIdByCookieRequest) returns (UserId) {}
 }

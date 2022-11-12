@@ -29,3 +29,11 @@ type RegisterUserRequest struct {
 	Name     string `json:"name"`
 	Surname  string `json:"surname"`
 }
+
+type UpdateUserRequest struct {
+	Name       string `json:"name"`
+	Surname    string `json:"surname"`
+	Patronymic string `json:"patronymic"`
+	Email      string `json:"email"`
+	Password   string `json:"password"`
+}

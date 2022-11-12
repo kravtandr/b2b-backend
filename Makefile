@@ -23,6 +23,9 @@ protogen-api-trip-service:
 protogen-api-sight-service:
 	make protogen-api-with-validator path=pkg/services/sight
 
+protogen-api-productsCategories-service:
+	make protogen-api-with-validator path=pkg/services/productsCategories
+
 protogen-api-review-service:
 	make protogen-api-with-validator path=pkg/services/review
 

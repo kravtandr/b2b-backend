@@ -15,7 +15,7 @@ type CompanyUseCase interface {
 }
 
 type companyUseCase struct {
-	companyGRPC companyGRPC
+	companyGRPC CompanyGRPC
 	daData      *dadata.DaData
 }
 
@@ -28,6 +28,30 @@ func (u *companyUseCase) GetCompanyByItnFromDaData(ctx context.Context, itn stri
 		return companyFullInfo, err
 	}
 	return companyFullInfo, nil
+}
+
+func (u *companyUseCase) UpdateCompanyByOwnerId(ctx context.Context) (*models.Company, error) {
+	responce, err := u.companyGRPC.UpdateCompanyByOwnerId(ctx, &company_service.UpdateCompanyRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.Company{
+		Name:         responce.Name,
+		Description:  responce.Description,
+		LegalName:    responce.LegalName,
+		Itn:          responce.Itn,
+		Psrn:         responce.Psrn,
+		Address:      responce.Address,
+		LegalAddress: responce.LegalAddress,
+		Email:        responce.Email,
+		Phone:        responce.Phone,
+		Link:         responce.Link,
+		Activity:     responce.Activity,
+		OwnerId:      responce.OwnerId,
+		Rating:       responce.Rating,
+		Verified:     responce.Verified,
+	}, nil
 }
 
 func (u *companyUseCase) GetCompanyById(ctx context.Context, id int64) (*models.Company, error) {
@@ -54,6 +78,6 @@ func (u *companyUseCase) GetCompanyById(ctx context.Context, id int64) (*models.
 	}, nil
 }
 
-func NewCompanyUseCase(grpc companyGRPC, daData *dadata.DaData) CompanyUseCase {
+func NewCompanyUseCase(grpc CompanyGRPC, daData *dadata.DaData) CompanyUseCase {
 	return &companyUseCase{companyGRPC: grpc, daData: daData}
 }
