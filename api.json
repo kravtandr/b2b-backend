@@ -71,3 +71,11 @@
     "activity": "Розничная торговля"
   }
 }
+-----------------
+/product GET ADD UPDATE
+/products GET по станичный вывод
+
+GET /product/сфеупщкн
+{
+category: "name"
+}

@@ -33,6 +33,22 @@ func (a productsCategoriesRepository) GetCategoryById(ctx context.Context, Categ
 	return category, nil
 }
 
+func (a productsCategoriesRepository) GetAllCategories(ctx context.Context) (*models.Categories, error) {
+	query := a.queryFactory.CreateGetAllCategories()
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+
+	category := &models.Categories{}
+	if err := row.Scan(
+		&category.Id, &category.Name,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			return &models.Category{}, errors.UserDoesNotExist
+		}
+		return &models.Category{}, err
+	}
+	return category, nil
+}
+
 func NewProductsCategoriesRepository(
 	queryFactory QueryFactory,
 	conn *pgxpool.Pool,

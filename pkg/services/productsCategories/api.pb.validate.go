@@ -158,10 +158,6 @@ func (m *GetCategory) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
-
-	// no validation rules for Name
-
 	if len(errors) > 0 {
 		return GetCategoryMultiError(errors)
 	}
