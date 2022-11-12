@@ -37,20 +37,22 @@ func (a *productsCategoriesDelivery) SearchCategories(ctx context.Context, reque
 		return &productsCategories_service.GetCategories{}, a.errorAdapter.AdaptError(err)
 	}
 
-	var modelCategory productsCategories_service.GetCategory
-	res := &productsCategories_service.GetCategories{}
+	var res productsCategories_service.GetCategories
+	var modelCategory *productsCategories_service.GetCategory
+
 	for _, result := range *resp {
 		description := productsCategories_service.SqlNullString{
 			String_: result.Description.String,
 			Valid:   result.Description.Valid}
-		modelCategory = productsCategories_service.GetCategory{
+		modelCategory = &productsCategories_service.GetCategory{
 			Id:          result.Id,
 			Name:        result.Name,
 			Description: &description,
 		}
-		res.Categories = append(res.Categories, &modelCategory)
+		res.Categories = append(res.Categories, modelCategory)
+
 	}
-	return res, nil
+	return &res, nil
 }
 
 func NewProductsCategoriesDelivery(

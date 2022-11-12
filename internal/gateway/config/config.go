@@ -14,10 +14,8 @@ type Config struct {
 	FastOrderServiceEndpoint          string `envconfig:"FASTORDER_ENDPOINT" required:"true"`
 	CompanyServiceEndpoint            string `envconfig:"COMPANY_ENDPOINT" required:"true"`
 	ProductsCategoriesServiceEndpoint string `envconfig:"PRODUCTSCATEGORIES_ENDPOINT" required:"true"`
-	// SightServiceEndpoint  string `envconfig:"SIGHT_ENDPOINT" required:"true"`
-	// ReviewServiceEndpoint string `envconfig:"REVIEW_ENDPOINT" required:"true"`
-	HTTPPort string `envconfig:"HTTP_PORT" required:"true"`
-	DBUrl    string `envconfig:"DB_URL" required:"true"`
+	HTTPPort                          string `envconfig:"HTTP_PORT" required:"true"`
+	DBUrl                             string `envconfig:"DB_URL" required:"true"`
 	// DefaultBucket    string `envconfig:"S3_BUCKET" required:"true"`
 	// S3Endpoint       string `envconfig:"S3_ENDPOINT" required:"true"`
 	// S3PublicEndpoint string `envconfig:"S3_PUBLIC_ENDPOINT" required:"true"`

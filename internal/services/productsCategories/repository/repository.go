@@ -50,7 +50,6 @@ func (a productsCategoriesRepository) SearchCategories(ctx context.Context, sear
 	if rows.Err() != nil {
 		return &categories, err
 	}
-
 	return &categories, err
 }
 
