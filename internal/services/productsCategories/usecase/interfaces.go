@@ -7,5 +7,6 @@ import (
 )
 
 type productsCategoriesRepository interface {
-	GetCategoryById(ctx context.Context, CategoryId *models.CategorieId) (*models.Category, error)
+	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
+	SearchCategories(ctx context.Context, search string) (*[]models.Category, error)
 }

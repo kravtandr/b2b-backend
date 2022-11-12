@@ -11,11 +11,26 @@ message GetCategoryByID {
   int64 id = 1;
 }
 
+message SearchCategoriesRequest {
+  string name = 1;
+}
+
+message sqlNullString {
+  string String = 1;
+  bool Valid = 2;
+}
+
 message GetCategory {
-  repeated int64 id = 1;
-  repeated string name = 2;
+  int64 id = 1;
+  string name = 2;
+  sqlNullString description = 3;
+}
+
+message GetCategories {
+    repeated GetCategory categories = 1;
 }
 
 service ProductsCategoriesService {
   rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
+  rpc SearchCategories(SearchCategoriesRequest) returns (GetCategories) {}
 }

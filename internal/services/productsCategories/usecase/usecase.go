@@ -7,19 +7,28 @@ import (
 )
 
 type ProductsCategoriesUseCase interface {
-	GetCategoryById(ctx context.Context, CategoryId *models.CategorieId) (*models.Category, error)
+	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
+	SearchCategories(ctx context.Context, search string) (*[]models.Category, error)
 }
 
 type productsCategoriesUseCase struct {
 	repo productsCategoriesRepository
 }
 
-func (a *productsCategoriesUseCase) GetCategoryById(ctx context.Context, CategoryId *models.CategorieId) (*models.Category, error) {
+func (a *productsCategoriesUseCase) GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error) {
 	category, err := a.repo.GetCategoryById(ctx, CategoryId)
 	if err != nil {
 		return &models.Category{}, err
 	}
 	return category, nil
+}
+
+func (a *productsCategoriesUseCase) SearchCategories(ctx context.Context, search string) (*[]models.Category, error) {
+	categories, err := a.repo.SearchCategories(ctx, search)
+	if err != nil {
+		return &[]models.Category{}, err
+	}
+	return categories, nil
 }
 
 func NewProductsCategoriesUseCase(

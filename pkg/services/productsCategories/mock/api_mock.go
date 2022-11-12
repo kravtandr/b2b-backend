@@ -56,6 +56,26 @@ func (mr *MockProductsCategoriesServiceClientMockRecorder) GetCategoryById(ctx, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryById", reflect.TypeOf((*MockProductsCategoriesServiceClient)(nil).GetCategoryById), varargs...)
 }
 
+// SearchCategories mocks base method.
+func (m *MockProductsCategoriesServiceClient) SearchCategories(ctx context.Context, in *productsCategories_service.SearchCategoriesRequest, opts ...grpc.CallOption) (*productsCategories_service.GetCategories, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "SearchCategories", varargs...)
+	ret0, _ := ret[0].(*productsCategories_service.GetCategories)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchCategories indicates an expected call of SearchCategories.
+func (mr *MockProductsCategoriesServiceClientMockRecorder) SearchCategories(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchCategories", reflect.TypeOf((*MockProductsCategoriesServiceClient)(nil).SearchCategories), varargs...)
+}
+
 // MockProductsCategoriesServiceServer is a mock of ProductsCategoriesServiceServer interface.
 type MockProductsCategoriesServiceServer struct {
 	ctrl     *gomock.Controller
@@ -92,6 +112,21 @@ func (m *MockProductsCategoriesServiceServer) GetCategoryById(arg0 context.Conte
 func (mr *MockProductsCategoriesServiceServerMockRecorder) GetCategoryById(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryById", reflect.TypeOf((*MockProductsCategoriesServiceServer)(nil).GetCategoryById), arg0, arg1)
+}
+
+// SearchCategories mocks base method.
+func (m *MockProductsCategoriesServiceServer) SearchCategories(arg0 context.Context, arg1 *productsCategories_service.SearchCategoriesRequest) (*productsCategories_service.GetCategories, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchCategories", arg0, arg1)
+	ret0, _ := ret[0].(*productsCategories_service.GetCategories)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchCategories indicates an expected call of SearchCategories.
+func (mr *MockProductsCategoriesServiceServerMockRecorder) SearchCategories(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchCategories", reflect.TypeOf((*MockProductsCategoriesServiceServer)(nil).SearchCategories), arg0, arg1)
 }
 
 // mustEmbedUnimplementedProductsCategoriesServiceServer mocks base method.

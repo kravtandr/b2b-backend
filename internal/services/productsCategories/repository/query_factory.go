@@ -7,6 +7,7 @@ import (
 type QueryFactory interface {
 	CreateGetCategoryById(id int64) *query.Query
 	CreateGetAllCategories() *query.Query
+	CreateSearchCategories(name string) *query.Query
 }
 
 type queryFactory struct{}
@@ -21,6 +22,13 @@ func (q *queryFactory) CreateGetCategoryById(id int64) *query.Query {
 func (q *queryFactory) CreateGetAllCategories() *query.Query {
 	return &query.Query{
 		Request: createGetAllCategories,
+	}
+}
+
+func (q *queryFactory) CreateSearchCategories(name string) *query.Query {
+	return &query.Query{
+		Request: createSearchCategories,
+		Params:  []interface{}{name},
 	}
 }
 

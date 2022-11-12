@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductsCategoriesServiceClient interface {
 	GetCategoryById(ctx context.Context, in *GetCategoryByID, opts ...grpc.CallOption) (*GetCategory, error)
+	SearchCategories(ctx context.Context, in *SearchCategoriesRequest, opts ...grpc.CallOption) (*GetCategories, error)
 }
 
 type productsCategoriesServiceClient struct {
@@ -42,11 +43,21 @@ func (c *productsCategoriesServiceClient) GetCategoryById(ctx context.Context, i
 	return out, nil
 }
 
+func (c *productsCategoriesServiceClient) SearchCategories(ctx context.Context, in *SearchCategoriesRequest, opts ...grpc.CallOption) (*GetCategories, error) {
+	out := new(GetCategories)
+	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/SearchCategories", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductsCategoriesServiceServer is the server API for ProductsCategoriesService service.
 // All implementations must embed UnimplementedProductsCategoriesServiceServer
 // for forward compatibility
 type ProductsCategoriesServiceServer interface {
 	GetCategoryById(context.Context, *GetCategoryByID) (*GetCategory, error)
+	SearchCategories(context.Context, *SearchCategoriesRequest) (*GetCategories, error)
 	mustEmbedUnimplementedProductsCategoriesServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedProductsCategoriesServiceServer struct {
 
 func (UnimplementedProductsCategoriesServiceServer) GetCategoryById(context.Context, *GetCategoryByID) (*GetCategory, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCategoryById not implemented")
+}
+func (UnimplementedProductsCategoriesServiceServer) SearchCategories(context.Context, *SearchCategoriesRequest) (*GetCategories, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchCategories not implemented")
 }
 func (UnimplementedProductsCategoriesServiceServer) mustEmbedUnimplementedProductsCategoriesServiceServer() {
 }
@@ -89,6 +103,24 @@ func _ProductsCategoriesService_GetCategoryById_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductsCategoriesService_SearchCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchCategoriesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductsCategoriesServiceServer).SearchCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.productsCategories_service.ProductsCategoriesService/SearchCategories",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductsCategoriesServiceServer).SearchCategories(ctx, req.(*SearchCategoriesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductsCategoriesService_ServiceDesc is the grpc.ServiceDesc for ProductsCategoriesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -99,6 +131,10 @@ var ProductsCategoriesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCategoryById",
 			Handler:    _ProductsCategoriesService_GetCategoryById_Handler,
+		},
+		{
+			MethodName: "SearchCategories",
+			Handler:    _ProductsCategoriesService_SearchCategories_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

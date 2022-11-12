@@ -25,7 +25,7 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next ProductsCategoriesRepo
 	}
 }
 
-func (l *loggingMiddleware) GetCategoryById(ctx context.Context, CategoryId *models.CategorieId) (c *models.Category, err error) {
+func (l *loggingMiddleware) GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (c *models.Category, err error) {
 	l.logger.Infow(module,
 		"Action", "GetCategoryById",
 		"Request", CategoryId,
@@ -41,4 +41,22 @@ func (l *loggingMiddleware) GetCategoryById(ctx context.Context, CategoryId *mod
 	}()
 
 	return l.next.GetCategoryById(ctx, CategoryId)
+}
+
+func (l *loggingMiddleware) SearchCategories(ctx context.Context, name string) (c *[]models.Category, err error) {
+	l.logger.Infow(module,
+		"Action", "SearchCategories",
+		"Request", name,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "SearchCategories",
+				"Request", name,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.SearchCategories(ctx, name)
 }

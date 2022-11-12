@@ -8,4 +8,5 @@ import (
 
 type productsCategoriesGRPC interface {
 	GetCategoryById(ctx context.Context, in *productsCategories_service.GetCategoryByID, opts ...grpc.CallOption) (*productsCategories_service.GetCategory, error)
+	SearchCategories(ctx context.Context, in *productsCategories_service.SearchCategoriesRequest, opts ...grpc.CallOption) (*productsCategories_service.GetCategories, error)
 }
