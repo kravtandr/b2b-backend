@@ -150,6 +150,13 @@ message GetPublicUserResponse{
   string Email = 4;
 }
 
+message CheckEmailRequest{
+  string email = 1 [(validate.rules).string = {
+    email: true,
+    max_len: 128,
+  }];
+}
+
 
 
 
@@ -164,4 +171,5 @@ service AuthService {
   rpc GetUserInfo(GetUserRequest) returns (UserInfo) {}
   rpc GetUserByEmail(UserEmailRequest) returns (UserId) {}
   rpc GetUserIdByCookie(GetUserIdByCookieRequest) returns (UserId) {}
+  rpc CheckEmail(CheckEmailRequest) returns (GetPublicUserResponse) {}
 }

@@ -33,6 +33,7 @@ type AuthServiceClient interface {
 	GetUserInfo(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*UserInfo, error)
 	GetUserByEmail(ctx context.Context, in *UserEmailRequest, opts ...grpc.CallOption) (*UserId, error)
 	GetUserIdByCookie(ctx context.Context, in *GetUserIdByCookieRequest, opts ...grpc.CallOption) (*UserId, error)
+	CheckEmail(ctx context.Context, in *CheckEmailRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error)
 }
 
 type authServiceClient struct {
@@ -133,6 +134,15 @@ func (c *authServiceClient) GetUserIdByCookie(ctx context.Context, in *GetUserId
 	return out, nil
 }
 
+func (c *authServiceClient) CheckEmail(ctx context.Context, in *CheckEmailRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error) {
+	out := new(GetPublicUserResponse)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/CheckEmail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -147,6 +157,7 @@ type AuthServiceServer interface {
 	GetUserInfo(context.Context, *GetUserRequest) (*UserInfo, error)
 	GetUserByEmail(context.Context, *UserEmailRequest) (*UserId, error)
 	GetUserIdByCookie(context.Context, *GetUserIdByCookieRequest) (*UserId, error)
+	CheckEmail(context.Context, *CheckEmailRequest) (*GetPublicUserResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -183,6 +194,9 @@ func (UnimplementedAuthServiceServer) GetUserByEmail(context.Context, *UserEmail
 }
 func (UnimplementedAuthServiceServer) GetUserIdByCookie(context.Context, *GetUserIdByCookieRequest) (*UserId, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserIdByCookie not implemented")
+}
+func (UnimplementedAuthServiceServer) CheckEmail(context.Context, *CheckEmailRequest) (*GetPublicUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckEmail not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -377,6 +391,24 @@ func _AuthService_GetUserIdByCookie_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_CheckEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).CheckEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/CheckEmail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).CheckEmail(ctx, req.(*CheckEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -423,6 +455,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserIdByCookie",
 			Handler:    _AuthService_GetUserIdByCookie_Handler,
+		},
+		{
+			MethodName: "CheckEmail",
+			Handler:    _AuthService_CheckEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

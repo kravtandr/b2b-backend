@@ -203,22 +203,22 @@ CREATE TABLE Cookies (
 );
 
 
--- INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
--- INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
+INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
+INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
 -- INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Иван', 'Иванович','Иванов','ivan@mail.ru','password123','Россия');
 -- INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Петр', 'Петрович','Петров','petr@mail.ru','password123','Россия');
 -- INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Алексндр', 'Александров','Александрович','alex@mail.ru','password123','Россия');
 -- INSERT INTO Companies ("name", "description", "legal_name", "itn", "psrn", "address","legal_address","email", "phone", "link", "activity", "owner_id", "rating"  ) VALUES ('Весна',
 --                                                                                                                                                                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                                                                                                                                                                           'ООО Весна',
-                                                                                                                                                                           '7727563379', '1162225076155',
-                                                                                                                                                                           '656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
-                                                                                                                                                                           '656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
-                                                                                                                                                                           'tsvetiu@mail.ru',
-                                                                                                                                                                           '89031223451',
-                                                                                                                                                                           'tsvetiu.ru',
-                                                                                                                                                                           'Розничная торговля',
-                                                                                                                                                                           1,5);
+--                                                                                                                                                                            'ООО Весна',
+--                                                                                                                                                                            '7727563379', '1162225076155',
+--                                                                                                                                                                            '656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
+--                                                                                                                                                                            '656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
+--                                                                                                                                                                            'tsvetiu@mail.ru',
+--                                                                                                                                                                            '89031223451',
+--                                                                                                                                                                            'tsvetiu.ru',
+--                                                                                                                                                                            'Розничная торговля',
+--                                                                                                                                                                            1,5);
 -- INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('CEO',1,1);
 -- INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('Manager',1,2);
 -- INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('Driver',1,3);

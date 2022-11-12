@@ -45,13 +45,13 @@ func (l *loggingMiddleware) GetCompanyByOwnerIdAndItn(ctx context.Context, compa
 func (l *loggingMiddleware) GetCompanyUserLinkByOwnerIdAndItn(ctx context.Context, id int64, itn string) (c *models.CompaniesUsersLink, err error) {
 	l.logger.Infow(module,
 		"Action", "GetCompanyUserLinkByOwnerIdAndItn",
-		"Request", id, itn,
+		"Request user id", id, "Request itn", itn,
 	)
 	defer func() {
 		if err != nil {
 			l.logger.Infow(module,
 				"Action", "GetCompanyUserLinkByOwnerIdAndItn",
-				"Request", id, itn,
+				"Request user id", id, "Request itn", itn,
 				"Error", err,
 			)
 		}
@@ -81,13 +81,13 @@ func (l *loggingMiddleware) UpdateCompanyById(ctx context.Context, newCompany mo
 func (l *loggingMiddleware) UpdateCompanyUsersLink(ctx context.Context, companyId int64, userId int64, post string) (newPost string, err error) {
 	l.logger.Infow(module,
 		"Action", "UpdateCompanyUsersLink",
-		"Request", companyId, userId, post,
+		"Request companyId", companyId, "Request userId", userId, "Request post", post,
 	)
 	defer func() {
 		if err != nil {
 			l.logger.Infow(module,
 				"Action", "UpdateCompanyUsersLink",
-				"Request", companyId, userId, post,
+				"Request companyId", companyId, "Request userId", userId, "Request post", post,
 				"Error", err,
 			)
 		}

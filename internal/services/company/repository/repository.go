@@ -59,22 +59,18 @@ func (a *companyRepository) GetCompanyByOwnerIdAndItn(ctx context.Context, compa
 }
 
 func (a *companyRepository) GetCompanyUserLinkByOwnerIdAndItn(ctx context.Context, id int64, itn string) (*models.CompaniesUsersLink, error) {
-	fmt.Println("GetCompanyUserLinkByOwnerIdAndItn", id, itn)
 	query := a.queryFactory.CreateGetCompanyUserLinkByOwnerIdAndItn(id, itn)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 
 	companiesUsersLink := &models.CompaniesUsersLink{}
 	if err := row.Scan(
-		&companiesUsersLink.Id, &companiesUsersLink.CompanyId, &companiesUsersLink.UserId, &companiesUsersLink.Post, &companiesUsersLink.Itn,
+		&companiesUsersLink.Id, &companiesUsersLink.Post, &companiesUsersLink.CompanyId, &companiesUsersLink.UserId, &companiesUsersLink.Itn,
 	); err != nil {
 		if err == pgx.ErrNoRows {
-			fmt.Println("ERROR 1", err)
-			return nil, errors.UserDoesNotExist
+			return nil, errors.CompanyUsersLinkNotExist
 		}
-		fmt.Println("ERROR 2", err)
 		return nil, err
 	}
-	fmt.Println("GetCompanyUserLinkByOwnerIdAndItn RETURN ", companiesUsersLink)
 	return companiesUsersLink, nil
 }
 func (a *companyRepository) UpdateCompanyUsersLink(ctx context.Context, companyId int64, userId int64, post string) (string, error) {
@@ -83,13 +79,13 @@ func (a *companyRepository) UpdateCompanyUsersLink(ctx context.Context, companyI
 
 	companiesUsersLink := &models.CompaniesUsersLink{}
 	if err := row.Scan(
-		&companiesUsersLink.Id, &companiesUsersLink.CompanyId, &companiesUsersLink.UserId, &companiesUsersLink.Post,
+		&companiesUsersLink.Id, &companiesUsersLink.Post, &companiesUsersLink.CompanyId, &companiesUsersLink.UserId, &companiesUsersLink.Itn,
 	); err != nil {
 		if err == pgx.ErrNoRows {
-			return "error", errors.UserDoesNotExist
+			return "no rows", errors.CompanyUsersLinkNotExist
 		}
 
-		return "error", err
+		return fmt.Sprint(err), err
 	}
 	return companiesUsersLink.Post, nil
 }

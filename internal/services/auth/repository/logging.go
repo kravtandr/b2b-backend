@@ -117,7 +117,7 @@ func (l *loggingMiddleware) CreateUser(ctx context.Context, user *models.User) (
 func (l *loggingMiddleware) FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) (err error) {
 	l.logger.Infow(module,
 		"Action", "FastRegistration",
-		"Request", user,
+		"Request", newCompany, user, post,
 	)
 	defer func() {
 		if err != nil {

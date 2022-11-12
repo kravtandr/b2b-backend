@@ -37,3 +37,17 @@ type UpdateUserRequest struct {
 	Email      string `json:"email"`
 	Password   string `json:"password"`
 }
+
+type UpdateUserResponse struct {
+	Name       string `json:"name"`
+	Surname    string `json:"surname"`
+	Patronymic string `json:"patronymic"`
+	Email      string `json:"email"`
+}
+
+type PublicUser struct {
+	Name       string `json:"name"`
+	Surname    string `json:"surname"`
+	Patronymic string `json:"patronymic"`
+	Email      string `json:"email"`
+}

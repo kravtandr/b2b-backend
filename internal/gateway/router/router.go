@@ -43,6 +43,8 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.PATCH(cnst.ProfileURL, lgrMw(authMw(cfg.UserDelivery.UpdateProfile)))
 	p.POST(cnst.RegisterURL, lgrMw(cfg.UserDelivery.Register))
 	p.GET(cnst.UserInfoURL, lgrMw(cfg.UserDelivery.GetUserInfo))
+	p.POST(cnst.UserCheckEmailURL, lgrMw(cfg.UserDelivery.CheckEmail))
+
 	p.POST(cnst.FastRegisterURL, lgrMw(cfg.UserDelivery.FastRegister))
 
 	p.POST(cnst.FastOrderURL, lgrMw(cfg.FastOrderDelivery.FastOrder))

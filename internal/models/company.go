@@ -32,6 +32,16 @@ type CompanyUpdateProfileRequest struct {
 	Activity     string `json:"activity"`
 }
 
+type CompanyUpdateProfileResponse struct {
+	Name         string `json:"name"`
+	Description  string `json:"description"`
+	Address      string `json:"address"`
+	LegalAddress string `json:"legal_address"`
+	Phone        string `json:"phone"`
+	Link         string `json:"link"`
+	Activity     string `json:"activity"`
+}
+
 //тотальный кал, переделать
 
 type CompanyWithCookie struct {
@@ -61,8 +71,14 @@ type CompanyAndOwner struct {
 	Post    string      `json:"post"`
 }
 
-type PublicCompanyAndOwner struct {
+type PublicCompanyAndOwnerRequest struct {
 	Owner   UpdateUserRequest           `json:"owner"`
 	Company CompanyUpdateProfileRequest `json:"company"`
 	Post    string                      `json:"post"`
+}
+
+type PublicCompanyAndOwnerResponse struct {
+	Owner   UpdateUserResponse           `json:"owner"`
+	Company CompanyUpdateProfileResponse `json:"company"`
+	Post    string                       `json:"post"`
 }

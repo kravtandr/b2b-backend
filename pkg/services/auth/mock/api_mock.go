@@ -37,6 +37,26 @@ func (m *MockAuthServiceClient) EXPECT() *MockAuthServiceClientMockRecorder {
 	return m.recorder
 }
 
+// CheckEmail mocks base method.
+func (m *MockAuthServiceClient) CheckEmail(ctx context.Context, in *auth_service.CheckEmailRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "CheckEmail", varargs...)
+	ret0, _ := ret[0].(*auth_service.GetPublicUserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckEmail indicates an expected call of CheckEmail.
+func (mr *MockAuthServiceClientMockRecorder) CheckEmail(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckEmail", reflect.TypeOf((*MockAuthServiceClient)(nil).CheckEmail), varargs...)
+}
+
 // FastRegister mocks base method.
 func (m *MockAuthServiceClient) FastRegister(ctx context.Context, in *auth_service.FastRegisterRequest, opts ...grpc.CallOption) (*auth_service.LoginResponse, error) {
 	m.ctrl.T.Helper()
@@ -258,6 +278,21 @@ func NewMockAuthServiceServer(ctrl *gomock.Controller) *MockAuthServiceServer {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockAuthServiceServer) EXPECT() *MockAuthServiceServerMockRecorder {
 	return m.recorder
+}
+
+// CheckEmail mocks base method.
+func (m *MockAuthServiceServer) CheckEmail(arg0 context.Context, arg1 *auth_service.CheckEmailRequest) (*auth_service.GetPublicUserResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckEmail", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.GetPublicUserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckEmail indicates an expected call of CheckEmail.
+func (mr *MockAuthServiceServerMockRecorder) CheckEmail(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckEmail", reflect.TypeOf((*MockAuthServiceServer)(nil).CheckEmail), arg0, arg1)
 }
 
 // FastRegister mocks base method.

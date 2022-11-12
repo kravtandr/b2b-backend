@@ -2,9 +2,11 @@ package constants
 
 const LoginURL = "/user/login"
 const RegisterURL = "/user/register"
+const UserCheckEmailURL = "/user/check"
 const ProfileURL = "/profile"
 const LogoutURL = "/logout"
 const UserInfoURL = "/user/{id}"
+
 const FastOrderURL = "/fastOrder"
 
 const FastRegisterURL = "/fastregister"

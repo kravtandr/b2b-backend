@@ -23,6 +23,7 @@ type UserDelivery interface {
 	FastRegister(ctx *fasthttp.RequestCtx)
 	GetProfile(ctx *fasthttp.RequestCtx)
 	UpdateProfile(ctx *fasthttp.RequestCtx)
+	CheckEmail(ctx *fasthttp.RequestCtx)
 }
 
 type userDelivery struct {
@@ -145,7 +146,7 @@ func (u *userDelivery) GetProfile(ctx *fasthttp.RequestCtx) {
 }
 
 func (u *userDelivery) UpdateProfile(ctx *fasthttp.RequestCtx) {
-	var request = &models.PublicCompanyAndOwner{}
+	var request = &models.PublicCompanyAndOwnerRequest{}
 	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
 		ctx.SetStatusCode(http.StatusBadRequest)
 		ctx.SetBody([]byte(cnst.WrongRequestBody))
@@ -162,6 +163,27 @@ func (u *userDelivery) UpdateProfile(ctx *fasthttp.RequestCtx) {
 	response, err := u.manager.UpdateProfile(ctx, userID, request)
 
 	b, err := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+}
+
+func (u *userDelivery) CheckEmail(ctx *fasthttp.RequestCtx) {
+	var request = &models.Email{}
+	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+
+	publicUser, err := u.manager.CheckEmail(ctx, request)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+
+	b, err := chttp.ApiResp(publicUser, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }

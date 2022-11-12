@@ -1,7 +1,7 @@
 package repository
 
 const (
-	getUserByEmailRequest  = "SELECT id, password FROM Users WHERE email = $1"
+	getUserByEmailRequest  = "SELECT id, name, surname,patronymic, email, password FROM Users WHERE email = $1"
 	getUserByIDRequest     = "SELECT id, name, surname, patronymic, email, password, group_id FROM Users WHERE id = $1"
 	createUserRequest      = "INSERT INTO Users (name, surname, patronymic, email, password, country) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id"
 	createCreateUpdateUser = "UPDATE Users SET name = $2, surname = $3, patronymic = $4, email =$5 ,password = $6 WHERE id = $1 RETURNING id, name, surname, patronymic, email, password"

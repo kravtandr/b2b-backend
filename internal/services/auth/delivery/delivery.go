@@ -28,6 +28,20 @@ func (a *authDelivery) LogoutUser(ctx context.Context, session *auth_service.Ses
 	return &empty.Empty{}, a.authUsecase.LogoutUser(ctx, session.Cookie)
 }
 
+func (a *authDelivery) CheckEmail(ctx context.Context, request *auth_service.CheckEmailRequest) (*auth_service.GetPublicUserResponse, error) {
+	response, err := a.authUsecase.GetUserByEmail(ctx, request.Email)
+	if err != nil {
+		return &auth_service.GetPublicUserResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.GetPublicUserResponse{
+		Name:       response.Name,
+		Surname:    response.Surname,
+		Patronymic: response.Patronymic,
+		Email:      response.Email,
+	}, nil
+}
+
 func (a *authDelivery) LoginUser(ctx context.Context, request *auth_service.LoginRequest) (*auth_service.LoginResponse, error) {
 	response, err := a.authUsecase.LoginUser(ctx, &models.User{
 		Email:    request.Email,

@@ -1,10 +1,8 @@
 package usecase
 
 import (
-	"context"
-	"fmt"
-
 	"b2b/m/internal/services/company/models"
+	"context"
 )
 
 type CompanyUseCase interface {
@@ -17,10 +15,8 @@ type companyUseCase struct {
 }
 
 func (a *companyUseCase) UpdateCompanyById(ctx context.Context, newCompany models.Company, post string) (*models.Company, string, error) {
-	fmt.Println("|UpdateCompanyById == ", newCompany)
 	link, err := a.repo.GetCompanyUserLinkByOwnerIdAndItn(ctx, newCompany.OwnerId, newCompany.Itn)
-	fmt.Println("GetCompanyById link =  ", link)
-	currentCompany, err := a.repo.GetCompanyById(ctx, link.Id)
+	currentCompany, err := a.repo.GetCompanyById(ctx, link.CompanyId)
 	newCompany.Id = currentCompany.Id
 	updatedCompany, err := a.repo.UpdateCompanyById(ctx, newCompany)
 	if err != nil {

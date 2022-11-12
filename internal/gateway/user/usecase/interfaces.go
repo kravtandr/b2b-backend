@@ -18,4 +18,5 @@ type authGRPC interface {
 	UpdateUser(ctx context.Context, in *auth_service.UpdateUserRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error)
 	FastRegister(ctx context.Context, in *auth_service.FastRegisterRequest, opts ...grpc.CallOption) (*auth_service.LoginResponse, error)
 	GetUserIdByCookie(ctx context.Context, in *auth_service.GetUserIdByCookieRequest, opts ...grpc.CallOption) (*auth_service.UserId, error)
+	CheckEmail(ctx context.Context, in *auth_service.CheckEmailRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error)
 }
