@@ -102,6 +102,7 @@ func (a *authUseCase) FastRegistration(ctx context.Context, form *models.FastReg
 		Name:      form.Name,
 		LegalName: form.LegalName,
 		Itn:       form.Itn,
+		Email:     form.Email,
 	}
 
 	err = a.repo.FastRegistration(ctx, &newCompany, user, form.Post)
@@ -119,7 +120,7 @@ func (a *authUseCase) FastRegistration(ctx context.Context, form *models.FastReg
 		//Psrn:         userCompany.Psrn,
 		//Address:      userCompany.Address,
 		//LegalAddress: userCompany.LegalAddress,
-		//Email:        userCompany.Email,
+		Email: newCompany.Email,
 		//Phone:        userCompany.Phone,
 		//Link:         userCompany.Link,
 		//Activity:     userCompany.Activity,

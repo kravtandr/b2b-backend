@@ -107,6 +107,7 @@ func (u *userUsecase) FastRegister(ctx context.Context, request *models.FastRegi
 		Cookie:    response.Cookie,
 		Token:     response.Token,
 		Name:      response.Name,
+		Email:     response.Email,
 		LegalName: response.LegalName,
 		Itn:       response.Itn,
 		OwnerId:   response.OwnerId,

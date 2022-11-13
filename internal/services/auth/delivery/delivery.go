@@ -87,7 +87,6 @@ func (a *authDelivery) FastRegister(ctx context.Context, request *auth_service.F
 	if err != nil {
 		return &auth_service.LoginResponse{}, a.errorAdapter.AdaptError(err)
 	}
-
 	return &auth_service.LoginResponse{
 		Cookie:       response.Cookie,
 		Token:        response.Token,
