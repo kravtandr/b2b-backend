@@ -11,7 +11,7 @@ const FastOrderURL = "/fastOrder"
 
 const FastRegisterURL = "/fastregister"
 const CompanyURL = "/company/{id}"
-const CompanyByInnFromDaDataURL = "/company/{itn}"
+const CompanyByInnFromDaDataURL = "/company/itn/{itn}"
 
 const CategoryByIdURL = "/category"
 const SearchCategoryURL = "/search/categories"
