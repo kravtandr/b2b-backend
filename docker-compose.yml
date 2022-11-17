@@ -1,5 +1,36 @@
 version: '3.7'
+networks:
+    net:
 services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:14.4-alpine3.16
+    environment:
+      POSTGRES_DB: "b2b"
+      POSTGRES_USER: "b2b"
+      POSTGRES_PASSWORD: "b2b"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+      - .:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U b2b -d b2b"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - net
+#    command:
+#      - /bin/sh
+#      - -c
+#      - |
+#        echo "sleep for 15sec"
+#        sleep 15
+
   auth_service:
     build:
       dockerfile: Dockerfile.auth_service
@@ -7,13 +38,17 @@ services:
       args:
         - APP_PKG_NAME=b2b/m
         - GOOS=linux
+    image: net.entrypoint.auth_service
     ports:
       - "10123:10123"
       - "11123:8080"
     environment:
-      - USER_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - USER_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
       - USER_GRPC_PORT=10123 
       - USER_PREFIX_LEN=3
+    networks:
+      - net
+    restart: unless-stopped
 
   fastorder_service:
     build:
@@ -22,12 +57,16 @@ services:
       args:
         - APP_PKG_NAME=b2b/m
         - GOOS=linux
+    image: net.entrypoint.fastorder_service
     ports:
       - "10124:10124"
       - "11124:8080"
     environment:
-      - FASTORDER_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - FASTORDER_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
       - FASTORDER_GRPC_PORT=10124
+    networks:
+      - net
+    restart: unless-stopped
 
   company_service:
     build:
@@ -36,12 +75,16 @@ services:
       args:
         - APP_PKG_NAME=b2b/m
         - GOOS=linux
+    image: net.entrypoint.company_service
     ports:
       - "10125:10125"
       - "11125:8080"
     environment:
-      - COMPANY_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - COMPANY_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
       - COMPANY_GRPC_PORT=10125
+    networks:
+      - net
+    restart: unless-stopped
 
   productscategories_service:
     build:
@@ -50,15 +93,20 @@ services:
       args:
         - APP_PKG_NAME=b2b/m
         - GOOS=linux
+    image: net.entrypoint.productscategories_service
     ports:
       - "10126:10126"
       - "11126:8080"
     environment:
-      - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
       - PRODUCTSCATEGORIES_GRPC_PORT=10126
+    networks:
+      - net
+    restart: unless-stopped
 
   gateway:
     depends_on:
+      - postgres
       - auth_service
       - fastorder_service
       - company_service
@@ -69,6 +117,7 @@ services:
       args:
         - APP_PKG_NAME=b2b/m
         - GOOS=linux
+    image: net.entrypoint.gateway
     ports:
       - "8080:8081"
       - "18080:8080"
@@ -78,4 +127,7 @@ services:
       - GATEWAY_FASTORDER_ENDPOINT=host.docker.internal:10124
       - GATEWAY_COMPANY_ENDPOINT=host.docker.internal:10125
       - GATEWAY_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
-      - GATEWAY_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - GATEWAY_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
+    networks:
+      - net
+    restart: unless-stopped

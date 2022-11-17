@@ -1,6 +1,11 @@
 # build binary
 FROM golang:1.17.1-alpine AS build
 
+RUN apt-get install -y curl
+COPY ./entrypoint/entrypoint.sh /usr/bin/entrypoint.sh
+ENTRYPOINT [ "entrypoint.sh" ]
+CMD ["echo", "!!!!!!!! Container_A is available now !!!!!!!!"]
+
 ARG GOOS
 ENV CGO_ENABLED=0 \
     GOOS=$GOOS \
