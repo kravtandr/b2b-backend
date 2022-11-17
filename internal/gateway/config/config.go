@@ -1,9 +1,9 @@
 package config
 
 import (
-	"context"
-
 	logs "b2b/m/pkg/logger"
+	"context"
+	"fmt"
 
 	"github.com/kelseyhightower/envconfig"
 	"go.uber.org/zap"
@@ -28,12 +28,13 @@ type Config struct {
 }
 
 func (c *Config) Setup() error {
+
 	if err := envconfig.Process("GATEWAY", c); err != nil {
 		return err
 	}
 	lgr := logs.BuildLogger()
 	c.Logger = lgr.Logger
 	c.Ctx, c.Cancel = context.WithCancel(context.Background())
-
+	fmt.Println("GATEWAY_AUTH_ENDPOINT", c.AuthServiceEndpoint)
 	return nil
 }
