@@ -24,12 +24,7 @@ services:
     restart: unless-stopped
     networks:
       - net
-#    command:
-#      - /bin/sh
-#      - -c
-#      - |
-#        echo "sleep for 15sec"
-#        sleep 15
+
 
   auth_service:
     build:
@@ -43,12 +38,14 @@ services:
       - "10123:10123"
       - "11123:8080"
     environment:
-      - USER_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
+      - USER_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
       - USER_GRPC_PORT=10123 
       - USER_PREFIX_LEN=3
     networks:
       - net
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   fastorder_service:
     build:
@@ -62,11 +59,13 @@ services:
       - "10124:10124"
       - "11124:8080"
     environment:
-      - FASTORDER_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
+      - FASTORDER_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
       - FASTORDER_GRPC_PORT=10124
     networks:
       - net
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   company_service:
     build:
@@ -80,11 +79,13 @@ services:
       - "10125:10125"
       - "11125:8080"
     environment:
-      - COMPANY_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
+      - COMPANY_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
       - COMPANY_GRPC_PORT=10125
     networks:
       - net
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   productscategories_service:
     build:
@@ -98,11 +99,13 @@ services:
       - "10126:10126"
       - "11126:8080"
     environment:
-      - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
+      - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
       - PRODUCTSCATEGORIES_GRPC_PORT=10126
     networks:
       - net
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   gateway:
     depends_on:
@@ -127,7 +130,9 @@ services:
       - GATEWAY_FASTORDER_ENDPOINT=host.docker.internal:10124
       - GATEWAY_COMPANY_ENDPOINT=host.docker.internal:10125
       - GATEWAY_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
-      - GATEWAY_DB_URL=postgres://b2b:b2b@host.docker.internal:5431/b2b
+      - GATEWAY_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
     networks:
       - net
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

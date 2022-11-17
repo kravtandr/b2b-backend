@@ -110,7 +110,7 @@ services:
       - GATEWAY_FASTORDER_ENDPOINT=host.docker.internal:10124
       - GATEWAY_COMPANY_ENDPOINT=host.docker.internal:10125
       - GATEWAY_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
-      - GATEWAY_DB_URL=postgres://b2b:b2b@host.docker.internal:5432/b2b
+      - GATEWAY_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
     extra_hosts:
       #  - "host.docker.internal:172.19.0.1"
       - "host.docker.internal:host-gateway"
