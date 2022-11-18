@@ -1,2 +1,0 @@
-RUN sleep 60
-CMD ["/app/server"]
