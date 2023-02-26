@@ -14,6 +14,24 @@ type productsCategoriesDelivery struct {
 	productsCategories_service.UnimplementedProductsCategoriesServiceServer
 }
 
+func (a *productsCategoriesDelivery) GetProductsList(ctx context.Context, request *productsCategories_service.GetProductsList) (*productsCategories_service.GetProducts, error) {
+	resp, err := a.productsCategoriesUseCase.GetProductsList(ctx, &models.QueryParam{
+		Skip:  request.Skip,
+		Limit: request.Limit,
+	})
+	if err != nil {
+		return &productsCategories_service.GetCategory{}, a.errorAdapter.AdaptError(err)
+	}
+	description := productsCategories_service.SqlNullString{
+		String_: resp.Description.String,
+		Valid:   resp.Description.Valid}
+	return &productsCategories_service.GetCategory{
+		Id:          resp.Id,
+		Name:        resp.Name,
+		Description: &description,
+	}, nil
+}
+
 func (a *productsCategoriesDelivery) GetCategoryById(ctx context.Context, request *productsCategories_service.GetCategoryByID) (*productsCategories_service.GetCategory, error) {
 	resp, err := a.productsCategoriesUseCase.GetCategoryById(ctx, &models.CategoryId{
 		Id: request.Id,

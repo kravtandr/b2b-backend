@@ -206,10 +206,7 @@ CREATE TABLE Cookies (
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
 
-COPY categories(name)
-FROM '/docker-entrypoint-initdb.d/export_base_categories.csv'
-DELIMITER ','
-CSV HEADER;
+COPY categories(name) FROM './export_base_categories.csv' DELIMITER ',' CSV HEADER;
 
 SELECT count() from categories;
 

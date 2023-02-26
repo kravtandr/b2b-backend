@@ -30,7 +30,23 @@ message GetCategories {
     repeated GetCategory categories = 1;
 }
 
+message GetProduct {
+  int64 id = 1;
+  string name = 2;
+  sqlNullString description = 3;
+  int64 price = 4;
+  string photo = 5;
+}
+
+message GetProducts {
+  repeated GetProduct products = 1;
+  int64 skip = 2;
+  int64 limit = 3;
+}
+
 service ProductsCategoriesService {
   rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
   rpc SearchCategories(SearchCategoriesRequest) returns (GetCategories) {}
+  rpc SearchProducts(SearchProductsRequest) returns (GetProducts) {}
+  rpc SearchProducts(GetProductsList) returns (GetProducts) {}
 }

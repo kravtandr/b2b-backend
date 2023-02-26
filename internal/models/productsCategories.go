@@ -19,3 +19,11 @@ type SearchCategory struct {
 type SearchCategoriesResponse struct {
 	SearchResults []GetCategoryByIdResponse `json:"searchresults"`
 }
+
+type SearchProducts struct {
+	Name string `json:"name"`
+}
+
+type SearchProductsResponse struct {
+	SearchResults []GetCategoryByIdResponse `json:"searchresults"`
+}

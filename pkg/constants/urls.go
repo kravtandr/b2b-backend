@@ -16,6 +16,9 @@ const CompanyByInnFromDaDataURL = "/company/itn/{itn}"
 const CategoryByIdURL = "/category"
 const SearchCategoryURL = "/search/categories"
 
+const ProductsListURL = "/search/products/?skip={skip}&limit={limit}"
+const SearchProductsURL = "/search/products"
+
 const CountryNameURL = "/country/{name}"
 const CountryIdURL = "/country/id/{id}"
 const CountryListURL = "/country/list"

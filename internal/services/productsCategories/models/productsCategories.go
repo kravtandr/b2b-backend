@@ -6,6 +6,10 @@ type CategoryId struct {
 	Id int64
 }
 
+type SearchProducts struct {
+	name string
+}
+
 type Category struct {
 	Id          int64
 	Name        string
