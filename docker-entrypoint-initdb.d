@@ -48,7 +48,8 @@ CREATE TABLE Products
     id          SERIAL      NOT NULL PRIMARY KEY,
     name        TEXT        NOT NULL,
     description TEXT        ,
-    price       int
+    price       INT         NOT NULL,
+    photo       TEXT        
 );
 
 CREATE TABLE ProductsSubCategories
@@ -202,6 +203,10 @@ CREATE TABLE Cookies (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+INSERT INTO products(name, description, price, photo) VALUES('1_product', 'aaa', 1000, '/photo1');
+INSERT INTO products(name, description, price, photo) VALUES('2_product', 'bbb', 1000, '/photo1');
+SELECT * from products;
+
 
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
@@ -210,3 +215,11 @@ COPY categories(name) FROM './export_base_categories.csv' DELIMITER ',' CSV HEAD
 
 SELECT count() from categories;
 
+CREATE TABLE Products_test
+(
+    id          SERIAL      NOT NULL PRIMARY KEY,
+    name        TEXT        NOT NULL,
+    description TEXT        ,
+    price       INT         NOT NULL,
+    photo       TEXT        
+);

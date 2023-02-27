@@ -15,8 +15,18 @@ type Resp struct {
 }
 
 type QueryParam struct {
-	Skip  int
-	Limit int
+	Skip  int64
+	Limit int64
+}
+
+type SearchItemName struct {
+	Name string `json:"name"`
+}
+
+type SearchItemNameWithSkipLimit struct {
+	Name  string
+	Skip  int64
+	Limit int64
 }
 
 func ApiResp(value interface{}, err error) ([]byte, error) {
@@ -36,17 +46,20 @@ func ApiResp(value interface{}, err error) ([]byte, error) {
 }
 
 func GetQueryParams(ctx *fasthttp.RequestCtx) (*QueryParam, error) {
-	skip, err := strconv.Atoi(ctx.UserValue("skip").(string))
+	skip_byte := ctx.QueryArgs().Peek("skip")
+	skip, err := strconv.ParseInt(string(skip_byte), 10, 64)
 	if err != nil {
-		return &QueryParam{}, err
+		return &QueryParam{Skip: 0, Limit: 1}, err
 	}
-	limit, err := strconv.Atoi(ctx.UserValue("limit").(string))
+	limit_byte := ctx.QueryArgs().Peek("limit")
+	limit, err := strconv.ParseInt(string(limit_byte), 10, 64)
 	if err != nil {
-		return &QueryParam{}, err
+		return &QueryParam{Skip: 0, Limit: 1}, err
 	}
 	var params = &QueryParam{
 		Skip:  skip,
 		Limit: limit,
 	}
+	fmt.Println("GetQueryParams || SKIP ====== ", skip, "LIMIT ====== ", limit)
 	return params, nil
 }

@@ -48,7 +48,8 @@ CREATE TABLE Products
     id          SERIAL      NOT NULL PRIMARY KEY,
     name        TEXT        NOT NULL,
     description TEXT        ,
-    price       int
+    price       INT         ,
+    photo       TEXT      
 );
 
 CREATE TABLE ProductsSubCategories
@@ -205,6 +206,9 @@ CREATE TABLE Cookies (
 
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
+INSERT INTO products(name, description, price, photo) VALUES('1_product', 'aaa', 1000, '/photo1');
+INSERT INTO products(name, description, price, photo) VALUES('2_product', 'bbb', 1000, '/photo1');
+COPY categories(name) FROM './export_base_categories.csv' DELIMITER ',' CSV HEADER;
 -- INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Иван', 'Иванович','Иванов','ivan@mail.ru','password123','Россия');
 -- INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Петр', 'Петрович','Петров','petr@mail.ru','password123','Россия');
 -- INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Алексндр', 'Александров','Александрович','alex@mail.ru','password123','Россия');

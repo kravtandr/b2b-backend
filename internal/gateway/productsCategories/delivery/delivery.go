@@ -7,6 +7,7 @@ import (
 	chttp "b2b/m/pkg/customhttp"
 	"b2b/m/pkg/error_adapter"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/valyala/fasthttp"
@@ -48,6 +49,7 @@ func (u *productsCategoriesDelivery) GetCategoryById(ctx *fasthttp.RequestCtx) {
 func (u *productsCategoriesDelivery) GetProductsList(ctx *fasthttp.RequestCtx) {
 	params, err := chttp.GetQueryParams(ctx)
 	if err != nil {
+		fmt.Println("PIZDEC V GetProductsList", err)
 		httpError := u.errorAdapter.AdaptError(err)
 		ctx.SetStatusCode(httpError.Code)
 		ctx.SetBody([]byte(httpError.MSG))
@@ -75,13 +77,18 @@ func (u *productsCategoriesDelivery) SearchProducts(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte(httpError.MSG))
 		return
 	}
-	var request = &models.SearchProducts{}
+	var request = &chttp.SearchItemName{}
 	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
 		ctx.SetStatusCode(http.StatusBadRequest)
 		ctx.SetBody([]byte(cnst.WrongRequestBody))
 		return
 	}
-	response, err := u.manager.SearchProducts(ctx, params)
+	var searchBody = &chttp.SearchItemNameWithSkipLimit{
+		Name:  request.Name,
+		Skip:  params.Skip,
+		Limit: params.Limit,
+	}
+	response, err := u.manager.SearchProducts(ctx, searchBody)
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)
 		ctx.SetStatusCode(httpError.Code)
@@ -95,7 +102,7 @@ func (u *productsCategoriesDelivery) SearchProducts(ctx *fasthttp.RequestCtx) {
 }
 
 func (u *productsCategoriesDelivery) SearchCategories(ctx *fasthttp.RequestCtx) {
-	var request = &models.SearchCategory{}
+	var request = &chttp.SearchItemName{}
 	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
 		ctx.SetStatusCode(http.StatusBadRequest)
 		ctx.SetBody([]byte(cnst.WrongRequestBody))
