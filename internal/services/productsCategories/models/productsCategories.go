@@ -13,3 +13,13 @@ type Category struct {
 }
 
 type Categories []Category
+
+type Product struct {
+	Id          int64
+	Name        string
+	Description sql.NullString
+	Price       int64
+	Photo       string
+}
+
+type ProductsList []Product

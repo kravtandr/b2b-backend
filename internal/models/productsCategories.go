@@ -12,10 +12,20 @@ type GetCategoryByIdResponse struct {
 	Description sql.NullString `json:"description"`
 }
 
-type SearchCategory struct {
-	Name string `json:"name"`
+type GetProduct struct {
+	Id          int64          `json:"id"`
+	Name        string         `json:"name"`
+	Description sql.NullString `json:"description"`
+	Price       int64          `json:"price"`
+	Photo       string         `json:"photo"`
 }
 
+type GetProductsList []GetProduct
+
 type SearchCategoriesResponse struct {
+	SearchResults []GetCategoryByIdResponse `json:"searchresults"`
+}
+
+type SearchProductsResponse struct {
 	SearchResults []GetCategoryByIdResponse `json:"searchresults"`
 }

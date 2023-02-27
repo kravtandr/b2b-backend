@@ -3,16 +3,18 @@ syntax = "proto3";
 package services.productsCategories_service;
 option go_package = "b2b/m/pkg/services/productsCategories;productsCategories_service";
 
-import "third_party/go-proto-validators/validator.proto";
-import "google/protobuf/empty.proto";
-
-
 message GetCategoryByID {
   int64 id = 1;
 }
 
-message SearchCategoriesRequest {
+message SearchItemNameRequest {
   string name = 1;
+}
+
+message SearchItemNameWithSkipLimitRequest {
+  string name = 1;
+  int64 skip = 2;
+  int64 limit = 3;
 }
 
 message sqlNullString {
@@ -30,7 +32,26 @@ message GetCategories {
     repeated GetCategory categories = 1;
 }
 
+message GetProduct {
+  int64 id = 1;
+  string name = 2;
+  sqlNullString description = 3;
+  int64 price = 4;
+  string photo = 5;
+}
+
+message GetProductsListRequest {
+  int64 skip = 1;
+  int64 limit = 2;
+}
+
+message GetProductsListResponse {
+  repeated GetProduct products = 1;
+}
+
 service ProductsCategoriesService {
   rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
-  rpc SearchCategories(SearchCategoriesRequest) returns (GetCategories) {}
+  rpc SearchCategories(SearchItemNameRequest) returns (GetCategories) {}
+  rpc SearchProducts(SearchItemNameWithSkipLimitRequest) returns (GetProductsListResponse) {}
+  rpc GetProductsList(GetProductsListRequest) returns (GetProductsListResponse) {}
 }

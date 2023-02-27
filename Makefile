@@ -17,12 +17,6 @@ protogen-api-fastOrder-service:
 protogen-api-company-service:
 	make protogen-api-with-validator path=pkg/services/company
 
-protogen-api-trip-service:
-	make protogen-api-with-validator path=pkg/services/trip
-
-protogen-api-sight-service:
-	make protogen-api-with-validator path=pkg/services/sight
-
 protogen-api-productsCategories-service:
 	make protogen-api-with-validator path=pkg/services/productsCategories
 
