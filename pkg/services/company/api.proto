@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package services.company_service;
+option go_package = "b2b/m/pkg/services/company;company_service";
+
+import "third_party/go-proto-validators/validator.proto";
+import "google/protobuf/empty.proto";
+
+message GetCompanyRequestByInn {
+  string inn = 1;
+}
+
+message GetCompanyRequestById {
+  int64 id = 1;
+}
+
+message GetCompanyResponse {
+  string name = 1;
+  string description = 2;
+  string legal_name = 3;
+  string itn = 4;
+  string psrn = 5;
+  string address = 6;
+  string legal_address = 7;
+  string email = 8;
+  string phone = 9;
+  string link = 10;
+  string activity = 11;
+  int64 owner_id = 12;
+  int64 rating = 13;
+  int64 verified = 14;
+}
+
+message GetCompanyAndPostResponse {
+  string name = 1;
+  string description = 2;
+  string legal_name = 3;
+  string itn = 4;
+  string psrn = 5;
+  string address = 6;
+  string legal_address = 7;
+  string email = 8;
+  string phone = 9;
+  string link = 10;
+  string activity = 11;
+  int64 owner_id = 12;
+  int64 rating = 13;
+  int64 verified = 14;
+  string post = 15;
+}
+
+
+
+message UpdateCompanyRequest{
+  string name = 1;
+  string description = 2;
+  string address = 3;
+  string legalAddress = 4;
+  string itn = 5;
+  string phone = 6;
+  string link = 7;
+  string activity = 8;
+  int64 owner_id = 9;
+  string post = 10;
+}
+
+
+service CompanyService {
+  rpc GetCompanyById(GetCompanyRequestById) returns (GetCompanyResponse) {}
+  rpc UpdateCompanyByOwnerId(UpdateCompanyRequest) returns (GetCompanyAndPostResponse) {}
+}

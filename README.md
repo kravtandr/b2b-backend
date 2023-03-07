@@ -1,9 +1,9 @@
-# b2b-backend
+b2b-backend
 
-psql postgres
-CREATE USER b2b WITH PASSWORD 'b2b';
-create database b2b;
-psql -U b2b -d b2b 
+run:           docker-compose up
 
-cd cmd
-go run main.go
+re-build:      docker-compose up --build
+               docker-compose up -d --force-recreate --no-deps --build company_service
+
+full re-build: docker system prune -a
+               docker-compose up 
