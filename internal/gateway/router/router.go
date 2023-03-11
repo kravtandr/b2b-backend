@@ -55,6 +55,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.GET(cnst.CategoryByIdURL, lgrMw(cfg.ProductsCategoriesDelivery.GetCategoryById))
 	p.POST(cnst.SearchCategoryURL, lgrMw(cfg.ProductsCategoriesDelivery.SearchCategories))
 
+	p.GET(cnst.ProductURL, lgrMw(cfg.ProductsCategoriesDelivery.GetProductById))
 	p.GET(cnst.ProductsListURL, lgrMw(cfg.ProductsCategoriesDelivery.GetProductsList))
 	p.POST(cnst.SearchProductsURL, lgrMw(cfg.ProductsCategoriesDelivery.SearchProducts))
 

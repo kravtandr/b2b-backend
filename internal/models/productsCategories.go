@@ -6,10 +6,22 @@ type GetCategoryByIdRequest struct {
 	Id int64 `json:"id"`
 }
 
+type GetProductByIdRequest struct {
+	Id int64 `json:"id"`
+}
+
 type GetCategoryByIdResponse struct {
 	Id          int64          `json:"id"`
 	Name        string         `json:"name"`
 	Description sql.NullString `json:"description"`
+}
+
+type GetProductByIdResponse struct {
+	Id          int64          `json:"id"`
+	Name        string         `json:"name"`
+	Description sql.NullString `json:"description"`
+	Price       int64          `json:"price"`
+	Photo       string         `json:"photo"`
 }
 
 type GetProduct struct {

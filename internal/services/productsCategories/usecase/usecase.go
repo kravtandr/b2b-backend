@@ -8,6 +8,7 @@ import (
 
 type ProductsCategoriesUseCase interface {
 	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
+	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
 	SearchCategories(ctx context.Context, search string) (*[]models.Category, error)
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error)
@@ -21,6 +22,14 @@ func (a *productsCategoriesUseCase) GetCategoryById(ctx context.Context, Categor
 	category, err := a.repo.GetCategoryById(ctx, CategoryId)
 	if err != nil {
 		return &models.Category{}, err
+	}
+	return category, nil
+}
+
+func (a *productsCategoriesUseCase) GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error) {
+	category, err := a.repo.GetProductById(ctx, ProductId)
+	if err != nil {
+		return &models.Product{}, err
 	}
 	return category, nil
 }

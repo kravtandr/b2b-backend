@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductsCategoriesServiceClient interface {
 	GetCategoryById(ctx context.Context, in *GetCategoryByID, opts ...grpc.CallOption) (*GetCategory, error)
+	GetProductById(ctx context.Context, in *GetProductByID, opts ...grpc.CallOption) (*GetProduct, error)
 	SearchCategories(ctx context.Context, in *SearchItemNameRequest, opts ...grpc.CallOption) (*GetCategories, error)
 	SearchProducts(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
 	GetProductsList(ctx context.Context, in *GetProductsListRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
@@ -39,6 +40,15 @@ func NewProductsCategoriesServiceClient(cc grpc.ClientConnInterface) ProductsCat
 func (c *productsCategoriesServiceClient) GetCategoryById(ctx context.Context, in *GetCategoryByID, opts ...grpc.CallOption) (*GetCategory, error) {
 	out := new(GetCategory)
 	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/GetCategoryById", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productsCategoriesServiceClient) GetProductById(ctx context.Context, in *GetProductByID, opts ...grpc.CallOption) (*GetProduct, error) {
+	out := new(GetProduct)
+	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/GetProductById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +87,7 @@ func (c *productsCategoriesServiceClient) GetProductsList(ctx context.Context, i
 // for forward compatibility
 type ProductsCategoriesServiceServer interface {
 	GetCategoryById(context.Context, *GetCategoryByID) (*GetCategory, error)
+	GetProductById(context.Context, *GetProductByID) (*GetProduct, error)
 	SearchCategories(context.Context, *SearchItemNameRequest) (*GetCategories, error)
 	SearchProducts(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetProductsListResponse, error)
 	GetProductsList(context.Context, *GetProductsListRequest) (*GetProductsListResponse, error)
@@ -89,6 +100,9 @@ type UnimplementedProductsCategoriesServiceServer struct {
 
 func (UnimplementedProductsCategoriesServiceServer) GetCategoryById(context.Context, *GetCategoryByID) (*GetCategory, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCategoryById not implemented")
+}
+func (UnimplementedProductsCategoriesServiceServer) GetProductById(context.Context, *GetProductByID) (*GetProduct, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProductById not implemented")
 }
 func (UnimplementedProductsCategoriesServiceServer) SearchCategories(context.Context, *SearchItemNameRequest) (*GetCategories, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchCategories not implemented")
@@ -127,6 +141,24 @@ func _ProductsCategoriesService_GetCategoryById_Handler(srv interface{}, ctx con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductsCategoriesServiceServer).GetCategoryById(ctx, req.(*GetCategoryByID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductsCategoriesService_GetProductById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProductByID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductsCategoriesServiceServer).GetProductById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.productsCategories_service.ProductsCategoriesService/GetProductById",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductsCategoriesServiceServer).GetProductById(ctx, req.(*GetProductByID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -195,6 +227,10 @@ var ProductsCategoriesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCategoryById",
 			Handler:    _ProductsCategoriesService_GetCategoryById_Handler,
+		},
+		{
+			MethodName: "GetProductById",
+			Handler:    _ProductsCategoriesService_GetProductById_Handler,
 		},
 		{
 			MethodName: "SearchCategories",

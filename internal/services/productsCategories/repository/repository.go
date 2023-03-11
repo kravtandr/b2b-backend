@@ -12,6 +12,7 @@ import (
 
 type ProductsCategoriesRepository interface {
 	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
+	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
 	SearchCategories(ctx context.Context, search string) (*[]models.Category, error)
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error)
@@ -31,11 +32,27 @@ func (a productsCategoriesRepository) GetCategoryById(ctx context.Context, Categ
 		&category.Id, &category.Name, &category.Description,
 	); err != nil {
 		if err == pgx.ErrNoRows {
-			return &models.Category{}, errors.UserDoesNotExist
+			return &models.Category{}, errors.CategoryDoesNotExist
 		}
 		return &models.Category{}, err
 	}
 	return category, nil
+}
+
+func (a productsCategoriesRepository) GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error) {
+	query := a.queryFactory.CreateGetProductById(ProductId.Id)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+
+	product := &models.Product{}
+	if err := row.Scan(
+		&product.Id, &product.Name, &product.Description, &product.Price, &product.Photo,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			return &models.Product{}, errors.ProductDoesNotExist
+		}
+		return &models.Product{}, err
+	}
+	return product, nil
 }
 
 func (a productsCategoriesRepository) SearchCategories(ctx context.Context, search string) (*[]models.Category, error) {

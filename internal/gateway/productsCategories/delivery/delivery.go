@@ -9,12 +9,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/valyala/fasthttp"
 )
 
 type ProductsCategoriesDelivery interface {
 	GetCategoryById(ctx *fasthttp.RequestCtx)
+	GetProductById(ctx *fasthttp.RequestCtx)
 	SearchCategories(ctx *fasthttp.RequestCtx)
 	SearchProducts(ctx *fasthttp.RequestCtx)
 	GetProductsList(ctx *fasthttp.RequestCtx)
@@ -41,6 +43,22 @@ func (u *productsCategoriesDelivery) GetCategoryById(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
+	b, err := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+}
+
+func (u *productsCategoriesDelivery) GetProductById(ctx *fasthttp.RequestCtx) {
+	var request = &models.GetProductByIdRequest{}
+	param, _ := strconv.Atoi(ctx.UserValue("id").(string))
+	request.Id = int64(param)
+	response, err := u.manager.GetProductById(ctx, request)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
 	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)

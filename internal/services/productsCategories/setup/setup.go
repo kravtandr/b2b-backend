@@ -5,7 +5,7 @@ import (
 	zap_middleware "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
-	"github.com/grpc-ecosystem/go-grpc-prometheus"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"google.golang.org/grpc"
 
 	"b2b/m/internal/services/productsCategories/config"
@@ -31,7 +31,7 @@ func SetupServer(cfg config.Config) (server *grpc.Server, cancel func(), err err
 		),
 	)
 	productsCategoriesUseCase := productsCategories_usecase.NewProductsCategoriesUseCase(productsCategoriesRepo)
-	productsCategoriesDelivery := delivery.NewProductsCategoriesDelivery(productsCategoriesUseCase, error_adapter.NewErrorAdapter(grpc_errors.PreparedFastOrderServiceErrorMap))
+	productsCategoriesDelivery := delivery.NewProductsCategoriesDelivery(productsCategoriesUseCase, error_adapter.NewErrorAdapter(grpc_errors.PreparedProductsServiceErrorMap))
 
 	server = grpc.NewServer(
 		grpc_middleware.WithUnaryServerChain(
