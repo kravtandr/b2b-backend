@@ -45,6 +45,24 @@ func (l *loggingMiddleware) GetCategoryById(ctx context.Context, CategoryId *mod
 	return l.next.GetCategoryById(ctx, CategoryId)
 }
 
+func (l *loggingMiddleware) GetProductById(ctx context.Context, ProductId *models.ProductId) (c *models.Product, err error) {
+	l.logger.Infow(module,
+		"Action", "GetProductById",
+		"Request", ProductId,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetProductById",
+				"Request", ProductId,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetProductById(ctx, ProductId)
+}
+
 func (l *loggingMiddleware) SearchCategories(ctx context.Context, name string) (c *[]models.Category, err error) {
 	l.logger.Infow(module,
 		"Action", "SearchCategories",

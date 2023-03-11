@@ -6,10 +6,12 @@ import (
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 type ProductsCategoriesUseCase interface {
 	GetCategoryById(ctx context.Context, request *models.GetCategoryByIdRequest) (*models.GetCategoryByIdResponse, error)
+	GetProductById(ctx context.Context, request *models.GetProductByIdRequest) (*models.GetProductByIdResponse, error)
 	SearchCategories(ctx context.Context, request *chttp.SearchItemName) (*[]models.GetCategoryByIdResponse, error)
 	GetProductsList(ctx context.Context, request *chttp.QueryParam) (*models.GetProductsList, error)
 	SearchProducts(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*models.GetProductsList, error)
@@ -33,6 +35,27 @@ func (u *productsCategoriesUseCase) GetCategoryById(ctx context.Context, request
 		Id:          request.Id,
 		Name:        response.Name,
 		Description: description,
+	}, nil
+}
+
+func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request *models.GetProductByIdRequest) (*models.GetProductByIdResponse, error) {
+	response, err := u.productsCategoriesGRPC.GetProductById(ctx, &productsCategories_service.GetProductByID{
+		Id: request.Id,
+	})
+	if err != nil {
+		fmt.Println("us ERRR", err)
+		return &models.GetProductByIdResponse{}, err
+	}
+	fmt.Println("HERE HERE HERE", err)
+	description := sql.NullString{
+		String: response.Description.String_,
+		Valid:  response.Description.Valid}
+	return &models.GetProductByIdResponse{
+		Id:          request.Id,
+		Name:        response.Name,
+		Description: description,
+		Price:       response.Price,
+		Photo:       response.Photo,
 	}, nil
 }
 

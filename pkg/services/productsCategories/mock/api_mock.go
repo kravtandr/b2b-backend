@@ -56,6 +56,26 @@ func (mr *MockProductsCategoriesServiceClientMockRecorder) GetCategoryById(ctx, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryById", reflect.TypeOf((*MockProductsCategoriesServiceClient)(nil).GetCategoryById), varargs...)
 }
 
+// GetProductById mocks base method.
+func (m *MockProductsCategoriesServiceClient) GetProductById(ctx context.Context, in *productsCategories_service.GetProductByID, opts ...grpc.CallOption) (*productsCategories_service.GetProduct, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetProductById", varargs...)
+	ret0, _ := ret[0].(*productsCategories_service.GetProduct)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetProductById indicates an expected call of GetProductById.
+func (mr *MockProductsCategoriesServiceClientMockRecorder) GetProductById(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProductById", reflect.TypeOf((*MockProductsCategoriesServiceClient)(nil).GetProductById), varargs...)
+}
+
 // GetProductsList mocks base method.
 func (m *MockProductsCategoriesServiceClient) GetProductsList(ctx context.Context, in *productsCategories_service.GetProductsListRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProductsListResponse, error) {
 	m.ctrl.T.Helper()
@@ -152,6 +172,21 @@ func (m *MockProductsCategoriesServiceServer) GetCategoryById(arg0 context.Conte
 func (mr *MockProductsCategoriesServiceServerMockRecorder) GetCategoryById(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryById", reflect.TypeOf((*MockProductsCategoriesServiceServer)(nil).GetCategoryById), arg0, arg1)
+}
+
+// GetProductById mocks base method.
+func (m *MockProductsCategoriesServiceServer) GetProductById(arg0 context.Context, arg1 *productsCategories_service.GetProductByID) (*productsCategories_service.GetProduct, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetProductById", arg0, arg1)
+	ret0, _ := ret[0].(*productsCategories_service.GetProduct)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetProductById indicates an expected call of GetProductById.
+func (mr *MockProductsCategoriesServiceServerMockRecorder) GetProductById(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProductById", reflect.TypeOf((*MockProductsCategoriesServiceServer)(nil).GetProductById), arg0, arg1)
 }
 
 // GetProductsList mocks base method.

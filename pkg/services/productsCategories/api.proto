@@ -7,6 +7,10 @@ message GetCategoryByID {
   int64 id = 1;
 }
 
+message GetProductByID {
+  int64 id = 1;
+}
+
 message SearchItemNameRequest {
   string name = 1;
 }
@@ -51,6 +55,7 @@ message GetProductsListResponse {
 
 service ProductsCategoriesService {
   rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
+  rpc GetProductById(GetProductByID) returns (GetProduct) {}
   rpc SearchCategories(SearchItemNameRequest) returns (GetCategories) {}
   rpc SearchProducts(SearchItemNameWithSkipLimitRequest) returns (GetProductsListResponse) {}
   rpc GetProductsList(GetProductsListRequest) returns (GetProductsListResponse) {}

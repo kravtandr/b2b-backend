@@ -89,6 +89,25 @@ func (a *productsCategoriesDelivery) GetCategoryById(ctx context.Context, reques
 	}, nil
 }
 
+func (a *productsCategoriesDelivery) GetProductById(ctx context.Context, request *productsCategories_service.GetProductByID) (*productsCategories_service.GetProduct, error) {
+	resp, err := a.productsCategoriesUseCase.GetProductById(ctx, &models.ProductId{
+		Id: request.Id,
+	})
+	if err != nil {
+		return &productsCategories_service.GetProduct{}, a.errorAdapter.AdaptError(err)
+	}
+	description := productsCategories_service.SqlNullString{
+		String_: resp.Description.String,
+		Valid:   resp.Description.Valid}
+	return &productsCategories_service.GetProduct{
+		Id:          resp.Id,
+		Name:        resp.Name,
+		Description: &description,
+		Price:       resp.Price,
+		Photo:       resp.Photo,
+	}, nil
+}
+
 func (a *productsCategoriesDelivery) SearchCategories(ctx context.Context, request *productsCategories_service.SearchItemNameRequest) (*productsCategories_service.GetCategories, error) {
 	resp, err := a.productsCategoriesUseCase.SearchCategories(ctx, request.Name)
 	if err != nil {
