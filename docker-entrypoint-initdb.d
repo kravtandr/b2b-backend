@@ -212,7 +212,7 @@ INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
 
 COPY categories(name) FROM '/var/lib/postgresql/data/export_base_categories.csv' DELIMITER ',' CSV HEADER;
-COPY products(name, description, price, photo) FROM '/var/lib/postgresql/data/test_products.csv' DELIMITER ',' CSV HEADER;
+COPY products(name, description, price, photo) FROM '/var/lib/postgresql/data/test_products.csv' DELIMITER ';' CSV HEADER;
 
 
 SELECT count() from categories;
