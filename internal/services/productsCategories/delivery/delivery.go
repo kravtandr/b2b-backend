@@ -108,8 +108,12 @@ func (a *productsCategoriesDelivery) GetProductById(ctx context.Context, request
 	}, nil
 }
 
-func (a *productsCategoriesDelivery) SearchCategories(ctx context.Context, request *productsCategories_service.SearchItemNameRequest) (*productsCategories_service.GetCategories, error) {
-	resp, err := a.productsCategoriesUseCase.SearchCategories(ctx, request.Name)
+func (a *productsCategoriesDelivery) SearchCategories(ctx context.Context, request *productsCategories_service.SearchItemNameWithSkipLimitRequest) (*productsCategories_service.GetCategories, error) {
+	resp, err := a.productsCategoriesUseCase.SearchCategories(ctx, &chttp.SearchItemNameWithSkipLimit{
+		Name:  request.Name,
+		Skip:  request.Skip,
+		Limit: request.Limit,
+	})
 	if err != nil {
 		return &productsCategories_service.GetCategories{}, a.errorAdapter.AdaptError(err)
 	}

@@ -97,7 +97,7 @@ func (mr *MockProductsCategoriesServiceClientMockRecorder) GetProductsList(ctx, 
 }
 
 // SearchCategories mocks base method.
-func (m *MockProductsCategoriesServiceClient) SearchCategories(ctx context.Context, in *productsCategories_service.SearchItemNameRequest, opts ...grpc.CallOption) (*productsCategories_service.GetCategories, error) {
+func (m *MockProductsCategoriesServiceClient) SearchCategories(ctx context.Context, in *productsCategories_service.SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*productsCategories_service.GetCategories, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
@@ -205,7 +205,7 @@ func (mr *MockProductsCategoriesServiceServerMockRecorder) GetProductsList(arg0,
 }
 
 // SearchCategories mocks base method.
-func (m *MockProductsCategoriesServiceServer) SearchCategories(arg0 context.Context, arg1 *productsCategories_service.SearchItemNameRequest) (*productsCategories_service.GetCategories, error) {
+func (m *MockProductsCategoriesServiceServer) SearchCategories(arg0 context.Context, arg1 *productsCategories_service.SearchItemNameWithSkipLimitRequest) (*productsCategories_service.GetCategories, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SearchCategories", arg0, arg1)
 	ret0, _ := ret[0].(*productsCategories_service.GetCategories)

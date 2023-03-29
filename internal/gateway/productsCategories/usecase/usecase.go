@@ -12,7 +12,7 @@ import (
 type ProductsCategoriesUseCase interface {
 	GetCategoryById(ctx context.Context, request *models.GetCategoryByIdRequest) (*models.GetCategoryByIdResponse, error)
 	GetProductById(ctx context.Context, request *models.GetProductByIdRequest) (*models.GetProductByIdResponse, error)
-	SearchCategories(ctx context.Context, request *chttp.SearchItemName) (*[]models.GetCategoryByIdResponse, error)
+	SearchCategories(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*[]models.GetCategoryByIdResponse, error)
 	GetProductsList(ctx context.Context, request *chttp.QueryParam) (*models.GetProductsList, error)
 	SearchProducts(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*models.GetProductsList, error)
 }
@@ -59,9 +59,11 @@ func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request 
 	}, nil
 }
 
-func (u *productsCategoriesUseCase) SearchCategories(ctx context.Context, request *chttp.SearchItemName) (*[]models.GetCategoryByIdResponse, error) {
-	SearchResults, err := u.productsCategoriesGRPC.SearchCategories(ctx, &productsCategories_service.SearchItemNameRequest{
-		Name: request.Name,
+func (u *productsCategoriesUseCase) SearchCategories(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*[]models.GetCategoryByIdResponse, error) {
+	SearchResults, err := u.productsCategoriesGRPC.SearchCategories(ctx, &productsCategories_service.SearchItemNameWithSkipLimitRequest{
+		Name:  request.Name,
+		Skip:  request.Skip,
+		Limit: request.Limit,
 	})
 	if err != nil {
 		return nil, err

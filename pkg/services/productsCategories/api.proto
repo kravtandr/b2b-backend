@@ -56,7 +56,7 @@ message GetProductsListResponse {
 service ProductsCategoriesService {
   rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
   rpc GetProductById(GetProductByID) returns (GetProduct) {}
-  rpc SearchCategories(SearchItemNameRequest) returns (GetCategories) {}
+  rpc SearchCategories(SearchItemNameWithSkipLimitRequest) returns (GetCategories) {}
   rpc SearchProducts(SearchItemNameWithSkipLimitRequest) returns (GetProductsListResponse) {}
   rpc GetProductsList(GetProductsListRequest) returns (GetProductsListResponse) {}
 }

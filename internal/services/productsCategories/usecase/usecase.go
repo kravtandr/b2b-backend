@@ -9,7 +9,7 @@ import (
 type ProductsCategoriesUseCase interface {
 	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
-	SearchCategories(ctx context.Context, search string) (*[]models.Category, error)
+	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error)
 }
@@ -34,8 +34,8 @@ func (a *productsCategoriesUseCase) GetProductById(ctx context.Context, ProductI
 	return category, nil
 }
 
-func (a *productsCategoriesUseCase) SearchCategories(ctx context.Context, search string) (*[]models.Category, error) {
-	categories, err := a.repo.SearchCategories(ctx, search)
+func (a *productsCategoriesUseCase) SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error) {
+	categories, err := a.repo.SearchCategories(ctx, SearchBody)
 	if err != nil {
 		return &[]models.Category{}, err
 	}

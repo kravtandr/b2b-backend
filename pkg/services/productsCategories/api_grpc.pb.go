@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ProductsCategoriesServiceClient interface {
 	GetCategoryById(ctx context.Context, in *GetCategoryByID, opts ...grpc.CallOption) (*GetCategory, error)
 	GetProductById(ctx context.Context, in *GetProductByID, opts ...grpc.CallOption) (*GetProduct, error)
-	SearchCategories(ctx context.Context, in *SearchItemNameRequest, opts ...grpc.CallOption) (*GetCategories, error)
+	SearchCategories(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetCategories, error)
 	SearchProducts(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
 	GetProductsList(ctx context.Context, in *GetProductsListRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
 }
@@ -55,7 +55,7 @@ func (c *productsCategoriesServiceClient) GetProductById(ctx context.Context, in
 	return out, nil
 }
 
-func (c *productsCategoriesServiceClient) SearchCategories(ctx context.Context, in *SearchItemNameRequest, opts ...grpc.CallOption) (*GetCategories, error) {
+func (c *productsCategoriesServiceClient) SearchCategories(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetCategories, error) {
 	out := new(GetCategories)
 	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/SearchCategories", in, out, opts...)
 	if err != nil {
@@ -88,7 +88,7 @@ func (c *productsCategoriesServiceClient) GetProductsList(ctx context.Context, i
 type ProductsCategoriesServiceServer interface {
 	GetCategoryById(context.Context, *GetCategoryByID) (*GetCategory, error)
 	GetProductById(context.Context, *GetProductByID) (*GetProduct, error)
-	SearchCategories(context.Context, *SearchItemNameRequest) (*GetCategories, error)
+	SearchCategories(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetCategories, error)
 	SearchProducts(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetProductsListResponse, error)
 	GetProductsList(context.Context, *GetProductsListRequest) (*GetProductsListResponse, error)
 	mustEmbedUnimplementedProductsCategoriesServiceServer()
@@ -104,7 +104,7 @@ func (UnimplementedProductsCategoriesServiceServer) GetCategoryById(context.Cont
 func (UnimplementedProductsCategoriesServiceServer) GetProductById(context.Context, *GetProductByID) (*GetProduct, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProductById not implemented")
 }
-func (UnimplementedProductsCategoriesServiceServer) SearchCategories(context.Context, *SearchItemNameRequest) (*GetCategories, error) {
+func (UnimplementedProductsCategoriesServiceServer) SearchCategories(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetCategories, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchCategories not implemented")
 }
 func (UnimplementedProductsCategoriesServiceServer) SearchProducts(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetProductsListResponse, error) {
@@ -164,7 +164,7 @@ func _ProductsCategoriesService_GetProductById_Handler(srv interface{}, ctx cont
 }
 
 func _ProductsCategoriesService_SearchCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchItemNameRequest)
+	in := new(SearchItemNameWithSkipLimitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -176,7 +176,7 @@ func _ProductsCategoriesService_SearchCategories_Handler(srv interface{}, ctx co
 		FullMethod: "/services.productsCategories_service.ProductsCategoriesService/SearchCategories",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductsCategoriesServiceServer).SearchCategories(ctx, req.(*SearchItemNameRequest))
+		return srv.(ProductsCategoriesServiceServer).SearchCategories(ctx, req.(*SearchItemNameWithSkipLimitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

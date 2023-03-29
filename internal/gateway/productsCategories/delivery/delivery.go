@@ -95,7 +95,7 @@ func (u *productsCategoriesDelivery) SearchProducts(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte(httpError.MSG))
 		return
 	}
-	var request = &chttp.SearchItemName{}
+	var request = &chttp.SearchItemNameWithSkipLimit{}
 	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
 		ctx.SetStatusCode(http.StatusBadRequest)
 		ctx.SetBody([]byte(cnst.WrongRequestBody))
@@ -120,14 +120,25 @@ func (u *productsCategoriesDelivery) SearchProducts(ctx *fasthttp.RequestCtx) {
 }
 
 func (u *productsCategoriesDelivery) SearchCategories(ctx *fasthttp.RequestCtx) {
-	var request = &chttp.SearchItemName{}
+	params, err := chttp.GetQueryParams(ctx)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	var request = &chttp.SearchItemNameWithSkipLimit{}
 	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
 		ctx.SetStatusCode(http.StatusBadRequest)
 		ctx.SetBody([]byte(cnst.WrongRequestBody))
 		return
 	}
-
-	response, err := u.manager.SearchCategories(ctx, request)
+	var searchBody = &chttp.SearchItemNameWithSkipLimit{
+		Name:  request.Name,
+		Skip:  params.Skip,
+		Limit: params.Limit,
+	}
+	response, err := u.manager.SearchCategories(ctx, searchBody)
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)
 		ctx.SetStatusCode(httpError.Code)
@@ -138,6 +149,25 @@ func (u *productsCategoriesDelivery) SearchCategories(ctx *fasthttp.RequestCtx) 
 	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
+
+	// var request = &chttp.SearchItemName{}
+	// if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
+	// 	ctx.SetStatusCode(http.StatusBadRequest)
+	// 	ctx.SetBody([]byte(cnst.WrongRequestBody))
+	// 	return
+	// }
+
+	// response, err := u.manager.SearchCategories(ctx, request)
+	// if err != nil {
+	// 	httpError := u.errorAdapter.AdaptError(err)
+	// 	ctx.SetStatusCode(httpError.Code)
+	// 	ctx.SetBody([]byte(httpError.MSG))
+	// 	return
+	// }
+
+	// b, err := chttp.ApiResp(response, err)
+	// ctx.SetStatusCode(http.StatusOK)
+	// ctx.SetBody(b)
 }
 
 func NewProductsCategoriesDelivery(

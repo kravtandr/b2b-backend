@@ -13,7 +13,7 @@ import (
 type ProductsCategoriesRepository interface {
 	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
-	SearchCategories(ctx context.Context, search string) (*[]models.Category, error)
+	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error)
 }
@@ -55,8 +55,8 @@ func (a productsCategoriesRepository) GetProductById(ctx context.Context, Produc
 	return product, nil
 }
 
-func (a productsCategoriesRepository) SearchCategories(ctx context.Context, search string) (*[]models.Category, error) {
-	query := a.queryFactory.CreateSearchCategories(search)
+func (a productsCategoriesRepository) SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error) {
+	query := a.queryFactory.CreateSearchCategories(SearchBody)
 	var category models.Category
 	var categories []models.Category
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)

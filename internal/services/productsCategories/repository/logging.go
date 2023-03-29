@@ -63,22 +63,22 @@ func (l *loggingMiddleware) GetProductById(ctx context.Context, ProductId *model
 	return l.next.GetProductById(ctx, ProductId)
 }
 
-func (l *loggingMiddleware) SearchCategories(ctx context.Context, name string) (c *[]models.Category, err error) {
+func (l *loggingMiddleware) SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (c *[]models.Category, err error) {
 	l.logger.Infow(module,
 		"Action", "SearchCategories",
-		"Request", name,
+		"Request", SearchBody,
 	)
 	defer func() {
 		if err != nil {
 			l.logger.Infow(module,
 				"Action", "SearchCategories",
-				"Request", name,
+				"Request", SearchBody,
 				"Error", err,
 			)
 		}
 	}()
 
-	return l.next.SearchCategories(ctx, name)
+	return l.next.SearchCategories(ctx, SearchBody)
 }
 
 func (l *loggingMiddleware) SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (c *models.ProductsList, err error) {
