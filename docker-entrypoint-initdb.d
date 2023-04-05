@@ -189,6 +189,21 @@ CREATE TABLE OrderForm
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE landing_request
+(
+    id                SERIAL      NOT NULL PRIMARY KEY,
+    product_category  TEXT        NOT NULL,
+    delivery_address  TEXT        NOT NULL,
+    delivery_date     TEXT        NOT NULL,
+    order_text        TEXT        DEFAULT 'empty',
+    email             TEXT        NOT NULL,
+    itn               TEXT        NOT NULL,
+    phone             TEXT        DEFAULT 'empty',
+    company_name      TEXT        DEFAULT 'empty',
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TRIGGER set_timestamp
     BEFORE UPDATE
     ON OrderForm

@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"context"
+
 	"github.com/golang/protobuf/ptypes/empty"
 
 	"b2b/m/internal/services/fastOrder/models"
@@ -26,6 +27,22 @@ func (a *fastOrderDelivery) FastOrder(ctx context.Context, request *fastOrder_se
 		Email:            request.Email,
 		Phone:            request.Phone,
 		Company_name:     request.CompanyName,
+		Itn:              request.Itn,
+	})
+	if err != nil {
+		return &empty.Empty{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &empty.Empty{}, nil
+}
+
+func (a *fastOrderDelivery) LandingOrder(ctx context.Context, request *fastOrder_service.LandingOrderRequest) (*empty.Empty, error) {
+	err := a.fastOrderUseCase.LandingOrder(ctx, &models.LandingForm{
+		Product_category: request.ProductCategory,
+		Delivery_address: request.DeliveryAddress,
+		Delivery_date:    request.DeliveryDate,
+		Order_text:       request.OrderText,
+		Email:            request.Email,
 		Itn:              request.Itn,
 	})
 	if err != nil {

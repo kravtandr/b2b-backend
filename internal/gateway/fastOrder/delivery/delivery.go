@@ -13,6 +13,7 @@ import (
 
 type FastOrderDelivery interface {
 	FastOrder(ctx *fasthttp.RequestCtx)
+	LandingOrder(ctx *fasthttp.RequestCtx)
 }
 
 type fastOrderDelivery struct {
@@ -29,6 +30,27 @@ func (u *fastOrderDelivery) FastOrder(ctx *fasthttp.RequestCtx) {
 	}
 
 	err := u.manager.FastOrder(ctx, request)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+
+	//b, err := chttp.ApiResp({}, err)
+	ctx.SetStatusCode(http.StatusOK)
+	//ctx.SetBody(b)
+}
+
+func (u *fastOrderDelivery) LandingOrder(ctx *fasthttp.RequestCtx) {
+	var request = &models.LandingOrderRequest{}
+	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+
+	err := u.manager.LandingOrder(ctx, request)
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)
 		ctx.SetStatusCode(httpError.Code)

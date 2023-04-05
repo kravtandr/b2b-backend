@@ -42,3 +42,21 @@ func (l *loggingMiddleware) FastOrder(ctx context.Context, order *models.OrderFo
 
 	return l.next.FastOrder(ctx, order)
 }
+
+func (l *loggingMiddleware) LandingOrder(ctx context.Context, order *models.LandingForm) (err error) {
+	l.logger.Infow(module,
+		"Action", "CreateLandingOrder",
+		"Request", order,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "CreateLandingOrder",
+				"Request", order,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.LandingOrder(ctx, order)
+}

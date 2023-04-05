@@ -8,6 +8,7 @@ const LogoutURL = "/logout"
 const UserInfoURL = "/user/{id}"
 
 const FastOrderURL = "/fastOrder"
+const LandingOrderURL = "/landingOrder"
 
 const FastRegisterURL = "/fastregister"
 const CompanyURL = "/company/{id}"

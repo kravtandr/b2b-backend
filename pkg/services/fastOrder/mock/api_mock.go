@@ -57,6 +57,26 @@ func (mr *MockFastOrderServiceClientMockRecorder) FastOrder(ctx, in interface{},
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FastOrder", reflect.TypeOf((*MockFastOrderServiceClient)(nil).FastOrder), varargs...)
 }
 
+// LandingOrder mocks base method.
+func (m *MockFastOrderServiceClient) LandingOrder(ctx context.Context, in *fastOrder_service.LandingOrderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "LandingOrder", varargs...)
+	ret0, _ := ret[0].(*emptypb.Empty)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// LandingOrder indicates an expected call of LandingOrder.
+func (mr *MockFastOrderServiceClientMockRecorder) LandingOrder(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LandingOrder", reflect.TypeOf((*MockFastOrderServiceClient)(nil).LandingOrder), varargs...)
+}
+
 // MockFastOrderServiceServer is a mock of FastOrderServiceServer interface.
 type MockFastOrderServiceServer struct {
 	ctrl     *gomock.Controller
@@ -93,6 +113,21 @@ func (m *MockFastOrderServiceServer) FastOrder(arg0 context.Context, arg1 *fastO
 func (mr *MockFastOrderServiceServerMockRecorder) FastOrder(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FastOrder", reflect.TypeOf((*MockFastOrderServiceServer)(nil).FastOrder), arg0, arg1)
+}
+
+// LandingOrder mocks base method.
+func (m *MockFastOrderServiceServer) LandingOrder(arg0 context.Context, arg1 *fastOrder_service.LandingOrderRequest) (*emptypb.Empty, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LandingOrder", arg0, arg1)
+	ret0, _ := ret[0].(*emptypb.Empty)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// LandingOrder indicates an expected call of LandingOrder.
+func (mr *MockFastOrderServiceServerMockRecorder) LandingOrder(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LandingOrder", reflect.TypeOf((*MockFastOrderServiceServer)(nil).LandingOrder), arg0, arg1)
 }
 
 // mustEmbedUnimplementedFastOrderServiceServer mocks base method.
