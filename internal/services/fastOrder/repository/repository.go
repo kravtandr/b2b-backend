@@ -23,19 +23,19 @@ type fastOrderRepository struct {
 
 func (a *fastOrderRepository) FastOrder(ctx context.Context, order *models.OrderForm) error {
 	query := a.queryFactory.CreateFastOrder(order)
-	sendMessageToBotNewFastOrder(order)
 	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
 		return err
 	}
+	sendMessageToBotNewFastOrder(order)
 	return nil
 }
 
 func (a *fastOrderRepository) LandingOrder(ctx context.Context, order *models.LandingForm) error {
 	query := a.queryFactory.CreateLandingOrder(order)
-	sendMessageToBotNewLandingOrder(order)
 	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
 		return err
 	}
+	sendMessageToBotNewLandingOrder(order)
 	return nil
 }
 
@@ -55,7 +55,7 @@ func sendMessageToBotNewLandingOrder(order *models.LandingForm) {
 	}
 	orderDetails := fmt.Sprintf("Email: %s\nИНН: %s\n"+
 		"Категория товара: %s\nАдрес доставки: %s\nДата доставки: %s\nОписание заявки: %s",
-		order.Email, order.Itn, order.Delivery_address, order.Delivery_date, order.Product_category,
+		order.Email, order.Itn, order.Product_category, order.Delivery_address, order.Delivery_date,
 		order.Order_text)
 	chatId := "-1001625808882"
 	botToken := "5653463229:AAGkQgSIkaSH-MaE9-PswOQWtMQZITJ2_Hk"
