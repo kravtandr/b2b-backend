@@ -204,6 +204,32 @@ CREATE TABLE landing_request
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE Chats 
+(
+    id                        SERIAL                    NOT NULL PRIMARY KEY,
+    name                      TEXT                      DEFAULT 'New Chat',
+    sender_id                 INT                       NOT NULL,
+    receiver_id               INT                       NOT NULL,
+    product_id                INT                       NOT NULL,
+    FOREIGN KEY (sender_id)   REFERENCES Users (id)     ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES Users (id)     ON DELETE CASCADE,
+    FOREIGN KEY (product_id)  REFERENCES Products (id)  ON DELETE CASCADE,
+    created_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW(),
+    updated_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE Msgs 
+(
+    id                      SERIAL                  NOT NULL PRIMARY KEY,
+    chat_id                 INT                     NOT NULL,
+    checked                 BOOLEAN                 NOT NULL DEFAULT FALSE,
+    text                    TEXT                    NOT NULL,
+    type                    TEXT                    NOT NULL, DEFAULT 'regular msg',
+    created_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    updated_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (chat_id)   REFERENCES Chats (id)   ON DELETE CASCADE
+);
+
 CREATE TRIGGER set_timestamp
     BEFORE UPDATE
     ON OrderForm
@@ -230,7 +256,7 @@ COPY categories(name) FROM '/var/lib/postgresql/data/export_base_categories.csv'
 COPY products(name, description, price, photo) FROM '/var/lib/postgresql/data/test_products.csv' DELIMITER ';' CSV HEADER;
 
 
-SELECT count() from categories;
+SELECT count() from categories
 
 CREATE TABLE Products_test
 (

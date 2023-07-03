@@ -53,3 +53,5 @@ const AlbumURL = "/album/{id}"
 const AlbumAddURL = "/album"
 const UploadAlbumPhotoURL = "/album/upload/{id}"
 const AlbumsByUserURL = "/album/user"
+
+const ProductChatURL = "/ws"

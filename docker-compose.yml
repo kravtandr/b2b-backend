@@ -87,25 +87,29 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  productscategories_service:
-    build:
-      dockerfile: Dockerfile.productsCategories_service
-      context: .
-      args:
-        - APP_PKG_NAME=b2b/m
-        - GOOS=linux
-    image: net.entrypoint.productscategories_service
-    ports:
-      - "10126:10126"
-      - "11126:8080"
-    environment:
-      - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
-      - PRODUCTSCATEGORIES_GRPC_PORT=10126
-    networks:
-      - net
-    restart: unless-stopped
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+#  productscategories_service:
+#    depends_on:
+#      - postgres
+#      - auth_service
+#      - company_service
+#    build:
+#      dockerfile: Dockerfile.productsCategories_service
+#      context: .
+#      args:
+#        - APP_PKG_NAME=b2b/m
+#        - GOOS=linux
+#    image: net.entrypoint.productscategories_service
+#    ports:
+#      - "10126:10126"
+#      - "11126:8080"
+#    environment:
+#      - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+#      - PRODUCTSCATEGORIES_GRPC_PORT=10126
+#    networks:
+#      - net
+#    restart: unless-stopped
+#    extra_hosts:
+#      - "host.docker.internal:host-gateway"
 
   gateway:
     depends_on:
@@ -136,3 +140,23 @@ services:
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+
+
+#   minio:
+#     image: registry. astrovolga.ru/docker/base/minio: RELEASE.2020-03-14T02-21-58Z-all
+#     container name: minio
+#     labels:
+#         #traefik.frontend.rule=Host:s3.test.astrovolga.ru"
+#     volumes:
+#     . /data: /data
+#     ./log: /var/log
+#     environment:
+#     MINIO ACCESS KEY: minio admin
+#     MINIO SECRET KEY: minio pass
+# SHUEUNE@O∞NOUD "traefik.port=9000"
+# 19 MINIO HTTP TRACE: /var/log/minio.log
+# 18 MINIO PROMETHEUS AUTH TYPE: public
+# 19 command: server /data
+# 20
+

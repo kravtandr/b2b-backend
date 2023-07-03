@@ -10,6 +10,7 @@ import (
 
 	"b2b/m/internal/services/auth/config"
 	"b2b/m/internal/services/auth/setup"
+
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
