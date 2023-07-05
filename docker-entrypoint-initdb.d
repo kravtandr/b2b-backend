@@ -224,7 +224,7 @@ CREATE TABLE Msgs
     chat_id                 INT                     NOT NULL,
     checked                 BOOLEAN                 NOT NULL DEFAULT FALSE,
     text                    TEXT                    NOT NULL,
-    type                    TEXT                    NOT NULL, DEFAULT 'regular msg',
+    type                    TEXT                    NOT NULL DEFAULT 'regular msg',
     created_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
     updated_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
     FOREIGN KEY (chat_id)   REFERENCES Chats (id)   ON DELETE CASCADE
@@ -256,7 +256,7 @@ COPY categories(name) FROM '/var/lib/postgresql/data/export_base_categories.csv'
 COPY products(name, description, price, photo) FROM '/var/lib/postgresql/data/test_products.csv' DELIMITER ';' CSV HEADER;
 
 
-SELECT count() from categories
+SELECT count() from categories;
 
 CREATE TABLE Products_test
 (

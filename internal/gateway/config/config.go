@@ -14,6 +14,7 @@ type Config struct {
 	FastOrderServiceEndpoint          string `envconfig:"FASTORDER_ENDPOINT" required:"true"`
 	CompanyServiceEndpoint            string `envconfig:"COMPANY_ENDPOINT" required:"true"`
 	ProductsCategoriesServiceEndpoint string `envconfig:"PRODUCTSCATEGORIES_ENDPOINT" required:"true"`
+	ChatServiceEndpoint               string `envconfig:"CHAT_ENDPOINT" required:"true"`
 	HTTPPort                          string `envconfig:"HTTP_PORT" required:"true"`
 	DBUrl                             string `envconfig:"DB_URL" required:"true"`
 	// DefaultBucket    string `envconfig:"S3_BUCKET" required:"true"`
@@ -35,6 +36,6 @@ func (c *Config) Setup() error {
 	lgr := logs.BuildLogger()
 	c.Logger = lgr.Logger
 	c.Ctx, c.Cancel = context.WithCancel(context.Background())
-	fmt.Println("GATEWAY_AUTH_ENDPOINT", c.AuthServiceEndpoint)
+	fmt.Println("GATEWAY_CHAT_ENDPOINT", c.ChatServiceEndpoint)
 	return nil
 }
