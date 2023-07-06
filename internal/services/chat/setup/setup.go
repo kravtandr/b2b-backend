@@ -1,6 +1,8 @@
 package setup
 
 import (
+	"b2b/m/internal/services/chat/usecase"
+	chat_service "b2b/m/pkg/services/chat"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	zap_middleware "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -11,12 +13,10 @@ import (
 	"b2b/m/internal/services/chat/config"
 	"b2b/m/internal/services/chat/delivery"
 	"b2b/m/internal/services/chat/repository"
-	auth_usecase "b2b/m/internal/services/chat/usecase"
 	"b2b/m/pkg/error_adapter"
 	"b2b/m/pkg/grpc_errors"
 	"b2b/m/pkg/hasher"
 	"b2b/m/pkg/helpers"
-	auth_service "b2b/m/pkg/services/chat"
 )
 
 func SetupServer(cfg config.Config) (server *grpc.Server, cancel func(), err error) {
@@ -25,15 +25,16 @@ func SetupServer(cfg config.Config) (server *grpc.Server, cancel func(), err err
 		return server, cancel, err
 	}
 
-	authRepo := repository.NewLoggingMiddleware(
+	chatRepo := repository.NewLoggingMiddleware(
 		cfg.Logger.Sugar(),
-		repository.NewAuthRepository(
+		repository.NewChatRepository(
 			repository.NewQueryFactory(), conn,
 		),
 	)
-	authUsecase := auth_usecase.NewAuthUseCase(hasher.NewHasher(3), authRepo)
+	chatUsecase := usecase.NewChatUseCase(hasher.NewHasher(3), chatRepo)
 	//authUsecase := auth_usecase.NewCompanyUseCase(authRepo)
-	authDelivery := delivery.NewAuthDelivery(authUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
+	//PreparedChatServiceErrorMap
+	chatDelivery := delivery.NewChatDelivery(chatUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 
 	server = grpc.NewServer(
 		grpc_middleware.WithUnaryServerChain(
@@ -44,7 +45,7 @@ func SetupServer(cfg config.Config) (server *grpc.Server, cancel func(), err err
 		),
 		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
 	)
-	auth_service.RegisterAuthServiceServer(server, authDelivery)
+	chat_service.RegisterChatServiceServer(server, chatDelivery)
 	grpc_prometheus.Register(server)
 
 	cancel = func() {

@@ -9,7 +9,7 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-type AuthUseCase interface {
+type ChatUseCase interface {
 	LoginUser(ctx context.Context, user *models.User) (models.CompanyWithCookie, error)
 	// LogoutUser(ctx context.Context, session string) error
 	// ValidateSession(ctx context.Context, session string) (int64, error)
@@ -21,13 +21,13 @@ type AuthUseCase interface {
 	// GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 }
 
-type authUseCase struct {
+type chatUseCase struct {
 	hashGenerator hasher
-	repo          authRepository
+	repo          chatRepository
 	uuidGen       generator.UUIDGenerator
 }
 
-func (a *authUseCase) LoginUser(ctx context.Context, user *models.User) (models.CompanyWithCookie, error) {
+func (a *chatUseCase) LoginUser(ctx context.Context, user *models.User) (models.CompanyWithCookie, error) {
 	repoUser, err := a.repo.GetUserByEmail(ctx, user.Email)
 	if err != nil {
 		return models.CompanyWithCookie{}, err
@@ -157,11 +157,11 @@ func (a *authUseCase) LoginUser(ctx context.Context, user *models.User) (models.
 // 	return a.repo.GetUserInfo(ctx, id)
 // }
 
-func NewAuthUseCase(
+func NewChatUseCase(
 	hashGenerator hasher,
-	repo authRepository,
-) AuthUseCase {
-	return &authUseCase{
+	repo chatRepository,
+) ChatUseCase {
+	return &chatUseCase{
 		hashGenerator: hashGenerator,
 		repo:          repo,
 		uuidGen:       generator.NewUUIDGenerator(uuid.NewGen()),

@@ -4,14 +4,14 @@ import (
 	"b2b/m/internal/services/chat/models"
 	"b2b/m/internal/services/chat/usecase"
 	"b2b/m/pkg/error_adapter"
-	auth_service "b2b/m/pkg/services/chat"
+	chat_service "b2b/m/pkg/services/chat"
 	"context"
 )
 
-type authDelivery struct {
-	authUsecase  usecase.AuthUseCase
+type chatDelivery struct {
+	chatUsecase  usecase.ChatUseCase
 	errorAdapter error_adapter.ErrorAdapter
-	auth_service.UnimplementedAuthServiceServer
+	chat_service.UnimplementedChatServiceServer
 }
 
 // func (a *authDelivery) ValidateSession(ctx context.Context, session *auth_service.Session) (*auth_service.ValidateSessionResponse, error) {
@@ -41,16 +41,16 @@ type authDelivery struct {
 // 	}, nil
 // }
 
-func (a *authDelivery) LoginUser(ctx context.Context, request *auth_service.LoginRequest) (*auth_service.LoginResponse, error) {
-	response, err := a.authUsecase.LoginUser(ctx, &models.User{
+func (a *chatDelivery) LoginUser(ctx context.Context, request *chat_service.LoginRequest) (*chat_service.LoginResponse, error) {
+	response, err := a.chatUsecase.LoginUser(ctx, &models.User{
 		Email:    request.Email,
 		Password: request.Password,
 	})
 	if err != nil {
-		return &auth_service.LoginResponse{}, a.errorAdapter.AdaptError(err)
+		return &chat_service.LoginResponse{}, a.errorAdapter.AdaptError(err)
 	}
 
-	return &auth_service.LoginResponse{
+	return &chat_service.LoginResponse{
 		Cookie:       response.Cookie,
 		Token:        response.Token,
 		Name:         response.Name,
@@ -188,12 +188,12 @@ func (a *authDelivery) LoginUser(ctx context.Context, request *auth_service.Logi
 // 	return &auth_service.UserId{Id: responce}, nil
 // }
 
-func NewAuthDelivery(
-	authUsecase usecase.AuthUseCase,
+func NewChatDelivery(
+	chatUsecase usecase.ChatUseCase,
 	errorAdapter error_adapter.ErrorAdapter,
-) auth_service.AuthServiceServer {
-	return &authDelivery{
-		authUsecase:  authUsecase,
+) chat_service.ChatServiceServer {
+	return &chatDelivery{
+		chatUsecase:  chatUsecase,
 		errorAdapter: errorAdapter,
 	}
 }

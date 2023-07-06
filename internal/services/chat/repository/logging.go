@@ -15,10 +15,10 @@ const (
 type loggingMiddleware struct {
 	logger *zap.SugaredLogger
 
-	next AuthRepository
+	next ChatRepository
 }
 
-func NewLoggingMiddleware(logger *zap.SugaredLogger, next AuthRepository) AuthRepository {
+func NewLoggingMiddleware(logger *zap.SugaredLogger, next ChatRepository) ChatRepository {
 	return &loggingMiddleware{
 		logger: logger,
 		next:   next,

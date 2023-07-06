@@ -1,32 +1,24 @@
 package usecase
 
 import (
+	chat_service "b2b/m/pkg/services/chat"
 	"context"
 
 	company_usecase "b2b/m/internal/gateway/company/usecase"
 	"b2b/m/internal/models"
-	auth_service "b2b/m/pkg/services/auth"
 )
 
-type UserUsecase interface {
+type ChatUsecase interface {
 	Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error)
-	// Register(ctx context.Context, request *models.RegisterUserRequest) (*models.Session, error)
-	// Logout(ctx context.Context, cookie string) error
-	// GetUserInfo(ctx context.Context, id int) (*models.Profile, error)
-	// FastRegister(ctx context.Context, request *models.FastRegistrationForm) (*models.CompanyWithCookie, error)
-	// Profile(ctx context.Context, userID int) (*models.Profile, error)
-	// UpdateProfile(ctx context.Context, userID int64, request *models.PublicCompanyAndOwnerRequest) (*models.PublicCompanyAndOwnerResponse, error)
-	// GetUserIdByCookie(ctx context.Context, hash string) (int64, error)
-	// CheckEmail(ctx context.Context, request *models.Email) (*models.PublicUser, error)
 }
 
-type userUsecase struct {
-	authGRPC    authGRPC
+type chatUsecase struct {
+	chatGRPC    chatGRPC
 	companyGRPC company_usecase.CompanyGRPC
 }
 
-func (u *userUsecase) Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error) {
-	response, err := u.authGRPC.LoginUser(ctx, &auth_service.LoginRequest{
+func (u *chatUsecase) Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error) {
+	response, err := u.chatGRPC.LoginUser(ctx, &chat_service.LoginRequest{
 		Email:    request.Email,
 		Password: request.Password,
 	})
@@ -237,6 +229,6 @@ func (u *userUsecase) Login(ctx context.Context, request *models.LoginUserReques
 // 	}, nil
 // }
 
-func NewUserUsecase(authGRPC authGRPC, companyGRPC company_usecase.CompanyGRPC) UserUsecase {
-	return &userUsecase{authGRPC: authGRPC, companyGRPC: companyGRPC}
+func NewChatUsecase(chatGRPC chatGRPC, companyGRPC company_usecase.CompanyGRPC) ChatUsecase {
+	return &chatUsecase{chatGRPC: chatGRPC, companyGRPC: companyGRPC}
 }

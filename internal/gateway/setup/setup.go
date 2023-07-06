@@ -1,6 +1,8 @@
 package setup
 
 import (
+	chatd "b2b/m/internal/gateway/chat/delivery"
+	chatu "b2b/m/internal/gateway/chat/usecase"
 	cd "b2b/m/internal/gateway/company/delivery"
 	company_usecase "b2b/m/internal/gateway/company/usecase"
 	"b2b/m/internal/gateway/config"
@@ -16,6 +18,7 @@ import (
 	"b2b/m/pkg/grpc_errors"
 	"b2b/m/pkg/helpers"
 	auth_service "b2b/m/pkg/services/auth"
+	chat_service "b2b/m/pkg/services/chat"
 	company_service "b2b/m/pkg/services/company"
 	fastOrder_service "b2b/m/pkg/services/fastOrder"
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
@@ -83,12 +86,26 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		productsCategoriesUseCase,
 	)
 
+	ChatConn, err := grpc.Dial(cfg.ChatServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return p, stopFunc, err
+	}
+	chatGRPC := chat_service.NewChatServiceClient(ChatConn)
+	chatUsecase := chatu.NewChatUsecase(chatGRPC, companyGRPC)
+	chatDelivery := chatd.NewChatDelivery(
+		error_adapter.NewGrpcToHttpAdapter(
+			grpc_errors.UserGatewayError, grpc_errors.CommonError,
+		),
+		chatUsecase,
+	)
+
 	p = router.SetupRouter(router.RouterConfig{
 		AuthGRPC:                   userGRPC,
 		UserDelivery:               userDelivery,
 		CompanyDelivery:            companyDelivery,
 		FastOrderDelivery:          fastOrderDelivery,
 		ProductsCategoriesDelivery: productsCategoriesDelivery,
+		ChatDelivery:               chatDelivery,
 		Logger:                     cfg.Logger,
 	})
 

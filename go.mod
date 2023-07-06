@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.295
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
 	github.com/fasthttp/router v1.4.19
+	github.com/fasthttp/websocket v1.5.3
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.3
@@ -43,7 +44,7 @@ require (
 	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/klauspost/compress v1.16.3 // indirect
+	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect

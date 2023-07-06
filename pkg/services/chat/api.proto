@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package services.auth_service;
-option go_package = "b2b/m/pkg/services/auth;auth_service";
+package services.chat_service;
+option go_package = "b2b/m/pkg/services/chat;chat_service";
 
 import "third_party/go-proto-validators/validator.proto";
 import "google/protobuf/empty.proto";
@@ -160,16 +160,16 @@ message CheckEmailRequest{
 
 
 
-service AuthService {
-  rpc ValidateSession (Session) returns (ValidateSessionResponse) {}
-  rpc LogoutUser(Session) returns (google.protobuf.Empty) {}
+service ChatService {
+//  rpc ValidateSession (Session) returns (ValidateSessionResponse) {}
+//  rpc LogoutUser(Session) returns (google.protobuf.Empty) {}
   rpc LoginUser(LoginRequest) returns (LoginResponse) {}
-  rpc FastRegister(FastRegisterRequest) returns (LoginResponse) {}
-  rpc RegisterUser(RegisterRequest) returns (RegisterResponse) {}
-  rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
-  rpc UpdateUser(UpdateUserRequest) returns (GetPublicUserResponse) {}
-  rpc GetUserInfo(GetUserRequest) returns (UserInfo) {}
-  rpc GetUserByEmail(UserEmailRequest) returns (UserId) {}
-  rpc GetUserIdByCookie(GetUserIdByCookieRequest) returns (UserId) {}
-  rpc CheckEmail(CheckEmailRequest) returns (GetPublicUserResponse) {}
+//  rpc FastRegister(FastRegisterRequest) returns (LoginResponse) {}
+//  rpc RegisterUser(RegisterRequest) returns (RegisterResponse) {}
+//  rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
+//  rpc UpdateUser(UpdateUserRequest) returns (GetPublicUserResponse) {}
+//  rpc GetUserInfo(GetUserRequest) returns (UserInfo) {}
+//  rpc GetUserByEmail(UserEmailRequest) returns (UserId) {}
+//  rpc GetUserIdByCookie(GetUserIdByCookieRequest) returns (UserId) {}
+//  rpc CheckEmail(CheckEmailRequest) returns (GetPublicUserResponse) {}
 }

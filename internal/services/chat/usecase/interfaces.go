@@ -6,7 +6,7 @@ import (
 	"b2b/m/internal/services/chat/models"
 )
 
-type authRepository interface {
+type chatRepository interface {
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	// GetUserCompany(ctx context.Context, id int64) (*company_models.Company, error)
 	// GetUserByID(ctx context.Context, ID int64) (*models.User, error)

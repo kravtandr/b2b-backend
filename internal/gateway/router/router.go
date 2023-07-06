@@ -1,6 +1,7 @@
 package router
 
 import (
+	chatd "b2b/m/internal/gateway/chat/delivery"
 	cd "b2b/m/internal/gateway/company/delivery"
 	fod "b2b/m/internal/gateway/fastOrder/delivery"
 	pcd "b2b/m/internal/gateway/productsCategories/delivery"
@@ -23,6 +24,7 @@ type RouterConfig struct {
 	FastOrderDelivery          fod.FastOrderDelivery
 	CompanyDelivery            cd.CompanyDelivery
 	ProductsCategoriesDelivery pcd.ProductsCategoriesDelivery
+	ChatDelivery               chatd.ChatDelivery
 
 	Logger *zap.Logger
 }
@@ -59,6 +61,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.GET(cnst.ProductURL, lgrMw(cfg.ProductsCategoriesDelivery.GetProductById))
 	p.GET(cnst.ProductsListURL, lgrMw(cfg.ProductsCategoriesDelivery.GetProductsList))
 	p.POST(cnst.SearchProductsURL, lgrMw(cfg.ProductsCategoriesDelivery.SearchProducts))
+	p.GET(cnst.ProductChatURL, lgrMw(cfg.ChatDelivery.WSUpgradeRequest))
 
 	return
 }

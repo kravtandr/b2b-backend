@@ -9,7 +9,7 @@ import (
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
 )
 
-type AuthRepository interface {
+type ChatRepository interface {
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	// GetUserByID(ctx context.Context, ID int64) (*models.User, error)
 	// CreateUser(ctx context.Context, user *models.User) (*models.User, error)
@@ -22,7 +22,7 @@ type AuthRepository interface {
 	// GetUserInfo(ctx context.Context, id int) (*models.User, error)
 }
 
-type authRepository struct {
+type chatRepository struct {
 	queryFactory QueryFactory
 	conn         *pgxpool.Pool
 }
@@ -58,7 +58,7 @@ type authRepository struct {
 // 	return user, nil
 // }
 
-func (a *authRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+func (a *chatRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	query := a.queryFactory.CreateGetUserByEmail(email)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 
@@ -173,11 +173,11 @@ func (a *authRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 // 	return updatedUser, nil
 // }
 
-func NewAuthRepository(
+func NewChatRepository(
 	queryFactory QueryFactory,
 	conn *pgxpool.Pool,
-) AuthRepository {
-	return &authRepository{
+) ChatRepository {
+	return &chatRepository{
 		queryFactory: queryFactory,
 		conn:         conn,
 	}

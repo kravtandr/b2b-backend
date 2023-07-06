@@ -7,7 +7,11 @@ package main
 import (
 	"b2b/m/internal/services/chat/config"
 	"b2b/m/internal/services/chat/setup"
+	"encoding/json"
+	"flag"
+	"github.com/fasthttp/websocket"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/valyala/fasthttp"
 	"log"
 	"net"
 	"net/http"
@@ -16,86 +20,85 @@ import (
 	"syscall"
 )
 
-//var addr = flag.String("addr", "localhost:5001", "http service address")
-//
-//var upgrader = websocket.FastHTTPUpgrader{}
-//
-//type Msg struct {
-//	Msg       string `json:"msg"`
-//	UserID    int64  `json:"userID"`
-//	ProductID int64  `json:"productID"`
-//}
-//
-//func initDB(ctx *fasthttp.RequestCtx) {
-//	//jdbc:postgresql://localhost:5431/b2b
-//	//postgres://b2b:b2b@postgres:5432/b2b
-//	config, err := pgxpool.ParseConfig("postgres://b2b:b2b@localhost:5431/b2b")
-//	if err != nil {
-//		log.Println("IN CHAT ParseConfig ERROR:", err)
-//	}
-//
-//	pool, err := pgxpool.ConnectConfig(context.Background(), config)
-//	if err != nil {
-//		log.Println("IN CHAT ConnectConfig ERROR:", err)
-//	}
-//	pool.Ping(context.Background())
-//	if err != nil {
-//		log.Println("IN CHAT Ping DB ERROR:", err)
-//	}
-//}
-//
-//func WriteNewMsg(msg Msg) error {
-//	// row := pool.QueryRow(context.Background(), "SELECT * from users;")
-//	// repoCompany := &models.PublicUser{}
-//	// if err := row.Scan(
-//	// 	&repoCompany.Email,
-//	// ); err != nil {
-//	// 	log.Println("IN CHAT DB ERROR:", err)
-//	// 	if err == pgx.ErrNoRows {
-//	// 		return
-//	// 	}
-//
-//	// 	return
-//	// }
-//	return nil
-//}
-//
-//func echoView(ctx *fasthttp.RequestCtx) {
-//	err := upgrader.Upgrade(ctx, func(ws *websocket.Conn) {
-//		defer ws.Close()
-//		//первое сообщение приходит с фронта
-//		msg := Msg{Msg: "Сколько единиц в комлекте?", UserID: 1, ProductID: 1}
-//		bytes, _ := json.Marshal(msg)
-//		// 1 - binary, 2 - text
-//		err := ws.WriteMessage(1, bytes)
-//		initDB(ctx)
+var addr = flag.String("addr", "localhost:5001", "http service address")
+
+var upgrader = websocket.FastHTTPUpgrader{}
+
+type Msg struct {
+	Msg       string `json:"msg"`
+	UserID    int64  `json:"userID"`
+	ProductID int64  `json:"productID"`
+}
+
+//	func initDB(ctx *fasthttp.RequestCtx) {
+//		//jdbc:postgresql://localhost:5431/b2b
+//		//postgres://b2b:b2b@postgres:5432/b2b
+//		config, err := pgxpool.ParseConfig("postgres://b2b:b2b@localhost:5431/b2b")
 //		if err != nil {
-//			log.Println("WS write:", err)
+//			log.Println("IN CHAT ParseConfig ERROR:", err)
 //		}
-//		for {
-//			mt, message, err := ws.ReadMessage()
-//			if err != nil {
-//				//когда приходит сообщение записываю его в бд
-//				log.Println("read:", err)
-//				break
-//			}
-//			log.Printf("recv: %s", message)
-//			//когда отправляю сообщение записываю его в бд
-//			err = ws.WriteMessage(mt, message)
-//			if err != nil {
-//				log.Println("write:", err)
-//				break
-//			}
-//		}
-//	})
 //
-//	if err != nil {
-//		if _, ok := err.(websocket.HandshakeError); ok {
-//			log.Println(err)
+//		pool, err := pgxpool.ConnectConfig(context.Background(), config)
+//		if err != nil {
+//			log.Println("IN CHAT ConnectConfig ERROR:", err)
 //		}
-//		return
+//		pool.Ping(context.Background())
+//		if err != nil {
+//			log.Println("IN CHAT Ping DB ERROR:", err)
+//		}
 //	}
-//}
+//
+//	func WriteNewMsg(msg Msg) error {
+//		// row := pool.QueryRow(context.Background(), "SELECT * from users;")
+//		// repoCompany := &models.PublicUser{}
+//		// if err := row.Scan(
+//		// 	&repoCompany.Email,
+//		// ); err != nil {
+//		// 	log.Println("IN CHAT DB ERROR:", err)
+//		// 	if err == pgx.ErrNoRows {
+//		// 		return
+//		// 	}
+//
+//		// 	return
+//		// }
+//		return nil
+//	}
+func echoView(ctx *fasthttp.RequestCtx) {
+	err := upgrader.Upgrade(ctx, func(ws *websocket.Conn) {
+		defer ws.Close()
+		//первое сообщение приходит с фронта
+		msg := Msg{Msg: "Сколько единиц в комлекте?", UserID: 1, ProductID: 1}
+		bytes, _ := json.Marshal(msg)
+		// 1 - binary, 2 - text
+		err := ws.WriteMessage(1, bytes)
+		//initDB(ctx)
+		if err != nil {
+			log.Println("WS write:", err)
+		}
+		for {
+			mt, message, err := ws.ReadMessage()
+			if err != nil {
+				//когда приходит сообщение записываю его в бд
+				log.Println("read:", err)
+				break
+			}
+			log.Printf("recv: %s", message)
+			//когда отправляю сообщение записываю его в бд
+			err = ws.WriteMessage(mt, message)
+			if err != nil {
+				log.Println("write:", err)
+				break
+			}
+		}
+	})
+
+	if err != nil {
+		if _, ok := err.(websocket.HandshakeError); ok {
+			log.Println(err)
+		}
+		return
+	}
+}
 
 // func homeView(ctx *fasthttp.RequestCtx) {
 // 	ctx.SetContentType("text/html")
@@ -137,7 +140,7 @@ func main() {
 		log.Fatal(http.ListenAndServe(":8080", nil))
 	}()
 
-	logger.Info("auth service started ...")
+	logger.Info("chat service started ...")
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)
@@ -150,6 +153,20 @@ func main() {
 
 		logger.Info("msg", " goodbye")
 	}(<-c)
+
+	requestHandler := func(ctx *fasthttp.RequestCtx) {
+		switch string(ctx.Path()) {
+		case "/ws":
+			echoView(ctx)
+		default:
+			ctx.Error("Unsupported path", fasthttp.StatusNotFound)
+		}
+	}
+	WSserver := fasthttp.Server{
+		Name:    "EchoExample",
+		Handler: requestHandler,
+	}
+	log.Fatal(WSserver.ListenAndServe(*addr))
 }
 
 //func main() {
