@@ -11,6 +11,7 @@ type QueryFactory interface {
 	CreateUpdateCompanyById(newCompany models.Company) *query.Query
 	CreateUpdateCompanyUsersLink(companyId int64, userId int64, post string) *query.Query
 	CreateGetCompanyUserLinkByOwnerIdAndItn(userId int64, itn string) *query.Query
+	CreateGetProductsCompaniesLink(ProductId int64) *query.Query
 }
 
 type queryFactory struct{}
@@ -19,6 +20,13 @@ func (q *queryFactory) CreateGetCompanyByID(ID int64) *query.Query {
 	return &query.Query{
 		Request: getCompanyByIDRequest,
 		Params:  []interface{}{ID},
+	}
+}
+
+func (q *queryFactory) CreateGetProductsCompaniesLink(ProductId int64) *query.Query {
+	return &query.Query{
+		Request: createGetProductsCompaniesLink,
+		Params:  []interface{}{ProductId},
 	}
 }
 

@@ -1,100 +1,60 @@
 package repository
 
 import (
-	"b2b/m/internal/services/auth/models"
-	company_models "b2b/m/internal/services/company/models"
+	"b2b/m/internal/services/chat/models"
 	"b2b/m/pkg/query"
 )
 
 type QueryFactory interface {
-	CreateCreateCompany(user *models.User, company *company_models.Company) *query.Query
-	CreateCreateUserCompanyLink(user *models.User, company *company_models.Company, post string) *query.Query
-	CreateGetUserByEmail(email string) *query.Query
-	CreateGetUserByID(ID int64) *query.Query
-	CreateCreateUser(user *models.User) *query.Query
-	CreateCreateUserSession(userID int64, hash string) *query.Query
-	CreateValidateUserSession(hash string) *query.Query
-	CreateRemoveUserSession(hash string) *query.Query
-	CreateUpdateUser(user *models.User) *query.Query
+	CreateCheckIfUniqChat(productId int64, userId int64) *query.Query
+	CreateNewChat(newChat *models.Chat) *query.Query
+	CreateWriteNewMsg(newMsg *models.Msg) *query.Query
+	CreateGetMsgsFromChat(chatId int64) *query.Query
+	CreateGetAllUserChats(userId int64) *query.Query
+	CreateGetUserLastMsgs(userId int64) *query.Query
 }
 
 type queryFactory struct{}
 
-func (q *queryFactory) CreateGetCompanyByUserId(Id int64) *query.Query {
+func (q *queryFactory) CreateCheckIfUniqChat(productId int64, userId int64) *query.Query {
 	return &query.Query{
-		Request: createCompanyByUserId,
-		Params:  []interface{}{Id},
+		Request: createCheckIfUniqChat,
+		Params:  []interface{}{productId, userId},
 	}
 }
 
-func (q *queryFactory) CreateUpdateUser(user *models.User) *query.Query {
+func (q *queryFactory) CreateNewChat(newChat *models.Chat) *query.Query {
 	return &query.Query{
-		Request: createCreateUpdateUser,
-		Params: []interface{}{
-			user.Id, user.Name, user.Surname, user.Patronymic, user.Email, user.Password,
-		},
+		Request: createNewChat,
+		Params:  []interface{}{newChat.Name, newChat.CreatorId, newChat.ProductId},
 	}
 }
 
-func (q *queryFactory) CreateCreateCompany(user *models.User, company *company_models.Company) *query.Query {
+func (q *queryFactory) CreateWriteNewMsg(newMsg *models.Msg) *query.Query {
 	return &query.Query{
-		Request: createCreateCompany,
-		Params: []interface{}{
-			company.Name, company.LegalName, company.Itn, user.Email, user.Id,
-		},
+		Request: createWriteNewMsg,
+		Params:  []interface{}{newMsg.Id, newMsg.ChatId, newMsg.Checked, newMsg.Text, newMsg.Type, newMsg.Time},
 	}
 }
 
-func (q *queryFactory) CreateCreateUserCompanyLink(user *models.User, company *company_models.Company, post string) *query.Query {
+func (q *queryFactory) CreateGetMsgsFromChat(chatId int64) *query.Query {
 	return &query.Query{
-		Request: createCreateUserCompanyLink,
-		Params: []interface{}{
-			post, company.Id, user.Id, company.Itn,
-		},
+		Request: createGetMsgsFromChat,
+		Params:  []interface{}{chatId},
 	}
 }
 
-func (q *queryFactory) CreateCreateUser(user *models.User) *query.Query {
+func (q *queryFactory) CreateGetAllUserChats(userId int64) *query.Query {
 	return &query.Query{
-		Request: createUserRequest,
-		Params: []interface{}{
-			user.Name, user.Surname, user.Patronymic, user.Email, user.Password, user.Country,
-		},
+		Request: createGetAllUserChats,
+		Params:  []interface{}{userId},
 	}
 }
 
-func (q *queryFactory) CreateGetUserByEmail(email string) *query.Query {
+func (q *queryFactory) CreateGetUserLastMsgs(userId int64) *query.Query {
 	return &query.Query{
-		Request: getUserByEmailRequest,
-		Params:  []interface{}{email},
-	}
-}
-
-func (q *queryFactory) CreateGetUserByID(ID int64) *query.Query {
-	return &query.Query{
-		Request: getUserByIDRequest,
-		Params:  []interface{}{ID},
-	}
-}
-
-func (q *queryFactory) CreateCreateUserSession(userID int64, hash string) *query.Query {
-	return &query.Query{
-		Request: createUserSession,
-		Params:  []interface{}{userID, hash},
-	}
-}
-
-func (q *queryFactory) CreateValidateUserSession(hash string) *query.Query {
-	return &query.Query{
-		Request: validateUserSession,
-		Params:  []interface{}{hash},
-	}
-}
-
-func (q *queryFactory) CreateRemoveUserSession(hash string) *query.Query {
-	return &query.Query{
-		Request: removeUserSession,
-		Params:  []interface{}{hash},
+		Request: createGetLastMsgsFromAllUserChats,
+		Params:  []interface{}{userId},
 	}
 }
 

@@ -241,6 +241,237 @@ var _ interface {
 	ErrorName() string
 } = GetCompanyRequestByIdValidationError{}
 
+// Validate checks the field values on IdRequest with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *IdRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on IdRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in IdRequestMultiError, or nil
+// if none found.
+func (m *IdRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *IdRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return IdRequestMultiError(errors)
+	}
+	return nil
+}
+
+// IdRequestMultiError is an error wrapping multiple validation errors returned
+// by IdRequest.ValidateAll() if the designated constraints aren't met.
+type IdRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m IdRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m IdRequestMultiError) AllErrors() []error { return m }
+
+// IdRequestValidationError is the validation error returned by
+// IdRequest.Validate if the designated constraints aren't met.
+type IdRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e IdRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e IdRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e IdRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e IdRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e IdRequestValidationError) ErrorName() string { return "IdRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e IdRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sIdRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = IdRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = IdRequestValidationError{}
+
+// Validate checks the field values on GetPrivateCompanyResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetPrivateCompanyResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetPrivateCompanyResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetPrivateCompanyResponseMultiError, or nil if none found.
+func (m *GetPrivateCompanyResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetPrivateCompanyResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	// no validation rules for Description
+
+	// no validation rules for LegalName
+
+	// no validation rules for Itn
+
+	// no validation rules for Psrn
+
+	// no validation rules for Address
+
+	// no validation rules for LegalAddress
+
+	// no validation rules for Email
+
+	// no validation rules for Phone
+
+	// no validation rules for Link
+
+	// no validation rules for Activity
+
+	// no validation rules for OwnerId
+
+	// no validation rules for Rating
+
+	// no validation rules for Verified
+
+	if len(errors) > 0 {
+		return GetPrivateCompanyResponseMultiError(errors)
+	}
+	return nil
+}
+
+// GetPrivateCompanyResponseMultiError is an error wrapping multiple validation
+// errors returned by GetPrivateCompanyResponse.ValidateAll() if the
+// designated constraints aren't met.
+type GetPrivateCompanyResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetPrivateCompanyResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetPrivateCompanyResponseMultiError) AllErrors() []error { return m }
+
+// GetPrivateCompanyResponseValidationError is the validation error returned by
+// GetPrivateCompanyResponse.Validate if the designated constraints aren't met.
+type GetPrivateCompanyResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetPrivateCompanyResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetPrivateCompanyResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetPrivateCompanyResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetPrivateCompanyResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetPrivateCompanyResponseValidationError) ErrorName() string {
+	return "GetPrivateCompanyResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetPrivateCompanyResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetPrivateCompanyResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetPrivateCompanyResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetPrivateCompanyResponseValidationError{}
+
 // Validate checks the field values on GetCompanyResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

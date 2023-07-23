@@ -9,4 +9,5 @@ import (
 type CompanyGRPC interface {
 	GetCompanyById(ctx context.Context, in *company_service.GetCompanyRequestById, opts ...grpc.CallOption) (*company_service.GetCompanyResponse, error)
 	UpdateCompanyByOwnerId(ctx context.Context, in *company_service.UpdateCompanyRequest, opts ...grpc.CallOption) (*company_service.GetCompanyAndPostResponse, error)
+	GetCompanyByProductId(ctx context.Context, in *company_service.IdRequest, opts ...grpc.CallOption) (*company_service.GetPrivateCompanyResponse, error)
 }

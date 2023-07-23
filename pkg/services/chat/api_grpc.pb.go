@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -22,9 +23,12 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatServiceClient interface {
-	//  rpc ValidateSession (Session) returns (ValidateSessionResponse) {}
-	//  rpc LogoutUser(Session) returns (google.protobuf.Empty) {}
-	LoginUser(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	CheckIfUniqChat(ctx context.Context, in *CheckIfUniqChatRequest, opts ...grpc.CallOption) (*CheckIfUniqChatResponse, error)
+	NewChat(ctx context.Context, in *NewChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
+	WriteNewMsg(ctx context.Context, in *WriteNewMsgRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetMsgsFromChat(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*MsgsResponse, error)
+	GetAllUserChats(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*GetAllUserChatsResponse, error)
+	GetAllChatsAndLastMsg(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*GetAllChatsAndLastMsgResponse, error)
 }
 
 type chatServiceClient struct {
@@ -35,9 +39,54 @@ func NewChatServiceClient(cc grpc.ClientConnInterface) ChatServiceClient {
 	return &chatServiceClient{cc}
 }
 
-func (c *chatServiceClient) LoginUser(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/LoginUser", in, out, opts...)
+func (c *chatServiceClient) CheckIfUniqChat(ctx context.Context, in *CheckIfUniqChatRequest, opts ...grpc.CallOption) (*CheckIfUniqChatResponse, error) {
+	out := new(CheckIfUniqChatResponse)
+	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/CheckIfUniqChat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) NewChat(ctx context.Context, in *NewChatRequest, opts ...grpc.CallOption) (*ChatResponse, error) {
+	out := new(ChatResponse)
+	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/NewChat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) WriteNewMsg(ctx context.Context, in *WriteNewMsgRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/WriteNewMsg", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) GetMsgsFromChat(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*MsgsResponse, error) {
+	out := new(MsgsResponse)
+	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/GetMsgsFromChat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) GetAllUserChats(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*GetAllUserChatsResponse, error) {
+	out := new(GetAllUserChatsResponse)
+	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/GetAllUserChats", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) GetAllChatsAndLastMsg(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*GetAllChatsAndLastMsgResponse, error) {
+	out := new(GetAllChatsAndLastMsgResponse)
+	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/GetAllChatsAndLastMsg", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,9 +97,12 @@ func (c *chatServiceClient) LoginUser(ctx context.Context, in *LoginRequest, opt
 // All implementations must embed UnimplementedChatServiceServer
 // for forward compatibility
 type ChatServiceServer interface {
-	//  rpc ValidateSession (Session) returns (ValidateSessionResponse) {}
-	//  rpc LogoutUser(Session) returns (google.protobuf.Empty) {}
-	LoginUser(context.Context, *LoginRequest) (*LoginResponse, error)
+	CheckIfUniqChat(context.Context, *CheckIfUniqChatRequest) (*CheckIfUniqChatResponse, error)
+	NewChat(context.Context, *NewChatRequest) (*ChatResponse, error)
+	WriteNewMsg(context.Context, *WriteNewMsgRequest) (*emptypb.Empty, error)
+	GetMsgsFromChat(context.Context, *IdRequest) (*MsgsResponse, error)
+	GetAllUserChats(context.Context, *IdRequest) (*GetAllUserChatsResponse, error)
+	GetAllChatsAndLastMsg(context.Context, *IdRequest) (*GetAllChatsAndLastMsgResponse, error)
 	mustEmbedUnimplementedChatServiceServer()
 }
 
@@ -58,8 +110,23 @@ type ChatServiceServer interface {
 type UnimplementedChatServiceServer struct {
 }
 
-func (UnimplementedChatServiceServer) LoginUser(context.Context, *LoginRequest) (*LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
+func (UnimplementedChatServiceServer) CheckIfUniqChat(context.Context, *CheckIfUniqChatRequest) (*CheckIfUniqChatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckIfUniqChat not implemented")
+}
+func (UnimplementedChatServiceServer) NewChat(context.Context, *NewChatRequest) (*ChatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewChat not implemented")
+}
+func (UnimplementedChatServiceServer) WriteNewMsg(context.Context, *WriteNewMsgRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WriteNewMsg not implemented")
+}
+func (UnimplementedChatServiceServer) GetMsgsFromChat(context.Context, *IdRequest) (*MsgsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMsgsFromChat not implemented")
+}
+func (UnimplementedChatServiceServer) GetAllUserChats(context.Context, *IdRequest) (*GetAllUserChatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllUserChats not implemented")
+}
+func (UnimplementedChatServiceServer) GetAllChatsAndLastMsg(context.Context, *IdRequest) (*GetAllChatsAndLastMsgResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllChatsAndLastMsg not implemented")
 }
 func (UnimplementedChatServiceServer) mustEmbedUnimplementedChatServiceServer() {}
 
@@ -74,20 +141,110 @@ func RegisterChatServiceServer(s grpc.ServiceRegistrar, srv ChatServiceServer) {
 	s.RegisterService(&ChatService_ServiceDesc, srv)
 }
 
-func _ChatService_LoginUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
+func _ChatService_CheckIfUniqChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckIfUniqChatRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChatServiceServer).LoginUser(ctx, in)
+		return srv.(ChatServiceServer).CheckIfUniqChat(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/services.chat_service.ChatService/LoginUser",
+		FullMethod: "/services.chat_service.ChatService/CheckIfUniqChat",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).LoginUser(ctx, req.(*LoginRequest))
+		return srv.(ChatServiceServer).CheckIfUniqChat(ctx, req.(*CheckIfUniqChatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_NewChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewChatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).NewChat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.chat_service.ChatService/NewChat",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).NewChat(ctx, req.(*NewChatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_WriteNewMsg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WriteNewMsgRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).WriteNewMsg(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.chat_service.ChatService/WriteNewMsg",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).WriteNewMsg(ctx, req.(*WriteNewMsgRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_GetMsgsFromChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).GetMsgsFromChat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.chat_service.ChatService/GetMsgsFromChat",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).GetMsgsFromChat(ctx, req.(*IdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_GetAllUserChats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).GetAllUserChats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.chat_service.ChatService/GetAllUserChats",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).GetAllUserChats(ctx, req.(*IdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_GetAllChatsAndLastMsg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).GetAllChatsAndLastMsg(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.chat_service.ChatService/GetAllChatsAndLastMsg",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).GetAllChatsAndLastMsg(ctx, req.(*IdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -100,8 +257,28 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ChatServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "LoginUser",
-			Handler:    _ChatService_LoginUser_Handler,
+			MethodName: "CheckIfUniqChat",
+			Handler:    _ChatService_CheckIfUniqChat_Handler,
+		},
+		{
+			MethodName: "NewChat",
+			Handler:    _ChatService_NewChat_Handler,
+		},
+		{
+			MethodName: "WriteNewMsg",
+			Handler:    _ChatService_WriteNewMsg_Handler,
+		},
+		{
+			MethodName: "GetMsgsFromChat",
+			Handler:    _ChatService_GetMsgsFromChat_Handler,
+		},
+		{
+			MethodName: "GetAllUserChats",
+			Handler:    _ChatService_GetAllUserChats_Handler,
+		},
+		{
+			MethodName: "GetAllChatsAndLastMsg",
+			Handler:    _ChatService_GetAllChatsAndLastMsg_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

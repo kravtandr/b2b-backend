@@ -1,234 +1,165 @@
 package usecase
 
 import (
-	chat_service "b2b/m/pkg/services/chat"
-	"context"
-
 	company_usecase "b2b/m/internal/gateway/company/usecase"
+	product_usecase "b2b/m/internal/gateway/productsCategories/usecase"
+	auth_usecase "b2b/m/internal/gateway/user/usecase"
 	"b2b/m/internal/models"
+
+	chat_service "b2b/m/pkg/services/chat"
+	product_service "b2b/m/pkg/services/productsCategories"
+	"context"
 )
 
 type ChatUsecase interface {
-	Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error)
+	CheckIfUniqChat(ctx context.Context, userId int64, productId int64) (bool, error)
+	NewChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
+	WriteNewMsg(ctx context.Context, request *models.Msg) error
+	GetMsgsFromChat(ctx context.Context, chatId int64) (*models.Msgs, error)
+	GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error)
+	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
 }
 
 type chatUsecase struct {
 	chatGRPC    chatGRPC
 	companyGRPC company_usecase.CompanyGRPC
+	productGRPC product_usecase.ProductsCategoriesGRPC
+	AuthGRPC    auth_usecase.AuthGRPC
 }
 
-func (u *chatUsecase) Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error) {
-	response, err := u.chatGRPC.LoginUser(ctx, &chat_service.LoginRequest{
-		Email:    request.Email,
-		Password: request.Password,
+func (u *chatUsecase) GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error) {
+	response, err := u.chatGRPC.GetAllUserChats(ctx, &chat_service.IdRequest{
+		Id: userId,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &models.CompanyWithCookie{
-		Token:        response.Token,
-		Cookie:       response.Cookie,
-		Name:         response.Name,
-		Description:  response.Description,
-		LegalName:    response.LegalName,
-		Itn:          response.Itn,
-		Psrn:         response.Psrn,
-		Address:      response.Address,
-		LegalAddress: response.LegalAddress,
-		Email:        response.Email,
-		Phone:        response.Phone,
-		Link:         response.Link,
-		Activity:     response.Activity,
-		OwnerId:      response.OwnerId,
-		Rating:       response.Rating,
-		Verified:     response.Verified,
+	var chat models.Chat
+	var chats models.Chats
+	for _, result := range response.Chats {
+		chat = models.Chat{
+			Id:        result.Id,
+			Name:      result.Name,
+			CreatorId: result.CreatorId,
+			ProductId: result.ProductId,
+		}
+		chats = append(chats, chat)
+	}
+	return &chats, nil
+}
+
+func (u *chatUsecase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error) {
+	//userId, err := u.AuthGRPC.GetUserIdByCookie(ctx)
+	//userId := ctx.UserValue(cnst.UserIDContextKey).(int)
+	response, err := u.chatGRPC.GetAllChatsAndLastMsg(ctx, &chat_service.IdRequest{
+		Id: userId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var chat models.Chat
+	var msg models.Msg
+	var chatAndLastMsg models.ChatAndLastMsg
+	var chatsAndLastMsg models.ChatsAndLastMsg
+	for _, result := range response.Chats {
+		chat = models.Chat{
+			Id:        result.Id,
+			Name:      result.Name,
+			CreatorId: result.CreatorId,
+			ProductId: result.ProductId,
+		}
+		msg = models.Msg{
+			Id:         result.Msg.Id,
+			ChatId:     result.Msg.ChatId,
+			SenderId:   result.Msg.SenderId,
+			ReceiverId: result.Msg.ReceiverId,
+			Checked:    result.Msg.Checked,
+			Text:       result.Msg.Text,
+			Type:       result.Msg.Type,
+			Time:       result.Msg.Time,
+		}
+		chatAndLastMsg.Chat = chat
+		chatAndLastMsg.LastMsg = msg
+		chatsAndLastMsg = append(chatsAndLastMsg, chatAndLastMsg)
+	}
+	return &chatsAndLastMsg, nil
+}
+
+func (u *chatUsecase) GetMsgsFromChat(ctx context.Context, chatId int64) (*models.Msgs, error) {
+	response, err := u.chatGRPC.GetMsgsFromChat(ctx, &chat_service.IdRequest{
+		Id: chatId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var msg models.Msg
+	var msgs models.Msgs
+	for _, result := range response.Msgs {
+		msg = models.Msg{
+			Id:      result.Id,
+			ChatId:  result.ChatId,
+			Checked: result.Checked,
+			Text:    result.Text,
+			Type:    result.Type,
+			Time:    result.Time,
+		}
+		msgs = append(msgs, msg)
+	}
+	return &msgs, nil
+}
+
+func (u *chatUsecase) NewChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error) {
+	product, err := u.productGRPC.GetProductById(ctx, &product_service.GetProductByID{
+		Id: productId,
+	})
+	response, err := u.chatGRPC.NewChat(ctx, &chat_service.NewChatRequest{
+		Name:      product.Name,
+		CreatorId: userId,
+		ProductId: productId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.Chat{
+		Id:        response.Id,
+		Name:      response.Name,
+		CreatorId: response.CreatorId,
+		ProductId: response.ProductId,
 	}, nil
 }
 
-// func (u *userUsecase) Register(ctx context.Context, request *models.RegisterUserRequest) (*models.Session, error) {
-// 	response, err := u.authGRPC.RegisterUser(ctx, &auth_service.RegisterRequest{
-// 		Email:    request.Email,
-// 		Password: request.Password,
-// 		Name:     request.Name,
-// 		Surname:  request.Surname,
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (u *chatUsecase) CheckIfUniqChat(ctx context.Context, userId int64, productId int64) (bool, error) {
+	response, err := u.chatGRPC.CheckIfUniqChat(ctx, &chat_service.CheckIfUniqChatRequest{
+		UserId:    userId,
+		ProductId: productId,
+	})
+	if err != nil {
+		return false, err
+	}
 
-// 	return &models.Session{
-// 		Token:  response.Token,
-// 		Cookie: response.Cookie,
-// 	}, nil
-// }
+	return response.Unique, nil
+}
 
-// func (u *userUsecase) CheckEmail(ctx context.Context, request *models.Email) (*models.PublicUser, error) {
-// 	response, err := u.authGRPC.CheckEmail(ctx, &auth_service.CheckEmailRequest{Email: request.Email})
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (u *chatUsecase) WriteNewMsg(ctx context.Context, request *models.Msg) error {
+	_, err := u.chatGRPC.WriteNewMsg(ctx, &chat_service.WriteNewMsgRequest{
+		ChatId:     request.ChatId,
+		SenderId:   request.SenderId,
+		ReceiverId: request.ReceiverId,
+		Checked:    request.Checked,
+		Text:       request.Text,
+		Type:       request.Type,
+		Time:       request.Time,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
-// 	return &models.PublicUser{
-// 		Name:       response.Name,
-// 		Surname:    response.Surname,
-// 		Patronymic: response.Patronymic,
-// 		Email:      response.Email,
-// 	}, nil
-// }
-
-// func (u *userUsecase) FastRegister(ctx context.Context, request *models.FastRegistrationForm) (*models.CompanyWithCookie, error) {
-// 	response, err := u.authGRPC.FastRegister(ctx, &auth_service.FastRegisterRequest{
-// 		Name:       request.Name,
-// 		LegalName:  request.LegalName,
-// 		Itn:        request.Itn,
-// 		Email:      request.Email,
-// 		Password:   request.Password,
-// 		OwnerName:  request.OwnerName,
-// 		Surname:    request.Surname,
-// 		Patronymic: request.Patronymic,
-// 		Country:    request.Country,
-// 		Post:       request.Post,
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return &models.CompanyWithCookie{
-// 		Cookie:    response.Cookie,
-// 		Token:     response.Token,
-// 		Name:      response.Name,
-// 		Email:     response.Email,
-// 		LegalName: response.LegalName,
-// 		Itn:       response.Itn,
-// 		OwnerId:   response.OwnerId,
-// 	}, nil
-// }
-
-// func (u *userUsecase) Logout(ctx context.Context, cookie string) error {
-// 	_, err := u.authGRPC.LogoutUser(ctx, &auth_service.Session{
-// 		Token:  "??",
-// 		Cookie: cookie,
-// 	})
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-// func (u *userUsecase) Profile(ctx context.Context, userID int) (*models.Profile, error) {
-// 	response, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: int64(userID)})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return &models.Profile{
-// 		Id:          userID,
-// 		Name:        response.Name,
-// 		Surname:     response.Surname,
-// 		Avatar:      response.Image,
-// 		Email:       response.Email,
-// 		Description: response.Description,
-// 	}, nil
-// }
-
-// func (u *userUsecase) GetUserIdByCookie(ctx context.Context, hash string) (int64, error) {
-// 	response, err := u.authGRPC.GetUserIdByCookie(ctx, &auth_service.GetUserIdByCookieRequest{Hash: hash})
-// 	if err != nil {
-// 		return -1, err
-// 	}
-
-// 	return response.Id, nil
-// }
-
-// func (u *userUsecase) UpdateProfile(ctx context.Context, userID int64, request *models.PublicCompanyAndOwnerRequest) (*models.PublicCompanyAndOwnerResponse, error) {
-// 	updatedUser, err := u.authGRPC.UpdateUser(ctx, &auth_service.UpdateUserRequest{
-// 		Id:         userID,
-// 		Name:       request.Owner.Name,
-// 		Surname:    request.Owner.Surname,
-// 		Patronymic: request.Owner.Patronymic,
-// 		Email:      request.Owner.Email,
-// 		Password:   request.Owner.Password,
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	updatedCompany, err := u.companyGRPC.UpdateCompanyByOwnerId(ctx, &company_service.UpdateCompanyRequest{
-// 		Name:         request.Company.Name,
-// 		Description:  request.Company.Description,
-// 		Address:      request.Company.Address,
-// 		LegalAddress: request.Company.LegalAddress,
-// 		Itn:          request.Company.Itn,
-// 		Phone:        request.Company.Phone,
-// 		Link:         request.Company.Link,
-// 		Activity:     request.Company.Activity,
-// 		OwnerId:      userID,
-// 		Post:         request.Post,
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return &models.PublicCompanyAndOwnerResponse{
-// 		Owner: models.UpdateUserResponse{
-// 			Name:       updatedUser.Name,
-// 			Surname:    updatedUser.Surname,
-// 			Patronymic: updatedUser.Patronymic,
-// 			Email:      updatedUser.Email,
-// 		},
-// 		Company: models.CompanyUpdateProfileResponse{
-// 			Name:         request.Company.Name,
-// 			Description:  request.Company.Description,
-// 			Address:      request.Company.Address,
-// 			LegalAddress: request.Company.LegalAddress,
-// 			Phone:        request.Company.Phone,
-// 			Link:         request.Company.Link,
-// 			Activity:     request.Company.Activity,
-// 		},
-// 		Post: updatedCompany.Post,
-// 	}, nil
-// }
-
-//func (u *userUsecase) UpdateProfile(ctx context.Context, userID int, request *models.UpdateProfileRequest) (*models.Profile, error) {
-//	response, err := u.authGRPC.UpdateUser(ctx, &auth_service.UpdateUserRequest{
-//		Id:          int64(userID),
-//		Name:        request.Name,
-//		Surname:     request.Surname,
-//		Email:       request.Email,
-//		Description: request.Description,
-//		Password:    request.Password,
-//		Image:       request.Avatar,
-//	})
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return &models.Profile{
-//		Id:          userID,
-//		Name:        response.Name,
-//		Surname:     response.Surname,
-//		Avatar:      response.Image,
-//		Email:       response.Email,
-//		Description: response.Description,
-//	}, nil
-//}
-
-//func (u *userUsecase) GetUserInfo(ctx context.Context, id int) (*models.Profile, error) {
-// 	responce, err := u.authGRPC.GetUserInfo(ctx, &auth_service.GetUserRequest{Id: int64(id)})
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return &models.Profile{
-// 		Id:      int(responce.UserId),
-// 		Name:    responce.Name,
-// 		Surname: responce.Surname,
-// 		Avatar:  responce.Image,
-// 	}, nil
-// }
-
-func NewChatUsecase(chatGRPC chatGRPC, companyGRPC company_usecase.CompanyGRPC) ChatUsecase {
-	return &chatUsecase{chatGRPC: chatGRPC, companyGRPC: companyGRPC}
+func NewChatUsecase(chatGRPC chatGRPC, companyGRPC company_usecase.CompanyGRPC, productGRPC product_usecase.ProductsCategoriesGRPC) ChatUsecase {
+	return &chatUsecase{chatGRPC: chatGRPC, companyGRPC: companyGRPC, productGRPC: productGRPC}
 }

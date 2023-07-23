@@ -15,6 +15,8 @@ type CompanyRepository interface {
 	UpdateCompanyById(ctx context.Context, newCompany models.Company) (*models.Company, error)
 	UpdateCompanyUsersLink(ctx context.Context, companyId int64, userId int64, post string) (string, error)
 	GetCompanyUserLinkByOwnerIdAndItn(ctx context.Context, id int64, itn string) (*models.CompaniesUsersLink, error)
+	GetCompanyByProductId(ctx context.Context, ID int64) (*models.Company, error)
+	GetProductsCompaniesLink(ctx context.Context, productId int64) (*models.ProductsCompaniesLink, error)
 }
 
 type companyRepository struct {
@@ -102,6 +104,36 @@ func (a *companyRepository) GetCompanyById(ctx context.Context, ID int64) (*mode
 			return nil, errors.CompanyDoesNotExist
 		}
 
+		return nil, err
+	}
+
+	return company, nil
+}
+
+func (a *companyRepository) GetProductsCompaniesLink(ctx context.Context, productId int64) (*models.ProductsCompaniesLink, error) {
+	query := a.queryFactory.CreateGetProductsCompaniesLink(productId)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+
+	productsCompaniesLink := &models.ProductsCompaniesLink{}
+	if err := row.Scan(
+		&productsCompaniesLink.Id, &productsCompaniesLink.CompanyId, &productsCompaniesLink.ProductId, &productsCompaniesLink.Amount,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.CompanyUsersLinkNotExist
+		}
+
+		return nil, err
+	}
+	return productsCompaniesLink, nil
+}
+
+func (a *companyRepository) GetCompanyByProductId(ctx context.Context, ID int64) (*models.Company, error) {
+	productsCompaniesLink, err := a.GetProductsCompaniesLink(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+	company, err := a.GetCompanyById(ctx, productsCompaniesLink.CompanyId)
+	if err != nil {
 		return nil, err
 	}
 

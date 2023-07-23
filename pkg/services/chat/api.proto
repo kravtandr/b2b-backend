@@ -6,170 +6,76 @@ option go_package = "b2b/m/pkg/services/chat;chat_service";
 import "third_party/go-proto-validators/validator.proto";
 import "google/protobuf/empty.proto";
 
-
-message LoginRequest {
-  string email = 1 [(validate.rules).string = {
-    email: true,
-    max_len: 128,
-  }];
-  string password = 2 [(validate.rules).string = {
-    min_len: 8,
-    max_len: 128,
-  }];
-}
-
-
-message  RegisterResponse {
-  string cookie = 1;
-  string token = 2;
-}
-
-message LoginResponse {
-  string cookie = 1;
-  string token = 2;
-  string name = 3;
-  string description = 4;
-  string legal_name = 5;
-  string itn = 6;
-  string psrn = 7;
-  string address = 8;
-  string legal_address = 9;
-  string email = 10;
-  string phone = 11;
-  string link = 12;
-  string activity = 13;
-  int64 owner_id = 14;
-  int64 rating = 15;
-  int64 verified = 16;
-}
-
-message RegisterRequest {
-  string email = 1 [(validate.rules).string = {
-    email: true,
-    max_len: 128,
-  }];
-  string password = 2 [(validate.rules).string = {
-    min_len: 8,
-    max_len: 128,
-    min_bytes: 1,
-  }];
-  string name = 3 [(validate.rules).string = {
-    max_len: 128,
-    min_bytes: 1,
-  }];;
-  string surname = 4 [(validate.rules).string = {
-    max_len: 128,
-    min_bytes: 1,
-  }];;
-}
-
-message GetUserRequest {
-  int64 id = 1 [(validate.rules).int64 = {
-    gt: 0,
-  }];
-}
-
-message FastRegisterRequest {
-  string name = 1;
-  string legal_name = 2;
-  string itn = 3;
-  string email = 4;
-  string password = 5;
-  string owner_name = 6;
-  string surname = 7;
-  string patronymic = 8;
-  string country = 9;
-  string post = 10;
-}
-
-
-
-message GetUserResponse {
-  string name = 1;
-  string surname = 2;
-  string email = 3;
-  string image = 4;
-  string description = 5;
-}
-
-message UpdateUserRequest {
-  int64 Id = 1;
-  string Name = 2;
-  string Surname = 3;
-  string Patronymic = 4;
-  string Email = 5;
-  string Password = 6;
-}
-
-message Session {
-  string token = 1 [(validate.rules).string = {
-    min_len: 1,
-    min_bytes: 1,
-  }];
-  string cookie = 2 [(validate.rules).string = {
-    min_len: 1,
-    min_bytes: 1,
-  }];
-}
-
-message ValidateSessionResponse {
-  int64 user_id = 1;
-}
-
-message UserInfo {
-  int64 user_id = 1;
-  string name = 3 [(validate.rules).string = {
-    max_len: 128,
-    min_bytes: 1,
-  }];;
-  string surname = 4 [(validate.rules).string = {
-    max_len: 128,
-    min_bytes: 1,
-  }];;
-  string image = 2;
-}
-
-message UserEmailRequest {
-  string email = 1 [(validate.rules).string = {
-    email: true,
-    max_len: 128,
-  }];
-}
-
-message UserId {
+message IdRequest {
   int64 id = 1;
 }
-message GetUserIdByCookieRequest{
-  string hash = 1;
+message CheckIfUniqChatRequest {
+  int64 UserId = 1;
+  int64  ProductId = 2;
+}
+message CheckIfUniqChatResponse {
+  bool Unique = 1;
 }
 
-message GetPublicUserResponse{
+message NewChatRequest {
   string Name = 1;
-  string Surname = 2;
-  string Patronymic = 3;
-  string Email = 4;
+  int64  CreatorId = 2;
+  int64  ProductId = 3;
 }
 
-message CheckEmailRequest{
-  string email = 1 [(validate.rules).string = {
-    email: true,
-    max_len: 128,
-  }];
+message ChatResponse {
+  int64 Id = 1;
+  string Name = 2;
+  int64  CreatorId = 3;
+  int64  ProductId = 4;
 }
 
+message WriteNewMsgRequest {
+  int64 ChatId = 1;
+  int64  SenderId = 2;
+  int64  ReceiverId = 3;
+  bool  Checked = 4;
+  string  Text = 5;
+  string  Type = 6;
+  string   Time = 7;
+}
+message MsgResponse{
+  int64 Id = 1;
+  int64 ChatId = 2;
+  int64  SenderId = 3;
+  int64  ReceiverId = 4;
+  bool  Checked = 5;
+  string  Text = 6;
+  string  Type = 7;
+  string   Time = 8;
+}
 
+message ChatAndLastMsgResponse {
+  int64 Id = 1;
+  string Name = 2;
+  int64  CreatorId = 3;
+  int64  ProductId = 4;
+  MsgResponse Msg = 5;
+}
+
+message MsgsResponse {
+  repeated MsgResponse Msgs = 1;
+}
+
+message    GetAllUserChatsResponse{
+  repeated ChatResponse Chats = 1;
+}
+
+message    GetAllChatsAndLastMsgResponse{
+  repeated ChatAndLastMsgResponse Chats = 1;
+}
 
 
 service ChatService {
-//  rpc ValidateSession (Session) returns (ValidateSessionResponse) {}
-//  rpc LogoutUser(Session) returns (google.protobuf.Empty) {}
-  rpc LoginUser(LoginRequest) returns (LoginResponse) {}
-//  rpc FastRegister(FastRegisterRequest) returns (LoginResponse) {}
-//  rpc RegisterUser(RegisterRequest) returns (RegisterResponse) {}
-//  rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
-//  rpc UpdateUser(UpdateUserRequest) returns (GetPublicUserResponse) {}
-//  rpc GetUserInfo(GetUserRequest) returns (UserInfo) {}
-//  rpc GetUserByEmail(UserEmailRequest) returns (UserId) {}
-//  rpc GetUserIdByCookie(GetUserIdByCookieRequest) returns (UserId) {}
-//  rpc CheckEmail(CheckEmailRequest) returns (GetPublicUserResponse) {}
+  rpc CheckIfUniqChat(CheckIfUniqChatRequest) returns (CheckIfUniqChatResponse) {}
+  rpc NewChat(NewChatRequest) returns (ChatResponse) {}
+  rpc WriteNewMsg(WriteNewMsgRequest) returns (google.protobuf.Empty) {}
+  rpc GetMsgsFromChat(IdRequest) returns (MsgsResponse) {}
+  rpc GetAllUserChats(IdRequest) returns (GetAllUserChatsResponse) {}
+  rpc GetAllChatsAndLastMsg(IdRequest) returns (GetAllChatsAndLastMsgResponse) {}
 }

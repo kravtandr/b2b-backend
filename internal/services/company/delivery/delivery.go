@@ -38,6 +38,31 @@ func (a *companyDelivery) GetCompanyById(ctx context.Context, request *company_s
 	}, nil
 }
 
+func (a *companyDelivery) GetCompanyByProductId(ctx context.Context, request *company_service.IdRequest) (*company_service.GetPrivateCompanyResponse, error) {
+	company, err := a.companyUseCase.GetCompanyByProductId(ctx, request.Id)
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+
+	return &company_service.GetPrivateCompanyResponse{
+		Id:           company.Id,
+		Name:         company.Name,
+		Description:  company.Description,
+		LegalName:    company.LegalName,
+		Itn:          company.Itn,
+		Psrn:         company.Psrn,
+		Address:      company.Address,
+		LegalAddress: company.LegalAddress,
+		Email:        company.Email,
+		Phone:        company.Phone,
+		Link:         company.Link,
+		Activity:     company.Activity,
+		OwnerId:      company.OwnerId,
+		Rating:       company.Rating,
+		Verified:     company.Verified,
+	}, nil
+}
+
 func (a *companyDelivery) UpdateCompanyByOwnerId(ctx context.Context, request *company_service.UpdateCompanyRequest) (*company_service.GetCompanyAndPostResponse, error) {
 	company, post, err := a.companyUseCase.UpdateCompanyById(ctx, models.Company{
 		Name:         request.Name,

@@ -6,6 +6,8 @@ import (
 	"b2b/m/pkg/error_adapter"
 	chat_service "b2b/m/pkg/services/chat"
 	"context"
+
+	"github.com/golang/protobuf/ptypes/empty"
 )
 
 type chatDelivery struct {
@@ -14,179 +16,128 @@ type chatDelivery struct {
 	chat_service.UnimplementedChatServiceServer
 }
 
-// func (a *authDelivery) ValidateSession(ctx context.Context, session *auth_service.Session) (*auth_service.ValidateSessionResponse, error) {
-// 	response, err := a.authUsecase.ValidateSession(ctx, session.Cookie)
-// 	if err != nil {
-// 		return &auth_service.ValidateSessionResponse{}, a.errorAdapter.AdaptError(err)
-// 	}
-
-// 	return &auth_service.ValidateSessionResponse{UserId: response}, nil
-// }
-
-// func (a *authDelivery) LogoutUser(ctx context.Context, session *auth_service.Session) (*empty.Empty, error) {
-// 	return &empty.Empty{}, a.authUsecase.LogoutUser(ctx, session.Cookie)
-// }
-
-// func (a *authDelivery) CheckEmail(ctx context.Context, request *auth_service.CheckEmailRequest) (*auth_service.GetPublicUserResponse, error) {
-// 	response, err := a.authUsecase.GetUserByEmail(ctx, request.Email)
-// 	if err != nil {
-// 		return &auth_service.GetPublicUserResponse{}, a.errorAdapter.AdaptError(err)
-// 	}
-
-// 	return &auth_service.GetPublicUserResponse{
-// 		Name:       response.Name,
-// 		Surname:    response.Surname,
-// 		Patronymic: response.Patronymic,
-// 		Email:      response.Email,
-// 	}, nil
-// }
-
-func (a *chatDelivery) LoginUser(ctx context.Context, request *chat_service.LoginRequest) (*chat_service.LoginResponse, error) {
-	response, err := a.chatUsecase.LoginUser(ctx, &models.User{
-		Email:    request.Email,
-		Password: request.Password,
+func (a *chatDelivery) CheckIfUniqChat(ctx context.Context, request *chat_service.CheckIfUniqChatRequest) (*chat_service.CheckIfUniqChatResponse, error) {
+	response, err := a.chatUsecase.CheckIfUniqChat(ctx, &models.UniqueCheck{
+		UserId:    request.UserId,
+		ProductId: request.ProductId,
 	})
 	if err != nil {
-		return &chat_service.LoginResponse{}, a.errorAdapter.AdaptError(err)
+		return nil, a.errorAdapter.AdaptError(err)
 	}
 
-	return &chat_service.LoginResponse{
-		Cookie:       response.Cookie,
-		Token:        response.Token,
-		Name:         response.Name,
-		Description:  response.Description,
-		LegalName:    response.LegalName,
-		Itn:          response.Itn,
-		Psrn:         response.Psrn,
-		Address:      response.Address,
-		LegalAddress: response.LegalAddress,
-		Email:        response.Email,
-		Phone:        response.Phone,
-		Link:         response.Link,
-		Activity:     response.Activity,
-		OwnerId:      response.OwnerId,
-		Rating:       response.Rating,
-		Verified:     response.Verified,
+	return &chat_service.CheckIfUniqChatResponse{
+		Unique: response,
 	}, nil
 }
 
-// func (a *authDelivery) FastRegister(ctx context.Context, request *auth_service.FastRegisterRequest) (*auth_service.LoginResponse, error) {
-// 	response, err := a.authUsecase.FastRegistration(ctx, &models.FastRegistrationForm{
-// 		Name:       request.Name,
-// 		LegalName:  request.LegalName,
-// 		Itn:        request.Itn,
-// 		Email:      request.Email,
-// 		Password:   request.Password,
-// 		OwnerName:  request.OwnerName,
-// 		Surname:    request.Surname,
-// 		Patronymic: request.Patronymic,
-// 		Country:    request.Country,
-// 		Post:       request.Post,
-// 	})
-// 	if err != nil {
-// 		return &auth_service.LoginResponse{}, a.errorAdapter.AdaptError(err)
-// 	}
-// 	return &auth_service.LoginResponse{
-// 		Cookie:       response.Cookie,
-// 		Token:        response.Token,
-// 		Name:         response.Name,
-// 		Description:  response.Description,
-// 		LegalName:    response.LegalName,
-// 		Itn:          response.Itn,
-// 		Psrn:         response.Psrn,
-// 		Address:      response.Address,
-// 		LegalAddress: response.LegalAddress,
-// 		Email:        response.Email,
-// 		Phone:        response.Phone,
-// 		Link:         response.Link,
-// 		Activity:     response.Activity,
-// 		OwnerId:      response.OwnerId,
-// 		Rating:       response.Rating,
-// 		Verified:     response.Verified,
-// 	}, nil
-// }
+func (a *chatDelivery) NewChat(ctx context.Context, request *chat_service.NewChatRequest) (*chat_service.ChatResponse, error) {
+	response, err := a.chatUsecase.NewChat(ctx, &models.Chat{
+		Name:      request.Name,
+		CreatorId: request.CreatorId,
+		ProductId: request.ProductId,
+	})
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
 
-// func (a *authDelivery) RegisterUser(ctx context.Context, request *auth_service.RegisterRequest) (*auth_service.RegisterResponse, error) {
-// 	response, err := a.authUsecase.RegisterUser(ctx, &models.User{
-// 		Name:     request.Name,
-// 		Surname:  request.Surname,
-// 		Email:    request.Email,
-// 		Password: request.Password,
-// 	})
-// 	if err != nil {
-// 		return &auth_service.RegisterResponse{}, a.errorAdapter.AdaptError(err)
-// 	}
+	return &chat_service.ChatResponse{
+		Id:        response.Id,
+		Name:      response.Name,
+		CreatorId: response.CreatorId,
+		ProductId: response.ProductId,
+	}, nil
+}
 
-// 	return &auth_service.RegisterResponse{
-// 		Cookie: response.Cookie,
-// 		Token:  response.Token,
-// 	}, nil
-// }
+func (a *chatDelivery) WriteNewMsg(ctx context.Context, request *chat_service.WriteNewMsgRequest) (*empty.Empty, error) {
+	err := a.chatUsecase.WriteNewMsg(ctx, &models.Msg{
+		ChatId:  request.ChatId,
+		Checked: request.Checked,
+		Text:    request.Text,
+		Type:    request.Type,
+		Time:    request.Time,
+	})
+	if err != nil {
+		return &empty.Empty{}, a.errorAdapter.AdaptError(err)
+	}
 
-// func (a *authDelivery) GetUser(ctx context.Context, request *auth_service.GetUserRequest) (*auth_service.GetUserResponse, error) {
-// 	response, err := a.authUsecase.GetUser(ctx, request.Id)
-// 	if err != nil {
-// 		return &auth_service.GetUserResponse{}, a.errorAdapter.AdaptError(err)
-// 	}
+	return &empty.Empty{}, nil
+}
 
-// 	return &auth_service.GetUserResponse{
-// 		Name:    response.Name,
-// 		Surname: response.Surname,
-// 		Email:   response.Email,
-// 	}, nil
-// }
+func (a *chatDelivery) GetMsgsFromChat(ctx context.Context, request *chat_service.IdRequest) (*chat_service.MsgsResponse, error) {
+	resp, err := a.chatUsecase.GetMsgsFromChat(ctx, request.Id)
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+	var res chat_service.MsgsResponse
+	var msg *chat_service.MsgResponse
 
-// func (a *authDelivery) UpdateUser(ctx context.Context, request *auth_service.UpdateUserRequest) (*auth_service.GetPublicUserResponse, error) {
-// 	response, err := a.authUsecase.UpdateUser(ctx, &models.User{
-// 		Id:         request.Id,
-// 		Name:       request.Name,
-// 		Surname:    request.Surname,
-// 		Patronymic: request.Patronymic,
-// 		Email:      request.Email,
-// 		Password:   request.Password,
-// 	})
-// 	if err != nil {
-// 		return &auth_service.GetPublicUserResponse{}, a.errorAdapter.AdaptError(err)
-// 	}
+	for _, result := range *resp {
+		msg = &chat_service.MsgResponse{
+			Id:      result.Id,
+			ChatId:  result.ChatId,
+			Checked: result.Checked,
+			Text:    result.Text,
+			Type:    result.Type,
+			Time:    result.Time,
+		}
+		res.Msgs = append(res.Msgs, msg)
 
-// 	return &auth_service.GetPublicUserResponse{
-// 		Name:       response.Name,
-// 		Surname:    response.Surname,
-// 		Patronymic: response.Patronymic,
-// 		Email:      response.Email,
-// 	}, nil
-// }
+	}
+	return &res, nil
+}
 
-// func (a *authDelivery) GetUserInfo(ctx context.Context, request *auth_service.GetUserRequest) (*auth_service.UserInfo, error) {
-// 	responce, err := a.authUsecase.GetUserInfo(ctx, int(request.Id))
-// 	if err != nil {
-// 		return &auth_service.UserInfo{}, a.errorAdapter.AdaptError(err)
-// 	}
+func (a *chatDelivery) GetAllChatsAndLastMsg(ctx context.Context, request *chat_service.IdRequest) (*chat_service.GetAllChatsAndLastMsgResponse, error) {
+	chatsAndLastMsg, err := a.chatUsecase.GetAllChatsAndLastMsg(ctx, request.Id)
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+	//var msg chat_service.MsgResponse
+	var res chat_service.GetAllChatsAndLastMsgResponse
+	var chatAndLatsMsg *chat_service.ChatAndLastMsgResponse
 
-// 	return &auth_service.UserInfo{
-// 		UserId:  responce.Id,
-// 		Name:    responce.Name,
-// 		Surname: responce.Surname,
-// 	}, nil
-// }
+	for _, item := range *chatsAndLastMsg {
+		chatAndLatsMsg = &chat_service.ChatAndLastMsgResponse{
+			Id:        item.Chat.Id,
+			Name:      item.Chat.Name,
+			CreatorId: item.Chat.CreatorId,
+			ProductId: item.Chat.ProductId,
+			Msg: &chat_service.MsgResponse{
+				Id:         item.LastMsg.Id,
+				ChatId:     item.LastMsg.ChatId,
+				SenderId:   item.LastMsg.SenderId,
+				ReceiverId: item.LastMsg.ReceiverId,
+				Checked:    item.LastMsg.Checked,
+				Text:       item.LastMsg.Text,
+				Type:       item.LastMsg.Type,
+				Time:       item.LastMsg.Time,
+			},
+		}
+		res.Chats = append(res.Chats, chatAndLatsMsg)
 
-// func (a *authDelivery) GetUserByEmail(ctx context.Context, request *auth_service.UserEmailRequest) (*auth_service.UserId, error) {
-// 	responce, err := a.authUsecase.GetUserByEmail(ctx, request.Email)
-// 	if err != nil {
-// 		return &auth_service.UserId{}, a.errorAdapter.AdaptError(err)
-// 	}
+	}
+	return &res, nil
+}
 
-// 	return &auth_service.UserId{Id: responce.Id}, nil
-// }
+func (a *chatDelivery) GetAllUserChats(ctx context.Context, request *chat_service.IdRequest) (*chat_service.GetAllUserChatsResponse, error) {
+	chats, err := a.chatUsecase.GetAllUserChats(ctx, request.Id)
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+	var res chat_service.GetAllUserChatsResponse
+	var chat *chat_service.ChatResponse
 
-// func (a *authDelivery) GetUserIdByCookie(ctx context.Context, request *auth_service.GetUserIdByCookieRequest) (*auth_service.UserId, error) {
-// 	responce, err := a.authUsecase.ValidateSession(ctx, request.Hash)
-// 	if err != nil {
-// 		return &auth_service.UserId{}, a.errorAdapter.AdaptError(err)
-// 	}
+	for _, item := range *chats {
+		chat = &chat_service.ChatResponse{
+			Id:        item.Id,
+			Name:      item.Name,
+			CreatorId: item.CreatorId,
+			ProductId: item.ProductId,
+		}
+		res.Chats = append(res.Chats, chat)
 
-// 	return &auth_service.UserId{Id: responce}, nil
-// }
+	}
+	return &res, nil
+}
 
 func NewChatDelivery(
 	chatUsecase usecase.ChatUseCase,

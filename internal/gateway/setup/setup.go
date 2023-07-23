@@ -22,6 +22,7 @@ import (
 	company_service "b2b/m/pkg/services/company"
 	fastOrder_service "b2b/m/pkg/services/fastOrder"
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
+
 	"gopkg.in/webdeskltd/dadata.v2"
 
 	"google.golang.org/grpc"
@@ -77,8 +78,8 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 	if err != nil {
 		return p, stopFunc, err
 	}
-	productsCategoriesGRPC := productsCategories_service.NewProductsCategoriesServiceClient(productsCategoriesConn)
-	productsCategoriesUseCase := productsCategories_usecase.NewProductsCategoriesUseCase(productsCategoriesGRPC)
+	ProductsCategoriesGRPC := productsCategories_service.NewProductsCategoriesServiceClient(productsCategoriesConn)
+	productsCategoriesUseCase := productsCategories_usecase.NewProductsCategoriesUseCase(ProductsCategoriesGRPC)
 	productsCategoriesDelivery := pcd.NewProductsCategoriesDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
@@ -91,7 +92,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		return p, stopFunc, err
 	}
 	chatGRPC := chat_service.NewChatServiceClient(ChatConn)
-	chatUsecase := chatu.NewChatUsecase(chatGRPC, companyGRPC)
+	chatUsecase := chatu.NewChatUsecase(chatGRPC, companyGRPC, ProductsCategoriesGRPC)
 	chatDelivery := chatd.NewChatDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,

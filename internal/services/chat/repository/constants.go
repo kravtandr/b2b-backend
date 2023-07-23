@@ -1,24 +1,13 @@
 package repository
 
+// add skip limit
 const (
-	getUserByEmailRequest  = "SELECT id, name, surname,patronymic, email, password FROM Users WHERE email = $1"
-	getUserByIDRequest     = "SELECT id, name, surname, patronymic, email, password, group_id FROM Users WHERE id = $1"
-	createUserRequest      = "INSERT INTO Users (name, surname, patronymic, email, password, country) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id"
-	createCreateUpdateUser = "UPDATE Users SET name = $2, surname = $3, patronymic = $4, email =$5 ,password = $6 WHERE id = $1 RETURNING id, name, surname, patronymic, email, password"
-	//updateUserRequest     = "UPDATE Users SET "
-	//updateUserName        = "name=$"
-	//updateUserSurname     = "surname=$"
-	//updateUserPass        = "password=$"
-	//updateUserEmail       = "email=$"
-	//updateUserDescription = "description=$"
-	//updateUserAvatar      = "avatar=$"
-	whereStatement = "WHERE id = $1"
-	//updateUserReturning   = "RETURNING name, surname, email, avatar, description"
-	createCompanyByUserId       = "SELECT id, name, description, legal_name, itn, psrn, address,legal_address,email, phone, link, activity, owner_id, rating , verified  FROM Companies WHERE owner_id = $1"
-	createCreateCompany         = "INSERT INTO companies (name, legal_name, itn, email, owner_id) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	createCreateUserCompanyLink = "INSERT INTO companiesusers (post, company_id, user_id, itn) VALUES ($1, $2, $3, $4) RETURNING id"
-	createUserSession           = "INSERT INTO Cookies (user_id, hash) VALUES ($1, $2)"
-	validateUserSession         = "SELECT user_id FROM Cookies WHERE hash = $1"
-	removeUserSession           = "DELETE FROM Cookies WHERE hash = $1"
-	GetUserInfoQuery            = "SELECT id, name, surname FROM Users WHERE id = $1"
+	createCheckIfUniqChat = "SELECT * FROM Chats WHERE product_id = $1 AND creater_id = $2 "
+	createNewChat         = "INSERT INTO Chats (name, creator_id, product_id) VALUES ($1,$2,$3) RETURNING id "
+	createWriteNewMsg     = "INSERT INTO Msgs (chat_id,sender_id, receiver_id, checked, text, type) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id, time"
+	createGetMsgsFromChat = "SELECT * FROM Msgs WHERE chat_id = $1"
+	//createGetAllChatsAndLastMsg       = "SELECT chat.id, chat.name, chat.creator_id, chat.product_id,msg.id, msg.chat_id, msg.sender_id, msg.receiver_id, msg.checked,msg.text,msg.type, MIN(msg.time) FROM Chats as chat JOIN Msgs as msg ON chat.id=msg.chat_id ORDER BY msg.time"
+	createGetAllUserChats             = "SELECT * FROM Chats WHERE sender_id = $1"
+	createGetLastMsgFromChat          = "SELECT * FROM Msgs WHERE chat_id = $1 ORDER BY time LIMIT 1"
+	createGetLastMsgsFromAllUserChats = "SELECT id, sender_id, receiver_id, checked, text, type, MAX(time) FROM Msgs WHERE sender_id = $1 OR receiver_id = $1"
 )

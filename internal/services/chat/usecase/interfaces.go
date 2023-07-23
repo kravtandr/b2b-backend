@@ -1,22 +1,18 @@
 package usecase
 
 import (
-	"context"
-
 	"b2b/m/internal/services/chat/models"
+	"context"
 )
 
 type chatRepository interface {
-	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
-	// GetUserCompany(ctx context.Context, id int64) (*company_models.Company, error)
-	// GetUserByID(ctx context.Context, ID int64) (*models.User, error)
-	// CreateUser(ctx context.Context, user *models.User) (*models.User, error)
-	// FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) error
-	// UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
-	// CreateUserSession(ctx context.Context, userID int64, hash string) error
-	// ValidateUserSession(ctx context.Context, hash string) (int64, error)
-	// RemoveUserSession(ctx context.Context, hash string) error
-	// GetUserInfo(ctx context.Context, id int) (*models.User, error)
+	CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error)
+	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
+	WriteNewMsg(ctx context.Context, newMsg *models.Msg) error
+	GetMsgsFromChat(ctx context.Context, chatId int64) (*models.Msgs, error)
+	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
+	GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error)
+	GetUserLastMsgs(ctx context.Context, userId int64) (*models.Msgs, error)
 }
 
 type hasher interface {

@@ -55,3 +55,5 @@ const UploadAlbumPhotoURL = "/album/upload/{id}"
 const AlbumsByUserURL = "/album/user"
 
 const ProductChatURL = "/ws"
+const AllChats = "/allchats"
+const AllMsgsFromChat = "/chat/{id}"

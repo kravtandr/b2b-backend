@@ -63,5 +63,8 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.POST(cnst.SearchProductsURL, lgrMw(cfg.ProductsCategoriesDelivery.SearchProducts))
 	p.GET(cnst.ProductChatURL, lgrMw(cfg.ChatDelivery.WSUpgradeRequest))
 
+	p.GET(cnst.AllChats, lgrMw(authMw(cfg.ChatDelivery.GetAllChatsAndLastMsg)))
+	p.GET(cnst.AllMsgsFromChat, lgrMw(authMw(cfg.ChatDelivery.GetMsgsFromChat)))
+
 	return
 }
