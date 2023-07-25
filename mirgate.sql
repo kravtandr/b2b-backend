@@ -48,8 +48,8 @@ CREATE TABLE Products
     id          SERIAL      NOT NULL PRIMARY KEY,
     name        TEXT        NOT NULL,
     description TEXT        ,
-    price       INT         ,
-    photo       TEXT      
+    price       INT         NOT NULL,
+    photo       TEXT        
 );
 
 CREATE TABLE ProductsSubCategories
@@ -204,6 +204,34 @@ CREATE TABLE landing_request
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE Chats 
+(
+    id                        SERIAL                    NOT NULL PRIMARY KEY,
+    name                      TEXT                      DEFAULT 'New Chat',
+    creator_id                INT                       NOT NULL,
+    product_id                INT                       NOT NULL,
+    FOREIGN KEY (creator_id)   REFERENCES Users (id)     ON DELETE CASCADE,
+    FOREIGN KEY (product_id)  REFERENCES Products (id)  ON DELETE CASCADE,
+    created_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW(),
+    updated_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE Msgs 
+(
+    id                      SERIAL                  NOT NULL PRIMARY KEY,
+    chat_id                 INT                     NOT NULL,
+    sender_id               INT                       NOT NULL,
+    receiver_id             INT                       NOT NULL,
+    checked                 BOOLEAN                 NOT NULL DEFAULT FALSE,
+    text                    TEXT                    NOT NULL,
+    type                    TEXT                    NOT NULL DEFAULT 'regular msg',
+    created_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    updated_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (chat_id)   REFERENCES Chats (id)   ON DELETE CASCADE,
+    FOREIGN KEY (sender_id)   REFERENCES Users (id)   ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id)   REFERENCES Users (id)   ON DELETE CASCADE
+);
+
 CREATE TRIGGER set_timestamp
     BEFORE UPDATE
     ON OrderForm
@@ -211,75 +239,19 @@ CREATE TRIGGER set_timestamp
 EXECUTE PROCEDURE trigger_set_timestamp();
 
 CREATE TABLE Cookies (
-                         id SERIAL NOT NULL PRIMARY KEY,
-                         hash TEXT NOT NULL,
-                         user_id INT NOT NULL,
-                         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  id SERIAL NOT NULL PRIMARY KEY,
+  hash TEXT NOT NULL,
+  user_id INT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+
+INSERT INTO products(name, description, price, photo) VALUES('1_product', 'aaa', 1000, '/photo1');
+INSERT INTO products(name, description, price, photo) VALUES('2_product', 'bbb', 1000, '/photo1');
 
 
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
-INSERT INTO products(name, description, price, photo) VALUES('1_product', 'aaa', 1000, '/photo1');
-INSERT INTO products(name, description, price, photo) VALUES('2_product', 'bbb', 1000, '/photo1');
-COPY categories(name) FROM './export_base_categories.csv' DELIMITER ',' CSV HEADER;
--- INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Иван', 'Иванович','Иванов','ivan@mail.ru','password123','Россия');
--- INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Петр', 'Петрович','Петров','petr@mail.ru','password123','Россия');
--- INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Алексндр', 'Александров','Александрович','alex@mail.ru','password123','Россия');
--- INSERT INTO Companies ("name", "description", "legal_name", "itn", "psrn", "address","legal_address","email", "phone", "link", "activity", "owner_id", "rating"  ) VALUES ('Весна',
---                                                                                                                                                                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
---                                                                                                                                                                            'ООО Весна',
---                                                                                                                                                                            '7727563379', '1162225076155',
---                                                                                                                                                                            '656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
---                                                                                                                                                                            '656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
---                                                                                                                                                                            'tsvetiu@mail.ru',
---                                                                                                                                                                            '89031223451',
---                                                                                                                                                                            'tsvetiu.ru',
---                                                                                                                                                                            'Розничная торговля',
---                                                                                                                                                                            1,5);
--- INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('CEO',1,1);
--- INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('Manager',1,2);
--- INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('Driver',1,3);
---
--- INSERT INTO Industry(title) VALUES('Машиностроение');
--- INSERT INTO Industry(title) VALUES('MetalProd');
--- INSERT INTO Industry(title) VALUES('OilProd');
--- INSERT INTO Category(title, industry_id) VALUES('category1', 1);
--- INSERT INTO Category(title, industry_id) VALUES('category2', 1);
--- INSERT INTO Category(title, industry_id) VALUES('category3', 2);
--- INSERT INTO Category(title, industry_id) VALUES('category4', 3);
---
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id) VALUES('test2@mail.ru', 'password123','Ромашка','ООО Ромашка','7727563779','1056749631995','Москва','8(915)9999998','yandex.ru',1);
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id)  VALUES('test3@mail.ru', 'password123','Пчелка','ООО Пчелка','7727563719','1057749331995','Москва','8(915)9999918','yandex.ru',1);
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id)  VALUES('test4@mail.ru', 'password123','Пример','ООО Пример','7727563729','1057249631995','Москва','8(915)9999928','yandex.ru',1);
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id)  VALUES('test5@mail.ru', 'password123','Тест','ООО Тест','7727533779','1057741631995','Москва','8(915)9999938','yandex.ru',2);
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id)  VALUES('test6@mail.ru', 'password123','Последний','ООО Последний','7727463779','1057749631995','Москва','8(915)9399998','yandex.ru',3);
 
-
--- SELECT   cu.post, cu.user_id, u.name, u.surname, u.patronymic, u.email, u.country, u.group_id FROM companiesusers AS cu  JOIN Users u on u.id = cu.user_id WHERE cu.company_id = 1;
-
--- SELECT
---
--- COPY categories(name)
--- FROM '/var/lib/postgresql/backend/b2b-backend/export_base_categories.csv'
--- DELIMITER ','
--- CSV HEADER;
---
---
--- SELECT name, description
--- 	FROM categories
--- 	WHERE name ~ $1;
---
---
---
---
--- UPDATE Companies SET name = $2, description = $3, legal_name = $4, address = $5, legal_address= $6, phone = $7, link = $8, activity = $9 WHERE id = $1
---
--- UPDATE Users SET name = 'asd', surname = 'asd', patronymic = 'as', email = 'asd' ,password = 'asd' WHERE id = 28;
---
-
-
---COPY categories(name) FROM '/var/lib/postgresql/data/export_base_categories.csv' DELIMITER ',' CSV HEADER;
---COPY products(name, description, price, photo) FROM '/var/lib/postgresql/data/test_products.csv' DELIMITER ';' CSV HEADER;
 

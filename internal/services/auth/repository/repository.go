@@ -6,6 +6,7 @@ import (
 	"b2b/m/pkg/errors"
 	"context"
 	"fmt"
+
 	"github.com/jackc/pgx/v4"
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
 )
@@ -20,7 +21,7 @@ type AuthRepository interface {
 	CreateUserSession(ctx context.Context, userID int64, hash string) error
 	ValidateUserSession(ctx context.Context, hash string) (int64, error)
 	RemoveUserSession(ctx context.Context, hash string) error
-	GetUserInfo(ctx context.Context, id int) (*models.User, error)
+	GetUserInfo(ctx context.Context, id int64) (*models.User, error)
 }
 
 type authRepository struct {
@@ -75,7 +76,7 @@ func (a *authRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 	return user, nil
 }
 
-func (a *authRepository) GetUserInfo(ctx context.Context, id int) (*models.User, error) {
+func (a *authRepository) GetUserInfo(ctx context.Context, id int64) (*models.User, error) {
 	conn, err := a.conn.Acquire(context.Background())
 	if err != nil {
 		return nil, err

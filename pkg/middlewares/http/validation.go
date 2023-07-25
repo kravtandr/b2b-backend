@@ -3,11 +3,13 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"log"
 
 	"b2b/m/pkg/common"
 	cnst "b2b/m/pkg/constants"
 	"b2b/m/pkg/error_adapter"
 	auth_service "b2b/m/pkg/services/auth"
+
 	"github.com/valyala/fasthttp"
 	"google.golang.org/grpc"
 )
@@ -49,7 +51,7 @@ func (s *sessionValidator) ValidateSession(ctx *fasthttp.RequestCtx) (err error)
 	if err != nil {
 		return err
 	}
-
-	ctx.SetUserValue(cnst.UserIDContextKey, int(response.UserId))
+	ctx.SetUserValue(cnst.UserIDContextKey, response.UserId)
+	log.Println("Helpers ValidateSession set UserIDContextKey: ", response.UserId)
 	return nil
 }

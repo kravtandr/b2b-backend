@@ -12,8 +12,9 @@ import (
 type ChatRepository interface {
 	CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
+	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) error
-	GetMsgsFromChat(ctx context.Context, chatId int64) (*models.Msgs, error)
+	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
 	GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error)
 	GetUserLastMsgs(ctx context.Context, userId int64) (*models.Msgs, error)
@@ -27,13 +28,17 @@ type chatRepository struct {
 func (a *chatRepository) CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error) {
 	query := a.queryFactory.CreateCheckIfUniqChat(productId, userId)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	count := 0
 	unique := false
-	if err := row.Scan(&unique); err != nil {
+	if err := row.Scan(&count); err != nil {
 		if err == pgx.ErrNoRows {
 			return false, errors.UserDoesNotExist
 		}
 
 		return false, err
+	}
+	if count == 0 {
+		unique = true
 	}
 
 	return unique, nil
@@ -44,6 +49,21 @@ func (a *chatRepository) NewChat(ctx context.Context, newChat *models.Chat) (*mo
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	chat := &models.Chat{}
 	if err := row.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.UserDoesNotExist
+		}
+
+		return nil, err
+	}
+
+	return chat, nil
+}
+
+func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error) {
+	query := a.queryFactory.CreateGetChat(chat)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	getChat := &models.Chat{}
+	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.UserDoesNotExist
 		}
@@ -75,8 +95,9 @@ func (a *chatRepository) WriteNewMsg(ctx context.Context, newMsg *models.Msg) er
 	return nil
 }
 
-func (a *chatRepository) GetMsgsFromChat(ctx context.Context, chatId int64) (*models.Msgs, error) {
-	query := a.queryFactory.CreateGetMsgsFromChat(chatId)
+func (a *chatRepository) GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error) {
+
+	query := a.queryFactory.CreateGetMsgsFromChat(chatId, userId)
 	var msg models.Msg
 	var msgs models.Msgs
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
@@ -114,28 +135,33 @@ func (a *chatRepository) GetUserLastMsgs(ctx context.Context, userId int64) (*mo
 }
 
 func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error) {
-	chats, err := a.GetAllUserChats(ctx, userId)
-	if err != nil {
-		return nil, err
-	}
-	msgs, err := a.GetUserLastMsgs(ctx, userId)
-	if err != nil {
-		return nil, err
-	}
-	chatAndLastMsg := models.ChatAndLastMsg{}
-	chatsAndLastMsg := models.ChatsAndLastMsg{}
+	// chats, err := a.GetAllUserChats(ctx, userId)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// msgs, err := a.GetUserLastMsgs(ctx, userId)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// chatAndLastMsg := models.ChatAndLastMsg{}
+	// chatsAndLastMsg := models.ChatsAndLastMsg{}
 
-	for _, item := range *chats {
-		for _, msg := range *msgs {
-			if msg.ChatId == item.Id {
-				chatAndLastMsg.Chat = item
-				chatAndLastMsg.LastMsg = msg
-				break
-			}
-		}
-		chatsAndLastMsg = append(chatsAndLastMsg, chatAndLastMsg)
+	query := a.queryFactory.CreateGetAllUserChatsAndLastMsgs(userId)
+	var chat models.ChatAndLastMsg
+	var chats models.ChatsAndLastMsg
+	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
+	if err != nil {
+		return &chats, err
 	}
-	return &chatsAndLastMsg, err
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&chat.Chat.Id, &chat.Chat.Name, &chat.Chat.CreatorId, &chat.Chat.ProductId, &chat.LastMsg.Id, &chat.LastMsg.SenderId, &chat.LastMsg.ReceiverId, &chat.LastMsg.Checked, &chat.LastMsg.Text, &chat.LastMsg.Type, &chat.LastMsg.Time)
+		chats = append(chats, chat)
+	}
+	if rows.Err() != nil {
+		return &chats, err
+	}
+	return &chats, err
 
 }
 
@@ -157,152 +183,6 @@ func (a *chatRepository) GetAllUserChats(ctx context.Context, userId int64) (*mo
 	}
 	return &chats, err
 }
-
-// func (a *authRepository) FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) error {
-// 	query := a.queryFactory.CreateCreateCompany(user, newCompany)
-// 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-
-// 	if err := row.Scan(&newCompany.Id); err != nil {
-// 		return err
-// 	}
-
-// 	query = a.queryFactory.CreateCreateUserCompanyLink(user, newCompany, post)
-// 	row = a.conn.QueryRow(ctx, query.Request, query.Params...)
-// 	return nil
-// }
-
-// func (a *authRepository) GetUserByID(ctx context.Context, ID int64) (*models.User, error) {
-// 	query := a.queryFactory.CreateGetUserByID(ID)
-// 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-
-// 	user := &models.User{}
-// 	if err := row.Scan(
-// 		&user.Id, &user.Name, &user.Surname, &user.Patronymic, &user.Email, &user.Password, &user.GroupId,
-// 	); err != nil {
-// 		if err == pgx.ErrNoRows {
-// 			return nil, errors.UserDoesNotExist
-// 		}
-
-// 		return nil, err
-// 	}
-
-// 	return user, nil
-// }
-
-// func (a *chatRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
-// 	query := a.queryFactory.CreateGetUserByEmail(email)
-// 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-
-// 	user := &models.User{}
-// 	if err := row.Scan(&user.Id, &user.Name, &user.Surname, &user.Patronymic, &user.Email, &user.Password); err != nil {
-// 		if err == pgx.ErrNoRows {
-// 			return nil, errors.UserDoesNotExist
-// 		}
-
-// 		return nil, err
-// 	}
-
-// 	return user, nil
-// }
-
-// func (a *authRepository) GetUserInfo(ctx context.Context, id int) (*models.User, error) {
-// 	conn, err := a.conn.Acquire(context.Background())
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer conn.Release()
-
-// 	var user models.User
-// 	err = conn.QueryRow(context.Background(),
-// 		GetUserInfoQuery,
-// 		id,
-// 	).Scan(&user.Id, &user.Name, &user.Surname)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return &user, nil
-// }
-
-// func (a *authRepository) CreateUser(ctx context.Context, user *models.User) (*models.User, error) {
-// 	query := a.queryFactory.CreateCreateUser(user)
-// 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-
-// 	if err := row.Scan(&user.Id); err != nil {
-// 		return nil, err
-// 	}
-
-// 	return user, nil
-// }
-
-// func (a *authRepository) CreateUserSession(ctx context.Context, userID int64, hash string) error {
-// 	query := a.queryFactory.CreateCreateUserSession(userID, hash)
-// 	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-// func (a *authRepository) GetUserCompany(ctx context.Context, id int64) (*company_models.Company, error) {
-// 	conn, err := a.conn.Acquire(context.Background())
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer conn.Release()
-
-// 	var company company_models.Company
-// 	err = conn.QueryRow(context.Background(),
-// 		createCompanyByUserId,
-// 		id,
-// 	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId, &company.Rating, &company.Verified)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return &company, nil
-// }
-
-// func (a *authRepository) ValidateUserSession(ctx context.Context, hash string) (int64, error) {
-// 	userID := int64(0)
-// 	query := a.queryFactory.CreateValidateUserSession(hash)
-// 	if err := a.conn.QueryRow(ctx, query.Request, query.Params...).Scan(&userID); err != nil {
-// 		if err == pgx.ErrNoRows {
-// 			return userID, errors.SessionDoesNotExist
-// 		}
-
-// 		return userID, err
-// 	}
-
-// 	return userID, nil
-// }
-
-// func (a *authRepository) RemoveUserSession(ctx context.Context, hash string) error {
-// 	query := a.queryFactory.CreateRemoveUserSession(hash)
-// 	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
-
-// func (a *authRepository) UpdateUser(ctx context.Context, user *models.User) (*models.User, error) {
-// 	query := a.queryFactory.CreateUpdateUser(user)
-// 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-
-// 	updatedUser := &models.User{}
-// 	if err := row.Scan(
-// 		&updatedUser.Id, &updatedUser.Name, &updatedUser.Surname, &updatedUser.Patronymic, &updatedUser.Email, &updatedUser.Password,
-// 	); err != nil {
-// 		if err == pgx.ErrNoRows {
-// 			fmt.Println("Error", err)
-// 			return &models.User{}, errors.UserDoesNotExist
-// 		}
-
-// 		return &models.User{}, err
-// 	}
-// 	return updatedUser, nil
-// }
 
 func NewChatRepository(
 	queryFactory QueryFactory,

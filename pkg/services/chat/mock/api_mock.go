@@ -97,8 +97,28 @@ func (mr *MockChatServiceClientMockRecorder) GetAllUserChats(ctx, in interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllUserChats", reflect.TypeOf((*MockChatServiceClient)(nil).GetAllUserChats), varargs...)
 }
 
+// GetChat mocks base method.
+func (m *MockChatServiceClient) GetChat(ctx context.Context, in *chat_service.GetChatRequest, opts ...grpc.CallOption) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetChat", varargs...)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetChat indicates an expected call of GetChat.
+func (mr *MockChatServiceClientMockRecorder) GetChat(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChat", reflect.TypeOf((*MockChatServiceClient)(nil).GetChat), varargs...)
+}
+
 // GetMsgsFromChat mocks base method.
-func (m *MockChatServiceClient) GetMsgsFromChat(ctx context.Context, in *chat_service.IdRequest, opts ...grpc.CallOption) (*chat_service.MsgsResponse, error) {
+func (m *MockChatServiceClient) GetMsgsFromChat(ctx context.Context, in *chat_service.ChatAndUserIdRequest, opts ...grpc.CallOption) (*chat_service.MsgsResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
@@ -225,8 +245,23 @@ func (mr *MockChatServiceServerMockRecorder) GetAllUserChats(arg0, arg1 interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllUserChats", reflect.TypeOf((*MockChatServiceServer)(nil).GetAllUserChats), arg0, arg1)
 }
 
+// GetChat mocks base method.
+func (m *MockChatServiceServer) GetChat(arg0 context.Context, arg1 *chat_service.GetChatRequest) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetChat", arg0, arg1)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetChat indicates an expected call of GetChat.
+func (mr *MockChatServiceServerMockRecorder) GetChat(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChat", reflect.TypeOf((*MockChatServiceServer)(nil).GetChat), arg0, arg1)
+}
+
 // GetMsgsFromChat mocks base method.
-func (m *MockChatServiceServer) GetMsgsFromChat(arg0 context.Context, arg1 *chat_service.IdRequest) (*chat_service.MsgsResponse, error) {
+func (m *MockChatServiceServer) GetMsgsFromChat(arg0 context.Context, arg1 *chat_service.ChatAndUserIdRequest) (*chat_service.MsgsResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMsgsFromChat", arg0, arg1)
 	ret0, _ := ret[0].(*chat_service.MsgsResponse)

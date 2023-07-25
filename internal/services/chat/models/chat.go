@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type UniqueCheck struct {
 	UserId    int64
 	ProductId int64
@@ -22,7 +24,7 @@ type Msg struct {
 	Checked    bool
 	Text       string
 	Type       string
-	Time       string
+	Time       time.Time
 }
 
 type Msgs []Msg

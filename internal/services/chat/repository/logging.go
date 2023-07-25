@@ -45,13 +45,13 @@ func (l *loggingMiddleware) CheckIfUniqChat(ctx context.Context, productId int64
 
 func (l *loggingMiddleware) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (c *models.ChatsAndLastMsg, err error) {
 	l.logger.Infow(module,
-		"Action", "CheckIfUniqChat",
+		"Action", "GetAllChatsAndLastMsg",
 		"Request", userId,
 	)
 	defer func() {
 		if err != nil {
 			l.logger.Infow(module,
-				"Action", "CheckIfUniqChat",
+				"Action", "GetAllChatsAndLastMsg",
 				"Request", userId,
 				"Error", err,
 			)
@@ -79,6 +79,24 @@ func (l *loggingMiddleware) NewChat(ctx context.Context, newChat *models.Chat) (
 	return l.next.NewChat(ctx, newChat)
 }
 
+func (l *loggingMiddleware) GetChat(ctx context.Context, chat *models.Chat) (getChat *models.Chat, err error) {
+	l.logger.Infow(module,
+		"Action", "GetChat",
+		"Request", chat,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetChat",
+				"Request", chat,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetChat(ctx, chat)
+}
+
 func (l *loggingMiddleware) WriteNewMsg(ctx context.Context, newMsg *models.Msg) (err error) {
 	l.logger.Infow(module,
 		"Action", "WriteNewMsg",
@@ -97,22 +115,22 @@ func (l *loggingMiddleware) WriteNewMsg(ctx context.Context, newMsg *models.Msg)
 	return l.next.WriteNewMsg(ctx, newMsg)
 }
 
-func (l *loggingMiddleware) GetMsgsFromChat(ctx context.Context, chatId int64) (msgs *models.Msgs, err error) {
+func (l *loggingMiddleware) GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (msgs *models.Msgs, err error) {
 	l.logger.Infow(module,
 		"Action", "GetMsgsFromChat",
-		"Request", chatId,
+		"Request", chatId, userId,
 	)
 	defer func() {
 		if err != nil {
 			l.logger.Infow(module,
 				"Action", "GetMsgsFromChat",
-				"Request", chatId,
+				"Request", chatId, userId,
 				"Error", err,
 			)
 		}
 	}()
 
-	return l.next.GetMsgsFromChat(ctx, chatId)
+	return l.next.GetMsgsFromChat(ctx, chatId, userId)
 }
 
 func (l *loggingMiddleware) GetAllUserChats(ctx context.Context, userId int64) (chats *models.Chats, err error) {

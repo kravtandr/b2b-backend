@@ -9,9 +9,15 @@ import "google/protobuf/empty.proto";
 message IdRequest {
   int64 id = 1;
 }
+
+message ChatAndUserIdRequest {
+  int64 ChatId = 1;
+  int64 UserId = 2;
+}
+
 message CheckIfUniqChatRequest {
   int64 UserId = 1;
-  int64  ProductId = 2;
+  int64 ProductId = 2;
 }
 message CheckIfUniqChatResponse {
   bool Unique = 1;
@@ -21,6 +27,11 @@ message NewChatRequest {
   string Name = 1;
   int64  CreatorId = 2;
   int64  ProductId = 3;
+}
+
+message GetChatRequest {
+  int64  CreatorId = 1;
+  int64  ProductId = 2;
 }
 
 message ChatResponse {
@@ -74,8 +85,9 @@ message    GetAllChatsAndLastMsgResponse{
 service ChatService {
   rpc CheckIfUniqChat(CheckIfUniqChatRequest) returns (CheckIfUniqChatResponse) {}
   rpc NewChat(NewChatRequest) returns (ChatResponse) {}
+  rpc GetChat(GetChatRequest) returns (ChatResponse) {}
   rpc WriteNewMsg(WriteNewMsgRequest) returns (google.protobuf.Empty) {}
-  rpc GetMsgsFromChat(IdRequest) returns (MsgsResponse) {}
+  rpc GetMsgsFromChat(ChatAndUserIdRequest) returns (MsgsResponse) {}
   rpc GetAllUserChats(IdRequest) returns (GetAllUserChatsResponse) {}
   rpc GetAllChatsAndLastMsg(IdRequest) returns (GetAllChatsAndLastMsgResponse) {}
 }

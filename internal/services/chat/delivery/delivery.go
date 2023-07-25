@@ -6,6 +6,7 @@ import (
 	"b2b/m/pkg/error_adapter"
 	chat_service "b2b/m/pkg/services/chat"
 	"context"
+	"fmt"
 
 	"github.com/golang/protobuf/ptypes/empty"
 )
@@ -48,13 +49,30 @@ func (a *chatDelivery) NewChat(ctx context.Context, request *chat_service.NewCha
 	}, nil
 }
 
+func (a *chatDelivery) GetChat(ctx context.Context, request *chat_service.GetChatRequest) (*chat_service.ChatResponse, error) {
+	response, err := a.chatUsecase.GetChat(ctx, &models.Chat{
+		CreatorId: request.CreatorId,
+		ProductId: request.ProductId,
+	})
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+
+	return &chat_service.ChatResponse{
+		Id:        response.Id,
+		Name:      response.Name,
+		CreatorId: response.CreatorId,
+		ProductId: response.ProductId,
+	}, nil
+}
+
 func (a *chatDelivery) WriteNewMsg(ctx context.Context, request *chat_service.WriteNewMsgRequest) (*empty.Empty, error) {
 	err := a.chatUsecase.WriteNewMsg(ctx, &models.Msg{
-		ChatId:  request.ChatId,
-		Checked: request.Checked,
-		Text:    request.Text,
-		Type:    request.Type,
-		Time:    request.Time,
+		ChatId:     request.ChatId,
+		SenderId:   request.SenderId,
+		ReceiverId: request.ReceiverId,
+		Text:       request.Text,
+		Type:       request.Type,
 	})
 	if err != nil {
 		return &empty.Empty{}, a.errorAdapter.AdaptError(err)
@@ -63,8 +81,8 @@ func (a *chatDelivery) WriteNewMsg(ctx context.Context, request *chat_service.Wr
 	return &empty.Empty{}, nil
 }
 
-func (a *chatDelivery) GetMsgsFromChat(ctx context.Context, request *chat_service.IdRequest) (*chat_service.MsgsResponse, error) {
-	resp, err := a.chatUsecase.GetMsgsFromChat(ctx, request.Id)
+func (a *chatDelivery) GetMsgsFromChat(ctx context.Context, request *chat_service.ChatAndUserIdRequest) (*chat_service.MsgsResponse, error) {
+	resp, err := a.chatUsecase.GetMsgsFromChat(ctx, request.ChatId, request.UserId)
 	if err != nil {
 		return nil, a.errorAdapter.AdaptError(err)
 	}
@@ -78,7 +96,7 @@ func (a *chatDelivery) GetMsgsFromChat(ctx context.Context, request *chat_servic
 			Checked: result.Checked,
 			Text:    result.Text,
 			Type:    result.Type,
-			Time:    result.Time,
+			Time:    fmt.Sprint(result.Time),
 		}
 		res.Msgs = append(res.Msgs, msg)
 
@@ -109,7 +127,7 @@ func (a *chatDelivery) GetAllChatsAndLastMsg(ctx context.Context, request *chat_
 				Checked:    item.LastMsg.Checked,
 				Text:       item.LastMsg.Text,
 				Type:       item.LastMsg.Type,
-				Time:       item.LastMsg.Time,
+				Time:       fmt.Sprint(item.LastMsg.Time),
 			},
 		}
 		res.Chats = append(res.Chats, chatAndLatsMsg)

@@ -46,6 +46,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.POST(cnst.RegisterURL, lgrMw(cfg.UserDelivery.Register))
 	p.GET(cnst.UserInfoURL, lgrMw(cfg.UserDelivery.GetUserInfo))
 	p.POST(cnst.UserCheckEmailURL, lgrMw(cfg.UserDelivery.CheckEmail))
+	p.GET(cnst.UserInfoByCookieURL, lgrMw(authMw(cfg.UserDelivery.GetUserByCookie)))
 
 	p.POST(cnst.FastRegisterURL, lgrMw(cfg.UserDelivery.FastRegister))
 

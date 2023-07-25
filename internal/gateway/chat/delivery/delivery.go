@@ -22,6 +22,7 @@ type ChatDelivery interface {
 	GetAllChatsAndLastMsg(ctx *fasthttp.RequestCtx)
 	GetMsgsFromChat(ctx *fasthttp.RequestCtx)
 	GetAllChats(ctx *fasthttp.RequestCtx)
+	InitChat(ctx *fasthttp.RequestCtx)
 }
 type Msg struct {
 	SenderID   int64  `json:"senderID"`
@@ -51,7 +52,9 @@ func (u *chatDelivery) GetAllChatsAndLastMsg(ctx *fasthttp.RequestCtx) {
 
 func (u *chatDelivery) GetAllChats(ctx *fasthttp.RequestCtx) {
 	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
-	response, err := u.manager.GetAllUserChats(ctx, userId)
+	cookie := string(ctx.Request.Header.Cookie(cnst.CookieName))
+	response, err := u.manager.GetAllUserChats(ctx, userId, cookie)
+
 	log.Println("userId from cookie:", userId)
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)
@@ -64,10 +67,35 @@ func (u *chatDelivery) GetAllChats(ctx *fasthttp.RequestCtx) {
 	ctx.SetBody(b)
 }
 
+func (u *chatDelivery) InitChat(ctx *fasthttp.RequestCtx) {
+	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
+	product_id, err := strconv.ParseInt(ctx.UserValue("id").(string), 10, 64)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	newChat, chat_id, err := u.manager.InitChat(ctx, userId, product_id)
+
+	log.Println("+++++ CheckIfUniqChat userId from cookie: ", userId, " +++++")
+	log.Println("+++++ CheckIfUniqChat newChat : ", newChat, " +++++")
+	log.Println("+++++ CheckIfUniqChat chat_id : ", chat_id, " +++++")
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, err := chttp.ApiResp(chat_id, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+}
+
 func (u *chatDelivery) GetMsgsFromChat(ctx *fasthttp.RequestCtx) {
 	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
 	chat_id, _ := strconv.ParseInt(ctx.UserValue("id").(string), 10, 64)
-	response, err := u.manager.GetMsgsFromChat(ctx, chat_id)
+	response, err := u.manager.GetMsgsFromChat(ctx, chat_id, userId)
 	log.Println("userId from cookie:", userId)
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)
@@ -91,12 +119,6 @@ func (u *chatDelivery) ChatLogic(ctx *fasthttp.RequestCtx) {
 
 }
 
-func (u *chatDelivery) InitChat(ctx *fasthttp.RequestCtx) {
-	//upgrade to ws
-
-	u.WSUpgradeRequest(ctx)
-	u.ChatLogic(ctx)
-}
 func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 	defer ws.Close()
 	//первое сообщение приходит с фронта
@@ -113,9 +135,9 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 		if err != nil {
 			//когда приходит сообщение записываю его в бд
 			log.Println("read:", err)
-			u.manager.WriteNewMsg(context.Background(), &models.Msg{Text: string(message), SenderId: 1, ReceiverId: 2})
 			break
 		}
+		u.manager.WriteNewMsg(context.Background(), &models.Msg{Text: string(message), SenderId: 1, ReceiverId: 2, ChatId: 1})
 		log.Printf("recv: %s", message)
 		//когда отправляю сообщение записываю его в бд
 		//echo
@@ -138,178 +160,6 @@ func (u *chatDelivery) WSUpgradeRequest(ctx *fasthttp.RequestCtx) {
 		return
 	}
 }
-
-//
-//func (u *userDelivery) Login(ctx *fasthttp.RequestCtx) {
-//	var request = &models.LoginUserRequest{}
-//	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
-//		ctx.SetStatusCode(http.StatusBadRequest)
-//		ctx.SetBody([]byte(cnst.WrongRequestBody))
-//		return
-//	}
-//
-//	response, err := u.manager.Login(ctx, request)
-//	if err != nil {
-//		httpError := u.errorAdapter.AdaptError(err)
-//		ctx.SetStatusCode(httpError.Code)
-//		ctx.SetBody([]byte(httpError.MSG))
-//		return
-//	}
-//
-//	b, err := chttp.ApiResp(response, err)
-//	ctx.SetStatusCode(http.StatusOK)
-//	ctx.SetBody(b)
-//
-//	var c fasthttp.Cookie
-//	c.SetKey(cnst.CookieName)
-//	c.SetValue(response.Cookie)
-//	c.SetMaxAge(int(time.Hour))
-//	c.SetHTTPOnly(true)
-//	c.SetSameSite(fasthttp.CookieSameSiteStrictMode)
-//	ctx.Response.Header.SetCookie(&c)
-//}
-//
-//func (u *userDelivery) Logout(ctx *fasthttp.RequestCtx) {
-//	err := u.manager.Logout(ctx, string(ctx.Request.Header.Cookie(cnst.CookieName)))
-//	if err != nil {
-//		httpError := u.errorAdapter.AdaptError(err)
-//		ctx.SetStatusCode(httpError.Code)
-//		ctx.SetBody([]byte(httpError.MSG))
-//		return
-//	}
-//
-//	ctx.SetStatusCode(http.StatusOK)
-//}
-//
-//func (u *userDelivery) FastRegister(ctx *fasthttp.RequestCtx) {
-//	var request = &models.FastRegistrationForm{}
-//	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
-//		ctx.SetStatusCode(http.StatusBadRequest)
-//		ctx.SetBody([]byte(cnst.WrongRequestBody))
-//		return
-//	}
-//
-//	response, err := u.manager.FastRegister(ctx, request)
-//	if err != nil {
-//		httpError := u.errorAdapter.AdaptError(err)
-//		ctx.SetStatusCode(httpError.Code)
-//		ctx.SetBody([]byte(httpError.MSG))
-//		return
-//	}
-//
-//	b, err := chttp.ApiResp(response, err)
-//	ctx.SetStatusCode(http.StatusOK)
-//	ctx.SetBody(b)
-//
-//	var c fasthttp.Cookie
-//	c.SetKey(cnst.CookieName)
-//	c.SetValue(response.Cookie)
-//	c.SetMaxAge(int(time.Hour))
-//	c.SetHTTPOnly(true)
-//	c.SetSameSite(fasthttp.CookieSameSiteStrictMode)
-//	ctx.Response.Header.SetCookie(&c)
-//}
-//
-//func (u *userDelivery) Register(ctx *fasthttp.RequestCtx) {
-//	var request = &models.RegisterUserRequest{}
-//	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
-//		ctx.SetStatusCode(http.StatusBadRequest)
-//		ctx.SetBody([]byte(cnst.WrongRequestBody))
-//		return
-//	}
-//
-//	response, err := u.manager.Register(ctx, request)
-//	if err != nil {
-//		httpError := u.errorAdapter.AdaptError(err)
-//		ctx.SetStatusCode(httpError.Code)
-//		ctx.SetBody([]byte(httpError.MSG))
-//		return
-//	}
-//
-//	b, err := chttp.ApiResp(response, err)
-//	ctx.SetStatusCode(http.StatusOK)
-//	ctx.SetBody(b)
-//
-//	var c fasthttp.Cookie
-//	c.SetKey(cnst.CookieName)
-//	c.SetValue(response.Cookie)
-//	c.SetMaxAge(int(time.Hour))
-//	c.SetHTTPOnly(true)
-//	c.SetSameSite(fasthttp.CookieSameSiteStrictMode)
-//	ctx.Response.Header.SetCookie(&c)
-//}
-//
-//func (u *userDelivery) GetProfile(ctx *fasthttp.RequestCtx) {
-//	userID := ctx.UserValue(cnst.UserIDContextKey).(int)
-//	response, err := u.manager.Profile(ctx, userID)
-//	if err != nil {
-//		httpError := u.errorAdapter.AdaptError(err)
-//		ctx.SetStatusCode(httpError.Code)
-//		ctx.SetBody([]byte(httpError.MSG))
-//		return
-//	}
-//
-//	b, err := chttp.ApiResp(response, err)
-//	ctx.SetStatusCode(http.StatusOK)
-//	ctx.SetBody(b)
-//}
-//
-//func (u *userDelivery) UpdateProfile(ctx *fasthttp.RequestCtx) {
-//	var request = &models.PublicCompanyAndOwnerRequest{}
-//	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
-//		ctx.SetStatusCode(http.StatusBadRequest)
-//		ctx.SetBody([]byte(cnst.WrongRequestBody))
-//		return
-//	}
-//
-//	userID, err := u.manager.GetUserIdByCookie(ctx, string(ctx.Request.Header.Cookie(cnst.CookieName)))
-//	if err != nil {
-//		httpError := u.errorAdapter.AdaptError(err)
-//		ctx.SetStatusCode(httpError.Code)
-//		ctx.SetBody([]byte(httpError.MSG))
-//		return
-//	}
-//	response, err := u.manager.UpdateProfile(ctx, userID, request)
-//
-//	b, err := chttp.ApiResp(response, err)
-//	ctx.SetStatusCode(http.StatusOK)
-//	ctx.SetBody(b)
-//}
-//
-//func (u *userDelivery) CheckEmail(ctx *fasthttp.RequestCtx) {
-//	var request = &models.Email{}
-//	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
-//		ctx.SetStatusCode(http.StatusBadRequest)
-//		ctx.SetBody([]byte(cnst.WrongRequestBody))
-//		return
-//	}
-//
-//	publicUser, err := u.manager.CheckEmail(ctx, request)
-//	if err != nil {
-//		httpError := u.errorAdapter.AdaptError(err)
-//		ctx.SetStatusCode(httpError.Code)
-//		ctx.SetBody([]byte(httpError.MSG))
-//		return
-//	}
-//
-//	b, err := chttp.ApiResp(publicUser, err)
-//	ctx.SetStatusCode(http.StatusOK)
-//	ctx.SetBody(b)
-//}
-//
-//func (u *userDelivery) GetUserInfo(ctx *fasthttp.RequestCtx) {
-//	param, _ := strconv.Atoi(ctx.UserValue("id").(string))
-//	response, err := u.manager.GetUserInfo(ctx, param)
-//	if err != nil {
-//		httpError := u.errorAdapter.AdaptError(err)
-//		ctx.SetStatusCode(httpError.Code)
-//		ctx.SetBody([]byte(httpError.MSG))
-//		return
-//	}
-//	b, err := chttp.ApiResp(response, err)
-//	ctx.SetStatusCode(http.StatusOK)
-//	ctx.SetBody(b)
-//}
 
 func NewChatDelivery(errorAdapter error_adapter.HttpAdapter, manager usecase.ChatUsecase) ChatDelivery {
 	return &chatDelivery{

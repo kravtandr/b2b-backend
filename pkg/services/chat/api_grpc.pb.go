@@ -25,8 +25,9 @@ const _ = grpc.SupportPackageIsVersion7
 type ChatServiceClient interface {
 	CheckIfUniqChat(ctx context.Context, in *CheckIfUniqChatRequest, opts ...grpc.CallOption) (*CheckIfUniqChatResponse, error)
 	NewChat(ctx context.Context, in *NewChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
+	GetChat(ctx context.Context, in *GetChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
 	WriteNewMsg(ctx context.Context, in *WriteNewMsgRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	GetMsgsFromChat(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*MsgsResponse, error)
+	GetMsgsFromChat(ctx context.Context, in *ChatAndUserIdRequest, opts ...grpc.CallOption) (*MsgsResponse, error)
 	GetAllUserChats(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*GetAllUserChatsResponse, error)
 	GetAllChatsAndLastMsg(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*GetAllChatsAndLastMsgResponse, error)
 }
@@ -57,6 +58,15 @@ func (c *chatServiceClient) NewChat(ctx context.Context, in *NewChatRequest, opt
 	return out, nil
 }
 
+func (c *chatServiceClient) GetChat(ctx context.Context, in *GetChatRequest, opts ...grpc.CallOption) (*ChatResponse, error) {
+	out := new(ChatResponse)
+	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/GetChat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *chatServiceClient) WriteNewMsg(ctx context.Context, in *WriteNewMsgRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/WriteNewMsg", in, out, opts...)
@@ -66,7 +76,7 @@ func (c *chatServiceClient) WriteNewMsg(ctx context.Context, in *WriteNewMsgRequ
 	return out, nil
 }
 
-func (c *chatServiceClient) GetMsgsFromChat(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*MsgsResponse, error) {
+func (c *chatServiceClient) GetMsgsFromChat(ctx context.Context, in *ChatAndUserIdRequest, opts ...grpc.CallOption) (*MsgsResponse, error) {
 	out := new(MsgsResponse)
 	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/GetMsgsFromChat", in, out, opts...)
 	if err != nil {
@@ -99,8 +109,9 @@ func (c *chatServiceClient) GetAllChatsAndLastMsg(ctx context.Context, in *IdReq
 type ChatServiceServer interface {
 	CheckIfUniqChat(context.Context, *CheckIfUniqChatRequest) (*CheckIfUniqChatResponse, error)
 	NewChat(context.Context, *NewChatRequest) (*ChatResponse, error)
+	GetChat(context.Context, *GetChatRequest) (*ChatResponse, error)
 	WriteNewMsg(context.Context, *WriteNewMsgRequest) (*emptypb.Empty, error)
-	GetMsgsFromChat(context.Context, *IdRequest) (*MsgsResponse, error)
+	GetMsgsFromChat(context.Context, *ChatAndUserIdRequest) (*MsgsResponse, error)
 	GetAllUserChats(context.Context, *IdRequest) (*GetAllUserChatsResponse, error)
 	GetAllChatsAndLastMsg(context.Context, *IdRequest) (*GetAllChatsAndLastMsgResponse, error)
 	mustEmbedUnimplementedChatServiceServer()
@@ -116,10 +127,13 @@ func (UnimplementedChatServiceServer) CheckIfUniqChat(context.Context, *CheckIfU
 func (UnimplementedChatServiceServer) NewChat(context.Context, *NewChatRequest) (*ChatResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewChat not implemented")
 }
+func (UnimplementedChatServiceServer) GetChat(context.Context, *GetChatRequest) (*ChatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetChat not implemented")
+}
 func (UnimplementedChatServiceServer) WriteNewMsg(context.Context, *WriteNewMsgRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WriteNewMsg not implemented")
 }
-func (UnimplementedChatServiceServer) GetMsgsFromChat(context.Context, *IdRequest) (*MsgsResponse, error) {
+func (UnimplementedChatServiceServer) GetMsgsFromChat(context.Context, *ChatAndUserIdRequest) (*MsgsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMsgsFromChat not implemented")
 }
 func (UnimplementedChatServiceServer) GetAllUserChats(context.Context, *IdRequest) (*GetAllUserChatsResponse, error) {
@@ -177,6 +191,24 @@ func _ChatService_NewChat_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChatService_GetChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetChatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).GetChat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.chat_service.ChatService/GetChat",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).GetChat(ctx, req.(*GetChatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ChatService_WriteNewMsg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WriteNewMsgRequest)
 	if err := dec(in); err != nil {
@@ -196,7 +228,7 @@ func _ChatService_WriteNewMsg_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _ChatService_GetMsgsFromChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IdRequest)
+	in := new(ChatAndUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -208,7 +240,7 @@ func _ChatService_GetMsgsFromChat_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/services.chat_service.ChatService/GetMsgsFromChat",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChatServiceServer).GetMsgsFromChat(ctx, req.(*IdRequest))
+		return srv.(ChatServiceServer).GetMsgsFromChat(ctx, req.(*ChatAndUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -263,6 +295,10 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NewChat",
 			Handler:    _ChatService_NewChat_Handler,
+		},
+		{
+			MethodName: "GetChat",
+			Handler:    _ChatService_GetChat_Handler,
 		},
 		{
 			MethodName: "WriteNewMsg",

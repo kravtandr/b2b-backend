@@ -1,7 +1,7 @@
 package models
 
 type Profile struct {
-	Id          int    `json:"id"`
+	Id          int64  `json:"id"`
 	Name        string `json:"name" valid:"required"`
 	Surname     string `json:"surname" valid:"required"`
 	Avatar      string `json:"avatar"`
