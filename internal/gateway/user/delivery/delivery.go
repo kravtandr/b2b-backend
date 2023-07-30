@@ -144,7 +144,7 @@ func (u *userDelivery) GetUserByCookie(ctx *fasthttp.RequestCtx) {
 	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
-	log.Println("Login SetCookie:", string(ctx.Request.Header.Cookie(cnst.CookieName)), " id ", response.Id, " email ", response.Email)
+	log.Println("GetUserByCookie SetCookie:", string(ctx.Request.Header.Cookie(cnst.CookieName)), " id ", response.Id, " email ", response.Email)
 }
 
 func (u *userDelivery) UpdateProfile(ctx *fasthttp.RequestCtx) {

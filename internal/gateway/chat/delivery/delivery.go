@@ -120,10 +120,11 @@ func (u *chatDelivery) ChatLogic(ctx *fasthttp.RequestCtx) {
 }
 
 func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
+	msg := &models.Msg{}
 	defer ws.Close()
 	//первое сообщение приходит с фронта
-	msg := Msg{Text: "Сколько единиц в комлекте?", SenderID: 1, RecieverID: 1}
-	bytes, _ := json.Marshal(msg)
+	firstMsg := Msg{Text: "Сколько единиц в комлекте?", SenderID: 1, RecieverID: 1}
+	bytes, _ := json.Marshal(firstMsg)
 	// 1 - binary, 2 - text
 	err := ws.WriteMessage(1, bytes)
 	//initDB(ctx)
@@ -137,8 +138,13 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 			log.Println("read:", err)
 			break
 		}
-		u.manager.WriteNewMsg(context.Background(), &models.Msg{Text: string(message), SenderId: 1, ReceiverId: 2, ChatId: 1})
-		log.Printf("recv: %s", message)
+		if err := json.Unmarshal(message, msg); err != nil {
+			log.Println("Unmarshal err:", err)
+			break
+		}
+		log.Println("read:", msg)
+		u.manager.WriteNewMsg(context.Background(), &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId})
+		log.Println("recv msg:", msg)
 		//когда отправляю сообщение записываю его в бд
 		//echo
 		err = ws.WriteMessage(mt, message)
@@ -151,6 +157,9 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 
 func (u *chatDelivery) WSUpgradeRequest(ctx *fasthttp.RequestCtx) {
 	var upgrader = websocket.FastHTTPUpgrader{}
+
+	upgrader.CheckOrigin = func(r *fasthttp.RequestCtx) bool { return true }
+	// epic bullshit ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	err := upgrader.Upgrade(ctx, u.WSChatLoop)
 
 	if err != nil {

@@ -69,6 +69,7 @@ func GetQueryParams(ctx *fasthttp.RequestCtx) (*QueryParam, error) {
 
 func SetCookieAndSession(ctx *fasthttp.RequestCtx, cookie string) {
 	var c fasthttp.Cookie
+	c.SetPath("/")
 	c.SetKey(cnst.CookieName)
 	c.SetValue(cookie)
 	c.SetMaxAge(int(time.Hour))

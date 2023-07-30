@@ -76,21 +76,21 @@ func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*model
 
 func (a *chatRepository) WriteNewMsg(ctx context.Context, newMsg *models.Msg) error {
 	query := a.queryFactory.CreateWriteNewMsg(newMsg)
-	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	_ = a.conn.QueryRow(ctx, query.Request, query.Params...)
 
-	type res struct {
-		Id   int
-		Time string
-	}
+	// type res struct {
+	// 	Id   int64
+	// 	Time string
+	// }
 
-	chat := &res{}
-	if err := row.Scan(&chat.Id, &chat.Time); err != nil {
-		if err == pgx.ErrNoRows {
-			return err
-		}
+	// chat := &res{}
+	// if err := row.Scan(&chat.Id, &chat.Time); err != nil {
+	// 	if err == pgx.ErrNoRows {
+	// 		return err
+	// 	}
 
-		return err
-	}
+	// 	return err
+	// }
 
 	return nil
 }
