@@ -120,6 +120,11 @@ func (u *chatDelivery) ChatLogic(ctx *fasthttp.RequestCtx) {
 }
 
 func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
+	//timeout := time.Now()
+	// timeout ws connection 30 sec
+	//timeout = timeout.Add(time.Second * 30)
+	//ws.SetReadDeadline(timeout)
+
 	msg := &models.Msg{}
 	defer ws.Close()
 	//первое сообщение приходит с фронта

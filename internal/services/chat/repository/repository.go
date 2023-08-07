@@ -4,6 +4,7 @@ import (
 	"b2b/m/internal/services/chat/models"
 	"b2b/m/pkg/errors"
 	"context"
+	"log"
 
 	"github.com/jackc/pgx/v4"
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
@@ -96,22 +97,26 @@ func (a *chatRepository) WriteNewMsg(ctx context.Context, newMsg *models.Msg) er
 }
 
 func (a *chatRepository) GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error) {
-
+	count := 0 // debug
 	query := a.queryFactory.CreateGetMsgsFromChat(chatId, userId)
 	var msg models.Msg
 	var msgs models.Msgs
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
 	if err != nil {
+		log.Println("ERROR ", err)
 		return &msgs, err
 	}
 	defer rows.Close()
 	for rows.Next() {
+		count += 1
 		err = rows.Scan(&msg.Id, &msg.ChatId, &msg.SenderId, &msg.ReceiverId, &msg.Checked, &msg.Text, &msg.Type, &msg.Time)
 		msgs = append(msgs, msg)
 	}
 	if rows.Err() != nil {
+		log.Println("ERROR ", err)
 		return &msgs, err
 	}
+	log.Println("ROWS COUNT", count)
 	return &msgs, err
 }
 

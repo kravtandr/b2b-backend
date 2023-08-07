@@ -22,6 +22,7 @@ import (
 	company_service "b2b/m/pkg/services/company"
 	fastOrder_service "b2b/m/pkg/services/fastOrder"
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
+	"time"
 
 	"gopkg.in/webdeskltd/dadata.v2"
 
@@ -87,7 +88,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		productsCategoriesUseCase,
 	)
 
-	ChatConn, err := grpc.Dial(cfg.ChatServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
+	ChatConn, err := grpc.Dial(cfg.ChatServiceEndpoint, grpc.WithTimeout(5*time.Second), grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		return p, stopFunc, err
 	}

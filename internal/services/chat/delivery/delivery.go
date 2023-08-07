@@ -91,12 +91,14 @@ func (a *chatDelivery) GetMsgsFromChat(ctx context.Context, request *chat_servic
 
 	for _, result := range *resp {
 		msg = &chat_service.MsgResponse{
-			Id:      result.Id,
-			ChatId:  result.ChatId,
-			Checked: result.Checked,
-			Text:    result.Text,
-			Type:    result.Type,
-			Time:    fmt.Sprint(result.Time),
+			Id:         result.Id,
+			ChatId:     result.ChatId,
+			SenderId:   result.SenderId,
+			ReceiverId: result.ReceiverId,
+			Checked:    result.Checked,
+			Text:       result.Text,
+			Type:       result.Type,
+			Time:       fmt.Sprint(result.Time),
 		}
 		res.Msgs = append(res.Msgs, msg)
 

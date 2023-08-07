@@ -112,12 +112,14 @@ func (u *chatUsecase) GetMsgsFromChat(ctx context.Context, chatId int64, userId 
 	var msgs models.Msgs
 	for _, result := range response.Msgs {
 		msg = models.Msg{
-			Id:      result.Id,
-			ChatId:  result.ChatId,
-			Checked: result.Checked,
-			Text:    result.Text,
-			Type:    result.Type,
-			Time:    result.Time,
+			Id:         result.Id,
+			ChatId:     result.ChatId,
+			SenderId:   result.SenderId,
+			ReceiverId: result.ReceiverId,
+			Checked:    result.Checked,
+			Text:       result.Text,
+			Type:       result.Type,
+			Time:       result.Time,
 		}
 		msgs = append(msgs, msg)
 	}
