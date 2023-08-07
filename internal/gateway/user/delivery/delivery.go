@@ -2,9 +2,9 @@ package delivery
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"b2b/m/internal/gateway/user/usecase"
 	"b2b/m/internal/models"
@@ -20,6 +20,7 @@ type UserDelivery interface {
 	Logout(ctx *fasthttp.RequestCtx)
 	Register(ctx *fasthttp.RequestCtx)
 	GetUserInfo(ctx *fasthttp.RequestCtx)
+	GetUserByCookie(ctx *fasthttp.RequestCtx)
 	FastRegister(ctx *fasthttp.RequestCtx)
 	GetProfile(ctx *fasthttp.RequestCtx)
 	UpdateProfile(ctx *fasthttp.RequestCtx)
@@ -50,14 +51,9 @@ func (u *userDelivery) Login(ctx *fasthttp.RequestCtx) {
 	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
+	log.Println("Login SetCookie:", response.Cookie, " id ", response.Id, " email ", response.Email)
 
-	var c fasthttp.Cookie
-	c.SetKey(cnst.CookieName)
-	c.SetValue(response.Cookie)
-	c.SetMaxAge(int(time.Hour))
-	c.SetHTTPOnly(true)
-	c.SetSameSite(fasthttp.CookieSameSiteStrictMode)
-	ctx.Response.Header.SetCookie(&c)
+	chttp.SetCookieAndSession(ctx, response.Cookie)
 }
 
 func (u *userDelivery) Logout(ctx *fasthttp.RequestCtx) {
@@ -68,6 +64,7 @@ func (u *userDelivery) Logout(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte(httpError.MSG))
 		return
 	}
+	log.Println("Logout delite cookie:", string(ctx.Request.Header.Cookie(cnst.CookieName)))
 
 	ctx.SetStatusCode(http.StatusOK)
 }
@@ -87,18 +84,13 @@ func (u *userDelivery) FastRegister(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte(httpError.MSG))
 		return
 	}
+	log.Println("FastRegister SetCookie:", response.Cookie, " id ", response.Id, " email ", response.Email)
 
 	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 
-	var c fasthttp.Cookie
-	c.SetKey(cnst.CookieName)
-	c.SetValue(response.Cookie)
-	c.SetMaxAge(int(time.Hour))
-	c.SetHTTPOnly(true)
-	c.SetSameSite(fasthttp.CookieSameSiteStrictMode)
-	ctx.Response.Header.SetCookie(&c)
+	chttp.SetCookieAndSession(ctx, response.Cookie)
 }
 
 func (u *userDelivery) Register(ctx *fasthttp.RequestCtx) {
@@ -121,17 +113,11 @@ func (u *userDelivery) Register(ctx *fasthttp.RequestCtx) {
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 
-	var c fasthttp.Cookie
-	c.SetKey(cnst.CookieName)
-	c.SetValue(response.Cookie)
-	c.SetMaxAge(int(time.Hour))
-	c.SetHTTPOnly(true)
-	c.SetSameSite(fasthttp.CookieSameSiteStrictMode)
-	ctx.Response.Header.SetCookie(&c)
+	chttp.SetCookieAndSession(ctx, response.Cookie)
 }
 
 func (u *userDelivery) GetProfile(ctx *fasthttp.RequestCtx) {
-	userID := ctx.UserValue(cnst.UserIDContextKey).(int)
+	userID := ctx.UserValue(cnst.UserIDContextKey).(int64)
 	response, err := u.manager.Profile(ctx, userID)
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)
@@ -143,6 +129,22 @@ func (u *userDelivery) GetProfile(ctx *fasthttp.RequestCtx) {
 	b, err := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
+}
+
+func (u *userDelivery) GetUserByCookie(ctx *fasthttp.RequestCtx) {
+	userID := ctx.UserValue(cnst.UserIDContextKey).(int64)
+	response, err := u.manager.Profile(ctx, userID)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+
+	b, err := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+	log.Println("GetUserByCookie SetCookie:", string(ctx.Request.Header.Cookie(cnst.CookieName)), " id ", response.Id, " email ", response.Email)
 }
 
 func (u *userDelivery) UpdateProfile(ctx *fasthttp.RequestCtx) {
@@ -189,7 +191,12 @@ func (u *userDelivery) CheckEmail(ctx *fasthttp.RequestCtx) {
 }
 
 func (u *userDelivery) GetUserInfo(ctx *fasthttp.RequestCtx) {
-	param, _ := strconv.Atoi(ctx.UserValue("id").(string))
+	param, err := strconv.ParseInt(ctx.UserValue("id").(string), 10, 64)
+	if err != nil {
+		log.Println("GetUserInfo ERROR ParseInt", err)
+		return
+	}
+
 	response, err := u.manager.GetUserInfo(ctx, param)
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)

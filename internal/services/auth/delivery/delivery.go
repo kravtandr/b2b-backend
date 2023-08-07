@@ -6,6 +6,7 @@ import (
 	"b2b/m/pkg/error_adapter"
 	auth_service "b2b/m/pkg/services/auth"
 	"context"
+
 	"github.com/golang/protobuf/ptypes/empty"
 )
 
@@ -159,7 +160,7 @@ func (a *authDelivery) UpdateUser(ctx context.Context, request *auth_service.Upd
 }
 
 func (a *authDelivery) GetUserInfo(ctx context.Context, request *auth_service.GetUserRequest) (*auth_service.UserInfo, error) {
-	responce, err := a.authUsecase.GetUserInfo(ctx, int(request.Id))
+	responce, err := a.authUsecase.GetUserInfo(ctx, request.Id)
 	if err != nil {
 		return &auth_service.UserInfo{}, a.errorAdapter.AdaptError(err)
 	}

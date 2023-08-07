@@ -29,7 +29,7 @@ func AccessLogMiddleware(l *Logger, handler func(ctx *fasthttp.RequestCtx)) func
 		l.Logger.Info(string(ctx.Path()),
 			zap.String("method", string(ctx.Method())),
 			zap.String("remote_addr", string(ctx.RemoteAddr().String())),
-			zap.String("url", string(ctx.Path())),
+			zap.String("url", string(ctx.Path())+"\n"),
 		)
 
 		handler(ctx)

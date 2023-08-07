@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package services.chat_service;
+option go_package = "b2b/m/pkg/services/chat;chat_service";
+
+import "third_party/go-proto-validators/validator.proto";
+import "google/protobuf/empty.proto";
+
+message IdRequest {
+  int64 id = 1;
+}
+
+message ChatAndUserIdRequest {
+  int64 ChatId = 1;
+  int64 UserId = 2;
+}
+
+message CheckIfUniqChatRequest {
+  int64 UserId = 1;
+  int64 ProductId = 2;
+}
+message CheckIfUniqChatResponse {
+  bool Unique = 1;
+}
+
+message NewChatRequest {
+  string Name = 1;
+  int64  CreatorId = 2;
+  int64  ProductId = 3;
+}
+
+message GetChatRequest {
+  int64  CreatorId = 1;
+  int64  ProductId = 2;
+}
+
+message ChatResponse {
+  int64 Id = 1;
+  string Name = 2;
+  int64  CreatorId = 3;
+  int64  ProductId = 4;
+}
+
+message WriteNewMsgRequest {
+  int64 ChatId = 1;
+  int64  SenderId = 2;
+  int64  ReceiverId = 3;
+  bool  Checked = 4;
+  string  Text = 5;
+  string  Type = 6;
+  string   Time = 7;
+}
+message MsgResponse{
+  int64 Id = 1;
+  int64 ChatId = 2;
+  int64  SenderId = 3;
+  int64  ReceiverId = 4;
+  bool  Checked = 5;
+  string  Text = 6;
+  string  Type = 7;
+  string   Time = 8;
+}
+
+message ChatAndLastMsgResponse {
+  int64 Id = 1;
+  string Name = 2;
+  int64  CreatorId = 3;
+  int64  ProductId = 4;
+  MsgResponse Msg = 5;
+}
+
+message MsgsResponse {
+  repeated MsgResponse Msgs = 1;
+}
+
+message    GetAllUserChatsResponse{
+  repeated ChatResponse Chats = 1;
+}
+
+message    GetAllChatsAndLastMsgResponse{
+  repeated ChatAndLastMsgResponse Chats = 1;
+}
+
+
+service ChatService {
+  rpc CheckIfUniqChat(CheckIfUniqChatRequest) returns (CheckIfUniqChatResponse) {}
+  rpc NewChat(NewChatRequest) returns (ChatResponse) {}
+  rpc GetChat(GetChatRequest) returns (ChatResponse) {}
+  rpc WriteNewMsg(WriteNewMsgRequest) returns (google.protobuf.Empty) {}
+  rpc GetMsgsFromChat(ChatAndUserIdRequest) returns (MsgsResponse) {}
+  rpc GetAllUserChats(IdRequest) returns (GetAllUserChatsResponse) {}
+  rpc GetAllChatsAndLastMsg(IdRequest) returns (GetAllChatsAndLastMsgResponse) {}
+}

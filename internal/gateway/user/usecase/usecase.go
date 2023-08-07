@@ -13,21 +13,21 @@ type UserUsecase interface {
 	Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error)
 	Register(ctx context.Context, request *models.RegisterUserRequest) (*models.Session, error)
 	Logout(ctx context.Context, cookie string) error
-	GetUserInfo(ctx context.Context, id int) (*models.Profile, error)
+	GetUserInfo(ctx context.Context, id int64) (*models.Profile, error)
 	FastRegister(ctx context.Context, request *models.FastRegistrationForm) (*models.CompanyWithCookie, error)
-	Profile(ctx context.Context, userID int) (*models.Profile, error)
+	Profile(ctx context.Context, userID int64) (*models.Profile, error)
 	UpdateProfile(ctx context.Context, userID int64, request *models.PublicCompanyAndOwnerRequest) (*models.PublicCompanyAndOwnerResponse, error)
 	GetUserIdByCookie(ctx context.Context, hash string) (int64, error)
 	CheckEmail(ctx context.Context, request *models.Email) (*models.PublicUser, error)
 }
 
 type userUsecase struct {
-	authGRPC    authGRPC
+	AuthGRPC    AuthGRPC
 	companyGRPC company_usecase.CompanyGRPC
 }
 
 func (u *userUsecase) Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error) {
-	response, err := u.authGRPC.LoginUser(ctx, &auth_service.LoginRequest{
+	response, err := u.AuthGRPC.LoginUser(ctx, &auth_service.LoginRequest{
 		Email:    request.Email,
 		Password: request.Password,
 	})
@@ -36,27 +36,18 @@ func (u *userUsecase) Login(ctx context.Context, request *models.LoginUserReques
 	}
 
 	return &models.CompanyWithCookie{
-		Token:        response.Token,
-		Cookie:       response.Cookie,
-		Name:         response.Name,
-		Description:  response.Description,
-		LegalName:    response.LegalName,
-		Itn:          response.Itn,
-		Psrn:         response.Psrn,
-		Address:      response.Address,
-		LegalAddress: response.LegalAddress,
-		Email:        response.Email,
-		Phone:        response.Phone,
-		Link:         response.Link,
-		Activity:     response.Activity,
-		OwnerId:      response.OwnerId,
-		Rating:       response.Rating,
-		Verified:     response.Verified,
+		Cookie:    response.Cookie,
+		Token:     response.Token,
+		Name:      response.Name,
+		Email:     response.Email,
+		LegalName: response.LegalName,
+		Itn:       response.Itn,
+		OwnerId:   response.OwnerId,
 	}, nil
 }
 
 func (u *userUsecase) Register(ctx context.Context, request *models.RegisterUserRequest) (*models.Session, error) {
-	response, err := u.authGRPC.RegisterUser(ctx, &auth_service.RegisterRequest{
+	response, err := u.AuthGRPC.RegisterUser(ctx, &auth_service.RegisterRequest{
 		Email:    request.Email,
 		Password: request.Password,
 		Name:     request.Name,
@@ -73,7 +64,7 @@ func (u *userUsecase) Register(ctx context.Context, request *models.RegisterUser
 }
 
 func (u *userUsecase) CheckEmail(ctx context.Context, request *models.Email) (*models.PublicUser, error) {
-	response, err := u.authGRPC.CheckEmail(ctx, &auth_service.CheckEmailRequest{Email: request.Email})
+	response, err := u.AuthGRPC.CheckEmail(ctx, &auth_service.CheckEmailRequest{Email: request.Email})
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +78,7 @@ func (u *userUsecase) CheckEmail(ctx context.Context, request *models.Email) (*m
 }
 
 func (u *userUsecase) FastRegister(ctx context.Context, request *models.FastRegistrationForm) (*models.CompanyWithCookie, error) {
-	response, err := u.authGRPC.FastRegister(ctx, &auth_service.FastRegisterRequest{
+	response, err := u.AuthGRPC.FastRegister(ctx, &auth_service.FastRegisterRequest{
 		Name:       request.Name,
 		LegalName:  request.LegalName,
 		Itn:        request.Itn,
@@ -115,7 +106,7 @@ func (u *userUsecase) FastRegister(ctx context.Context, request *models.FastRegi
 }
 
 func (u *userUsecase) Logout(ctx context.Context, cookie string) error {
-	_, err := u.authGRPC.LogoutUser(ctx, &auth_service.Session{
+	_, err := u.AuthGRPC.LogoutUser(ctx, &auth_service.Session{
 		Token:  "??",
 		Cookie: cookie,
 	})
@@ -126,8 +117,8 @@ func (u *userUsecase) Logout(ctx context.Context, cookie string) error {
 	return nil
 }
 
-func (u *userUsecase) Profile(ctx context.Context, userID int) (*models.Profile, error) {
-	response, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: int64(userID)})
+func (u *userUsecase) Profile(ctx context.Context, userID int64) (*models.Profile, error) {
+	response, err := u.AuthGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: int64(userID)})
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +134,7 @@ func (u *userUsecase) Profile(ctx context.Context, userID int) (*models.Profile,
 }
 
 func (u *userUsecase) GetUserIdByCookie(ctx context.Context, hash string) (int64, error) {
-	response, err := u.authGRPC.GetUserIdByCookie(ctx, &auth_service.GetUserIdByCookieRequest{Hash: hash})
+	response, err := u.AuthGRPC.GetUserIdByCookie(ctx, &auth_service.GetUserIdByCookieRequest{Hash: hash})
 	if err != nil {
 		return -1, err
 	}
@@ -152,7 +143,7 @@ func (u *userUsecase) GetUserIdByCookie(ctx context.Context, hash string) (int64
 }
 
 func (u *userUsecase) UpdateProfile(ctx context.Context, userID int64, request *models.PublicCompanyAndOwnerRequest) (*models.PublicCompanyAndOwnerResponse, error) {
-	updatedUser, err := u.authGRPC.UpdateUser(ctx, &auth_service.UpdateUserRequest{
+	updatedUser, err := u.AuthGRPC.UpdateUser(ctx, &auth_service.UpdateUserRequest{
 		Id:         userID,
 		Name:       request.Owner.Name,
 		Surname:    request.Owner.Surname,
@@ -201,7 +192,7 @@ func (u *userUsecase) UpdateProfile(ctx context.Context, userID int64, request *
 }
 
 //func (u *userUsecase) UpdateProfile(ctx context.Context, userID int, request *models.UpdateProfileRequest) (*models.Profile, error) {
-//	response, err := u.authGRPC.UpdateUser(ctx, &auth_service.UpdateUserRequest{
+//	response, err := u.AuthGRPC.UpdateUser(ctx, &auth_service.UpdateUserRequest{
 //		Id:          int64(userID),
 //		Name:        request.Name,
 //		Surname:     request.Surname,
@@ -224,20 +215,20 @@ func (u *userUsecase) UpdateProfile(ctx context.Context, userID int64, request *
 //	}, nil
 //}
 
-func (u *userUsecase) GetUserInfo(ctx context.Context, id int) (*models.Profile, error) {
-	responce, err := u.authGRPC.GetUserInfo(ctx, &auth_service.GetUserRequest{Id: int64(id)})
+func (u *userUsecase) GetUserInfo(ctx context.Context, id int64) (*models.Profile, error) {
+	response, err := u.AuthGRPC.GetUserInfo(ctx, &auth_service.GetUserRequest{Id: int64(id)})
 	if err != nil {
 		return nil, err
 	}
 
 	return &models.Profile{
-		Id:      int(responce.UserId),
-		Name:    responce.Name,
-		Surname: responce.Surname,
-		Avatar:  responce.Image,
+		Id:      response.UserId,
+		Name:    response.Name,
+		Surname: response.Surname,
+		Avatar:  response.Image,
 	}, nil
 }
 
-func NewUserUsecase(authGRPC authGRPC, companyGRPC company_usecase.CompanyGRPC) UserUsecase {
-	return &userUsecase{authGRPC: authGRPC, companyGRPC: companyGRPC}
+func NewUserUsecase(AuthGRPC AuthGRPC, companyGRPC company_usecase.CompanyGRPC) UserUsecase {
+	return &userUsecase{AuthGRPC: AuthGRPC, companyGRPC: companyGRPC}
 }

@@ -7,6 +7,7 @@ import (
 
 type CompanyUseCase interface {
 	GetCompanyById(ctx context.Context, ID int64) (*models.Company, error)
+	GetCompanyByProductId(ctx context.Context, ID int64) (*models.Company, error)
 	UpdateCompanyById(ctx context.Context, newCompany models.Company, post string) (*models.Company, string, error)
 }
 
@@ -30,11 +31,19 @@ func (a *companyUseCase) UpdateCompanyById(ctx context.Context, newCompany model
 }
 
 func (a *companyUseCase) GetCompanyById(ctx context.Context, ID int64) (*models.Company, error) {
-	user, err := a.repo.GetCompanyById(ctx, ID)
+	company, err := a.repo.GetCompanyById(ctx, ID)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	return company, nil
+}
+
+func (a *companyUseCase) GetCompanyByProductId(ctx context.Context, ID int64) (*models.Company, error) {
+	company, err := a.repo.GetCompanyByProductId(ctx, ID)
+	if err != nil {
+		return nil, err
+	}
+	return company, nil
 }
 
 func NewCompanyUseCase(

@@ -113,3 +113,39 @@ func (l *loggingMiddleware) GetCompanyById(ctx context.Context, ID int64) (c *mo
 
 	return l.next.GetCompanyById(ctx, ID)
 }
+
+func (l *loggingMiddleware) GetProductsCompaniesLink(ctx context.Context, productId int64) (c *models.ProductsCompaniesLink, err error) {
+	l.logger.Infow(module,
+		"Action", "GetProductsCompaniesLink",
+		"Request", productId,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetProductsCompaniesLink",
+				"Request", productId,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetProductsCompaniesLink(ctx, productId)
+}
+
+func (l *loggingMiddleware) GetCompanyByProductId(ctx context.Context, ID int64) (c *models.Company, err error) {
+	l.logger.Infow(module,
+		"Action", "GetCompanyByProductId",
+		"Request", ID,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetCompanyByProductId",
+				"Request", ID,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetCompanyByProductId(ctx, ID)
+}

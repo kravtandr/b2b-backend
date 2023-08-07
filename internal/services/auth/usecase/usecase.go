@@ -18,7 +18,7 @@ type AuthUseCase interface {
 	RegisterUser(ctx context.Context, user *models.User) (models.Session, error)
 	GetUser(ctx context.Context, ID int64) (*models.User, error)
 	UpdateUser(ctx context.Context, user *models.User) (*models.PublicUser, error)
-	GetUserInfo(ctx context.Context, id int) (*models.User, error)
+	GetUserInfo(ctx context.Context, id int64) (*models.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 }
 
@@ -181,7 +181,7 @@ func (a *authUseCase) UpdateUser(ctx context.Context, user *models.User) (*model
 	}, nil
 }
 
-func (a *authUseCase) GetUserInfo(ctx context.Context, id int) (*models.User, error) {
+func (a *authUseCase) GetUserInfo(ctx context.Context, id int64) (*models.User, error) {
 	return a.repo.GetUserInfo(ctx, id)
 }
 

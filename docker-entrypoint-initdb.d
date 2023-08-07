@@ -204,6 +204,34 @@ CREATE TABLE landing_request
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE Chats 
+(
+    id                        SERIAL                    NOT NULL PRIMARY KEY,
+    name                      TEXT                      DEFAULT 'New Chat',
+    creator_id                INT                       NOT NULL,
+    product_id                INT                       NOT NULL,
+    FOREIGN KEY (creator_id)   REFERENCES Users (id)     ON DELETE CASCADE,
+    FOREIGN KEY (product_id)  REFERENCES Products (id)  ON DELETE CASCADE,
+    created_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW(),
+    updated_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE Msgs 
+(
+    id                      SERIAL                  NOT NULL PRIMARY KEY,
+    chat_id                 INT                     NOT NULL,
+    sender_id               INT                       NOT NULL,
+    receiver_id             INT                       NOT NULL,
+    checked                 BOOLEAN                 NOT NULL DEFAULT FALSE,
+    text                    TEXT                    NOT NULL,
+    type                    TEXT                    NOT NULL DEFAULT 'regular msg',
+    created_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    updated_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (chat_id)   REFERENCES Chats (id)   ON DELETE CASCADE,
+    FOREIGN KEY (sender_id)   REFERENCES Users (id)   ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id)   REFERENCES Users (id)   ON DELETE CASCADE
+);
+
 CREATE TRIGGER set_timestamp
     BEFORE UPDATE
     ON OrderForm
@@ -218,25 +246,16 @@ CREATE TABLE Cookies (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+
 INSERT INTO products(name, description, price, photo) VALUES('1_product', 'aaa', 1000, '/photo1');
 INSERT INTO products(name, description, price, photo) VALUES('2_product', 'bbb', 1000, '/photo1');
-SELECT * from products;
 
 
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
 
-COPY categories(name) FROM '/var/lib/postgresql/data/export_base_categories.csv' DELIMITER ',' CSV HEADER;
-COPY products(name, description, price, photo) FROM '/var/lib/postgresql/data/test_products.csv' DELIMITER ';' CSV HEADER;
+
+-- COPY categories(name) FROM '/var/lib/postgresql/data/export_base_categories.csv' DELIMITER ',' CSV HEADER;
+-- COPY products(name, description, price, photo) FROM '/var/lib/postgresql/data/test_products.csv' DELIMITER ';' CSV HEADER;
 
 
-SELECT count() from categories;
-
-CREATE TABLE Products_test
-(
-    id          SERIAL      NOT NULL PRIMARY KEY,
-    name        TEXT        NOT NULL,
-    description TEXT        ,
-    price       INT         NOT NULL,
-    photo       TEXT        
-);

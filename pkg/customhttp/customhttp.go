@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
+
+	cnst "b2b/m/pkg/constants"
 
 	"github.com/valyala/fasthttp"
 )
@@ -62,4 +65,15 @@ func GetQueryParams(ctx *fasthttp.RequestCtx) (*QueryParam, error) {
 	}
 	fmt.Println("GetQueryParams || SKIP ====== ", skip, "LIMIT ====== ", limit)
 	return params, nil
+}
+
+func SetCookieAndSession(ctx *fasthttp.RequestCtx, cookie string) {
+	var c fasthttp.Cookie
+	c.SetPath("/")
+	c.SetKey(cnst.CookieName)
+	c.SetValue(cookie)
+	c.SetMaxAge(int(time.Hour))
+	c.SetHTTPOnly(true)
+	c.SetSameSite(fasthttp.CookieSameSiteStrictMode)
+	ctx.Response.Header.SetCookie(&c)
 }

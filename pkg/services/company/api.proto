@@ -14,6 +14,30 @@ message GetCompanyRequestById {
   int64 id = 1;
 }
 
+message    IdRequest{
+    int64 id = 1;
+}
+
+
+
+message GetPrivateCompanyResponse {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string legal_name = 4;
+  string itn = 5;
+  string psrn = 6;
+  string address = 7;
+  string legal_address = 8;
+  string email = 9;
+  string phone = 10;
+  string link = 11;
+  string activity = 12;
+  int64 owner_id = 13;
+  int64 rating = 14;
+  int64 verified = 15;
+}
+
 message GetCompanyResponse {
   string name = 1;
   string description = 2;
@@ -67,5 +91,6 @@ message UpdateCompanyRequest{
 
 service CompanyService {
   rpc GetCompanyById(GetCompanyRequestById) returns (GetCompanyResponse) {}
+  rpc GetCompanyByProductId(IdRequest) returns (GetPrivateCompanyResponse) {}
   rpc UpdateCompanyByOwnerId(UpdateCompanyRequest) returns (GetCompanyAndPostResponse) {}
 }

@@ -132,23 +132,23 @@ func (l *loggingMiddleware) FastRegistration(ctx context.Context, newCompany *co
 	return l.next.FastRegistration(ctx, newCompany, user, post)
 }
 
-//func (l *loggingMiddleware) UpdateUser(ctx context.Context, user *models.User) (u *models.User, err error) {
-//	l.logger.Infow(module,
-//		"Action", "UpdateUser",
-//		"Request", user,
-//	)
-//	defer func() {
-//		if err != nil {
-//			l.logger.Infow(module,
-//				"Action", "UpdateUser",
-//				"Request", user,
-//				"Error", err,
-//			)
-//		}
-//	}()
+//	func (l *loggingMiddleware) UpdateUser(ctx context.Context, user *models.User) (u *models.User, err error) {
+//		l.logger.Infow(module,
+//			"Action", "UpdateUser",
+//			"Request", user,
+//		)
+//		defer func() {
+//			if err != nil {
+//				l.logger.Infow(module,
+//					"Action", "UpdateUser",
+//					"Request", user,
+//					"Error", err,
+//				)
+//			}
+//		}()
 //
-//	return l.next.UpdateUser(ctx, user)
-//}
+//		return l.next.UpdateUser(ctx, user)
+//	}
 func (l *loggingMiddleware) CreateUserSession(ctx context.Context, userID int64, hash string) (err error) {
 	l.logger.Infow(module,
 		"Action", "CreateUserSession",
@@ -201,7 +201,7 @@ func (l *loggingMiddleware) RemoveUserSession(ctx context.Context, hash string) 
 	return l.next.RemoveUserSession(ctx, hash)
 }
 
-func (l *loggingMiddleware) GetUserInfo(ctx context.Context, id int) (u *models.User, err error) {
+func (l *loggingMiddleware) GetUserInfo(ctx context.Context, id int64) (u *models.User, err error) {
 	l.logger.Infow(module,
 		"Action", "GetUserByEmail",
 		"Request", id,

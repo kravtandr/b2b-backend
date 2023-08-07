@@ -1,6 +1,8 @@
 package setup
 
 import (
+	chatd "b2b/m/internal/gateway/chat/delivery"
+	chatu "b2b/m/internal/gateway/chat/usecase"
 	cd "b2b/m/internal/gateway/company/delivery"
 	company_usecase "b2b/m/internal/gateway/company/usecase"
 	"b2b/m/internal/gateway/config"
@@ -16,9 +18,12 @@ import (
 	"b2b/m/pkg/grpc_errors"
 	"b2b/m/pkg/helpers"
 	auth_service "b2b/m/pkg/services/auth"
+	chat_service "b2b/m/pkg/services/chat"
 	company_service "b2b/m/pkg/services/company"
 	fastOrder_service "b2b/m/pkg/services/fastOrder"
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
+	"time"
+
 	"gopkg.in/webdeskltd/dadata.v2"
 
 	"google.golang.org/grpc"
@@ -74,13 +79,26 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 	if err != nil {
 		return p, stopFunc, err
 	}
-	productsCategoriesGRPC := productsCategories_service.NewProductsCategoriesServiceClient(productsCategoriesConn)
-	productsCategoriesUseCase := productsCategories_usecase.NewProductsCategoriesUseCase(productsCategoriesGRPC)
+	ProductsCategoriesGRPC := productsCategories_service.NewProductsCategoriesServiceClient(productsCategoriesConn)
+	productsCategoriesUseCase := productsCategories_usecase.NewProductsCategoriesUseCase(ProductsCategoriesGRPC)
 	productsCategoriesDelivery := pcd.NewProductsCategoriesDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
 		),
 		productsCategoriesUseCase,
+	)
+
+	ChatConn, err := grpc.Dial(cfg.ChatServiceEndpoint, grpc.WithTimeout(5*time.Second), grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return p, stopFunc, err
+	}
+	chatGRPC := chat_service.NewChatServiceClient(ChatConn)
+	chatUsecase := chatu.NewChatUsecase(chatGRPC, companyGRPC, ProductsCategoriesGRPC)
+	chatDelivery := chatd.NewChatDelivery(
+		error_adapter.NewGrpcToHttpAdapter(
+			grpc_errors.UserGatewayError, grpc_errors.CommonError,
+		),
+		chatUsecase,
 	)
 
 	p = router.SetupRouter(router.RouterConfig{
@@ -89,6 +107,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		CompanyDelivery:            companyDelivery,
 		FastOrderDelivery:          fastOrderDelivery,
 		ProductsCategoriesDelivery: productsCategoriesDelivery,
+		ChatDelivery:               chatDelivery,
 		Logger:                     cfg.Logger,
 	})
 

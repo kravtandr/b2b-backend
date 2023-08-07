@@ -56,6 +56,26 @@ func (mr *MockCompanyServiceClientMockRecorder) GetCompanyById(ctx, in interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyById", reflect.TypeOf((*MockCompanyServiceClient)(nil).GetCompanyById), varargs...)
 }
 
+// GetCompanyByProductId mocks base method.
+func (m *MockCompanyServiceClient) GetCompanyByProductId(ctx context.Context, in *company_service.IdRequest, opts ...grpc.CallOption) (*company_service.GetPrivateCompanyResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetCompanyByProductId", varargs...)
+	ret0, _ := ret[0].(*company_service.GetPrivateCompanyResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCompanyByProductId indicates an expected call of GetCompanyByProductId.
+func (mr *MockCompanyServiceClientMockRecorder) GetCompanyByProductId(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyByProductId", reflect.TypeOf((*MockCompanyServiceClient)(nil).GetCompanyByProductId), varargs...)
+}
+
 // UpdateCompanyByOwnerId mocks base method.
 func (m *MockCompanyServiceClient) UpdateCompanyByOwnerId(ctx context.Context, in *company_service.UpdateCompanyRequest, opts ...grpc.CallOption) (*company_service.GetCompanyAndPostResponse, error) {
 	m.ctrl.T.Helper()
@@ -112,6 +132,21 @@ func (m *MockCompanyServiceServer) GetCompanyById(arg0 context.Context, arg1 *co
 func (mr *MockCompanyServiceServerMockRecorder) GetCompanyById(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyById", reflect.TypeOf((*MockCompanyServiceServer)(nil).GetCompanyById), arg0, arg1)
+}
+
+// GetCompanyByProductId mocks base method.
+func (m *MockCompanyServiceServer) GetCompanyByProductId(arg0 context.Context, arg1 *company_service.IdRequest) (*company_service.GetPrivateCompanyResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCompanyByProductId", arg0, arg1)
+	ret0, _ := ret[0].(*company_service.GetPrivateCompanyResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCompanyByProductId indicates an expected call of GetCompanyByProductId.
+func (mr *MockCompanyServiceServerMockRecorder) GetCompanyByProductId(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyByProductId", reflect.TypeOf((*MockCompanyServiceServer)(nil).GetCompanyByProductId), arg0, arg1)
 }
 
 // UpdateCompanyByOwnerId mocks base method.
