@@ -1,14 +1,19 @@
 syntax = "proto3";
 
 package services.productsCategories_service;
+import "third_party/go-proto-validators/validator.proto";
 option go_package = "b2b/m/pkg/services/productsCategories;productsCategories_service";
 
 message GetCategoryByID {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message GetProductByID {
-  int64 id = 1;
+  int64 id = 1[(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message SearchItemNameRequest {
@@ -19,6 +24,27 @@ message SearchItemNameWithSkipLimitRequest {
   string name = 1;
   int64 skip = 2;
   int64 limit = 3;
+}
+
+message AddProductRequest {
+  string name = 1;
+  int64 category_id = 2 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  sqlNullString description = 3;
+  int64 price = 4;
+  int64 amount = 5;
+  string pay_way = 6;
+  string adress = 7;
+  string delivery_way = 8;
+  string product_photo = 9;
+  string docs = 10;
+  int64 user_id = 11 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64 company_id = 12 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message sqlNullString {
@@ -54,6 +80,7 @@ message GetProductsListResponse {
 }
 
 service ProductsCategoriesService {
+  rpc AddProduct(AddProductRequest) returns (GetProduct) {}
   rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
   rpc GetProductById(GetProductByID) returns (GetProduct) {}
   rpc SearchCategories(SearchItemNameWithSkipLimitRequest) returns (GetCategories) {}

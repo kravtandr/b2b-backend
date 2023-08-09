@@ -19,32 +19,13 @@ const CategoryByIdURL = "/category"
 const SearchCategoryURL = "/search/categories"
 
 const ProductURL = "/product/{id}"
+const AddProductURL = "/product/add"
 const ProductsListURL = "/products/list"
 const SearchProductsURL = "/search/products"
 
 const CountryNameURL = "/country/{name}"
 const CountryIdURL = "/country/id/{id}"
 const CountryListURL = "/country/list"
-
-const SightURL = "/sight/{id}"
-const SightsByCountryURL = "/sights/{name}"
-const SightSearch = "/sights/search"
-const SightTag = "/sights/tag"
-const Tags = "/tags"
-const RandomTags = "/random/tags"
-
-const ReviewAddURL = "/review"
-const ReviewURL = "/review/{id}"
-
-const TripPostURL = "/trip"
-const TripURL = "/trip/{id}"
-const SightsByTripURL = "/trip/sights/{id}"
-const TripsByUserURL = "/trip/user"
-const AddTripUserURL = "/trip/user/{id}"
-const ShareTripURL = "/trip/share/{id}"
-const SharedTripURL = "/trip/share/{code}/{id}"
-
-const ShareTrip = "/trip/share/"
 
 const UploadURL = "/upload"
 const AvatarDirPath = "/avatars/"

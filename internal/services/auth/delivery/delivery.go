@@ -190,6 +190,45 @@ func (a *authDelivery) GetUserIdByCookie(ctx context.Context, request *auth_serv
 	return &auth_service.UserId{Id: responce}, nil
 }
 
+func (a *authDelivery) GetUsersCompany(ctx context.Context, request *auth_service.UserIdRequest) (*auth_service.GetPrivateCompanyResponse, error) {
+	response, err := a.authUsecase.GetUsersCompany(ctx, request.Id)
+	if err != nil {
+		return &auth_service.GetPrivateCompanyResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.GetPrivateCompanyResponse{
+		Id:           response.Id,
+		Name:         response.Name,
+		Description:  response.Description,
+		LegalName:    response.LegalName,
+		Itn:          response.Itn,
+		Psrn:         response.Psrn,
+		Address:      response.Address,
+		LegalAddress: response.LegalAddress,
+		Email:        response.Email,
+		Phone:        response.Phone,
+		Link:         response.Link,
+		Activity:     response.Activity,
+		OwnerId:      response.OwnerId,
+		Rating:       response.Rating,
+		Verified:     response.Verified,
+	}, nil
+}
+
+func (a *authDelivery) GetCompanyUserLink(ctx context.Context, request *auth_service.UserAndCompanyIdsRequest) (*auth_service.GetCompanyUserLinkResponse, error) {
+	response, err := a.authUsecase.GetCompanyUserLink(ctx, request.UserId, request.CompanyId)
+	if err != nil {
+		return &auth_service.GetCompanyUserLinkResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.GetCompanyUserLinkResponse{
+		Post:      response.Post,
+		CompanyId: response.CompanyId,
+		UserId:    response.UserId,
+		Itn:       response.Itn,
+	}, nil
+}
+
 func NewAuthDelivery(
 	authUsecase usecase.AuthUseCase,
 	errorAdapter error_adapter.ErrorAdapter,

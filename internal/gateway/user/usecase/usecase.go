@@ -118,18 +118,52 @@ func (u *userUsecase) Logout(ctx context.Context, cookie string) error {
 }
 
 func (u *userUsecase) Profile(ctx context.Context, userID int64) (*models.Profile, error) {
-	response, err := u.AuthGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: int64(userID)})
+	userInfo, err := u.AuthGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: int64(userID)})
+	if err != nil {
+		return nil, err
+	}
+	usersCompany, err := u.AuthGRPC.GetUsersCompany(ctx, &auth_service.UserIdRequest{Id: int64(userID)})
+	if err != nil {
+		return nil, err
+	}
+	companyUserLink, err := u.AuthGRPC.GetCompanyUserLink(ctx, &auth_service.UserAndCompanyIdsRequest{
+		UserId:    userID,
+		CompanyId: usersCompany.Id,
+	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &models.Profile{
 		Id:          userID,
-		Name:        response.Name,
-		Surname:     response.Surname,
-		Avatar:      response.Image,
-		Email:       response.Email,
-		Description: response.Description,
+		Name:        userInfo.Name,
+		Surname:     userInfo.Surname,
+		Avatar:      userInfo.Image,
+		Email:       userInfo.Email,
+		Description: userInfo.Description,
+		Company: models.Company{
+			Id:           usersCompany.Id,
+			Name:         usersCompany.Name,
+			Description:  usersCompany.Description,
+			LegalName:    usersCompany.LegalName,
+			Itn:          usersCompany.Itn,
+			Psrn:         usersCompany.Psrn,
+			Address:      usersCompany.Address,
+			LegalAddress: usersCompany.LegalAddress,
+			Email:        usersCompany.Email,
+			Phone:        usersCompany.Phone,
+			Link:         usersCompany.Link,
+			Activity:     usersCompany.Activity,
+			OwnerId:      usersCompany.OwnerId,
+			Rating:       usersCompany.Rating,
+			Verified:     usersCompany.Verified,
+		},
+		CompanyUser: models.CompanyUser{
+			Post:      companyUserLink.Post,
+			CompanyId: companyUserLink.CompanyId,
+			UserId:    companyUserLink.UserId,
+			Itn:       companyUserLink.Itn,
+		},
 	}, nil
 }
 
@@ -190,30 +224,6 @@ func (u *userUsecase) UpdateProfile(ctx context.Context, userID int64, request *
 		Post: updatedCompany.Post,
 	}, nil
 }
-
-//func (u *userUsecase) UpdateProfile(ctx context.Context, userID int, request *models.UpdateProfileRequest) (*models.Profile, error) {
-//	response, err := u.AuthGRPC.UpdateUser(ctx, &auth_service.UpdateUserRequest{
-//		Id:          int64(userID),
-//		Name:        request.Name,
-//		Surname:     request.Surname,
-//		Email:       request.Email,
-//		Description: request.Description,
-//		Password:    request.Password,
-//		Image:       request.Avatar,
-//	})
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return &models.Profile{
-//		Id:          userID,
-//		Name:        response.Name,
-//		Surname:     response.Surname,
-//		Avatar:      response.Image,
-//		Email:       response.Email,
-//		Description: response.Description,
-//	}, nil
-//}
 
 func (u *userUsecase) GetUserInfo(ctx context.Context, id int64) (*models.Profile, error) {
 	response, err := u.AuthGRPC.GetUserInfo(ctx, &auth_service.GetUserRequest{Id: int64(id)})

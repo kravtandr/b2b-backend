@@ -7,6 +7,7 @@ import (
 )
 
 type ProductsCategoriesUseCase interface {
+	AddProduct(ctx context.Context, Product *models.Product, CompaniesProducts *models.CompaniesProducts, userId int64, companyId int64, categoryId int64) (*models.Product, error)
 	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
 	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
@@ -32,6 +33,23 @@ func (a *productsCategoriesUseCase) GetProductById(ctx context.Context, ProductI
 		return &models.Product{}, err
 	}
 	return category, nil
+}
+
+func (a *productsCategoriesUseCase) AddProduct(ctx context.Context, Product *models.Product, CompaniesProducts *models.CompaniesProducts, userId int64, companyId int64, categoryId int64) (*models.Product, error) {
+	product, err := a.repo.AddProduct(ctx, Product)
+	if err != nil {
+		return &models.Product{}, err
+	}
+	err = a.repo.AddProductsCategoriesLink(ctx, Product.Id, categoryId)
+	if err != nil {
+		return &models.Product{}, err
+	}
+	CompaniesProducts.ProductId = product.Id
+	err = a.repo.AddCompaniesProductsLink(ctx, CompaniesProducts)
+	if err != nil {
+		return &models.Product{}, err
+	}
+	return product, nil
 }
 
 func (a *productsCategoriesUseCase) SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error) {

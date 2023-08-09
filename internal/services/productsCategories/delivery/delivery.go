@@ -7,12 +7,45 @@ import (
 	"b2b/m/pkg/error_adapter"
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
 	"context"
+	"database/sql"
 )
 
 type productsCategoriesDelivery struct {
 	productsCategoriesUseCase usecase.ProductsCategoriesUseCase
 	errorAdapter              error_adapter.ErrorAdapter
 	productsCategories_service.UnimplementedProductsCategoriesServiceServer
+}
+
+func (a *productsCategoriesDelivery) AddProduct(ctx context.Context, request *productsCategories_service.AddProductRequest) (*productsCategories_service.GetProduct, error) {
+	resp, err := a.productsCategoriesUseCase.AddProduct(ctx, &models.Product{
+		Name: request.Name,
+		Description: sql.NullString{
+			String: request.Description.String_,
+			Valid:  request.Description.Valid},
+		Price: request.Price,
+		Photo: request.ProductPhoto,
+		Docs:  request.Docs,
+	}, &models.CompaniesProducts{
+		CompanyId:   request.CompanyId,
+		AddedBy:     request.UserId,
+		Amount:      request.Amount,
+		PayWay:      request.PayWay,
+		DeliveryWay: request.DeliveryWay,
+		Adress:      request.Adress,
+	}, request.UserId, request.CompanyId, request.CategoryId)
+	if err != nil {
+		return &productsCategories_service.GetProduct{}, a.errorAdapter.AdaptError(err)
+	}
+	description := productsCategories_service.SqlNullString{
+		String_: resp.Description.String,
+		Valid:   resp.Description.Valid}
+	return &productsCategories_service.GetProduct{
+		Id:          resp.Id,
+		Name:        resp.Name,
+		Description: &description,
+		Price:       resp.Price,
+		Photo:       resp.Photo,
+	}, nil
 }
 
 func (a *productsCategoriesDelivery) GetProductsList(ctx context.Context, request *productsCategories_service.GetProductsListRequest) (*productsCategories_service.GetProductsListResponse, error) {

@@ -45,6 +45,60 @@ func (l *loggingMiddleware) GetCategoryById(ctx context.Context, CategoryId *mod
 	return l.next.GetCategoryById(ctx, CategoryId)
 }
 
+func (l *loggingMiddleware) AddProduct(ctx context.Context, Product *models.Product) (c *models.Product, err error) {
+	l.logger.Infow(module,
+		"Action", "AddProduct",
+		"Request", Product,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "AddProduct",
+				"Request", Product,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.AddProduct(ctx, Product)
+}
+
+func (l *loggingMiddleware) AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) (err error) {
+	l.logger.Infow(module,
+		"Action", "AddProductsCategoriesLink",
+		"Request", productId, categoryId,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "AddProductsCategoriesLink",
+				"Request", productId, categoryId,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.AddProductsCategoriesLink(ctx, productId, categoryId)
+}
+
+func (l *loggingMiddleware) AddCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) (err error) {
+	l.logger.Infow(module,
+		"Action", "AddCompaniesProductsLink",
+		"Request", CompaniesProducts,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "AddCompaniesProductsLink",
+				"Request", CompaniesProducts,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.AddCompaniesProductsLink(ctx, CompaniesProducts)
+}
+
 func (l *loggingMiddleware) GetProductById(ctx context.Context, ProductId *models.ProductId) (c *models.Product, err error) {
 	l.logger.Infow(module,
 		"Action", "GetProductById",

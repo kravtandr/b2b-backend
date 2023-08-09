@@ -16,6 +16,9 @@ type ProductsCategoriesRepository interface {
 	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error)
+	AddProduct(ctx context.Context, Product *models.Product) (*models.Product, error)
+	AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error
+	AddCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error
 }
 
 type productsCategoriesRepository struct {
@@ -53,6 +56,34 @@ func (a productsCategoriesRepository) GetProductById(ctx context.Context, Produc
 		return &models.Product{}, err
 	}
 	return product, nil
+}
+
+func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *models.Product) (*models.Product, error) {
+	query := a.queryFactory.CreateAddProduct(Product)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+
+	product := &models.Product{}
+	if err := row.Scan(
+		&product.Id, &product.Name, &product.Description, &product.Price, &product.Photo,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			return &models.Product{}, errors.ProductDoesNotExist
+		}
+		return &models.Product{}, err
+	}
+	return product, nil
+}
+
+func (a productsCategoriesRepository) AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error {
+	query := a.queryFactory.CreateAddProductsCategoriesLink(productId, categoryId)
+	_ = a.conn.QueryRow(ctx, query.Request, query.Params...)
+	return nil
+}
+
+func (a productsCategoriesRepository) AddCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error {
+	query := a.queryFactory.CreateAddCompaniesProductsLink(CompaniesProducts)
+	_ = a.conn.QueryRow(ctx, query.Request, query.Params...)
+	return nil
 }
 
 func (a productsCategoriesRepository) SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error) {

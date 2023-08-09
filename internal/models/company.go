@@ -65,6 +65,13 @@ type CompanyWithCookie struct {
 	//Docks        []string `json:"docs"`
 }
 
+type CompanyUser struct {
+	Post      string `json:"post"`
+	CompanyId int64  `json:"company_id"`
+	UserId    int64  `json:"user_id"`
+	Itn       string `json:"itn"`
+}
+
 type CompanyAndOwner struct {
 	Owner   models.User `json:"owner"`
 	Company Company     `json:"company"`

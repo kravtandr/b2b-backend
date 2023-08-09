@@ -36,6 +36,26 @@ func (m *MockProductsCategoriesServiceClient) EXPECT() *MockProductsCategoriesSe
 	return m.recorder
 }
 
+// AddProduct mocks base method.
+func (m *MockProductsCategoriesServiceClient) AddProduct(ctx context.Context, in *productsCategories_service.AddProductRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProduct, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "AddProduct", varargs...)
+	ret0, _ := ret[0].(*productsCategories_service.GetProduct)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AddProduct indicates an expected call of AddProduct.
+func (mr *MockProductsCategoriesServiceClientMockRecorder) AddProduct(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddProduct", reflect.TypeOf((*MockProductsCategoriesServiceClient)(nil).AddProduct), varargs...)
+}
+
 // GetCategoryById mocks base method.
 func (m *MockProductsCategoriesServiceClient) GetCategoryById(ctx context.Context, in *productsCategories_service.GetCategoryByID, opts ...grpc.CallOption) (*productsCategories_service.GetCategory, error) {
 	m.ctrl.T.Helper()
@@ -157,6 +177,21 @@ func NewMockProductsCategoriesServiceServer(ctrl *gomock.Controller) *MockProduc
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockProductsCategoriesServiceServer) EXPECT() *MockProductsCategoriesServiceServerMockRecorder {
 	return m.recorder
+}
+
+// AddProduct mocks base method.
+func (m *MockProductsCategoriesServiceServer) AddProduct(arg0 context.Context, arg1 *productsCategories_service.AddProductRequest) (*productsCategories_service.GetProduct, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddProduct", arg0, arg1)
+	ret0, _ := ret[0].(*productsCategories_service.GetProduct)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AddProduct indicates an expected call of AddProduct.
+func (mr *MockProductsCategoriesServiceServerMockRecorder) AddProduct(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddProduct", reflect.TypeOf((*MockProductsCategoriesServiceServer)(nil).AddProduct), arg0, arg1)
 }
 
 // GetCategoryById mocks base method.

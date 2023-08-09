@@ -79,22 +79,40 @@ func (l *loggingMiddleware) UpdateUser(ctx context.Context, user *models.User) (
 	return l.next.UpdateUser(ctx, user)
 }
 
-func (l *loggingMiddleware) GetUserCompany(ctx context.Context, ID int64) (u *company_models.Company, err error) {
+func (l *loggingMiddleware) GetUsersCompany(ctx context.Context, userId int64) (u *company_models.Company, err error) {
 	l.logger.Infow(module,
-		"Action", "GetUserCompany",
-		"Request", ID,
+		"Action", "GetUsersCompany",
+		"Request", userId,
 	)
 	defer func() {
 		if err != nil {
 			l.logger.Infow(module,
-				"Action", "GetUserCompany",
-				"Request", ID,
+				"Action", "GetUsersCompany",
+				"Request", userId,
 				"Error", err,
 			)
 		}
 	}()
 
-	return l.next.GetUserCompany(ctx, ID)
+	return l.next.GetUsersCompany(ctx, userId)
+}
+
+func (l *loggingMiddleware) GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (u *company_models.CompaniesUsersLink, err error) {
+	l.logger.Infow(module,
+		"Action", "GetCompanyUserLink",
+		"Request", userId, companyId,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetCompanyUserLink",
+				"Request", userId, companyId,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetCompanyUserLink(ctx, userId, companyId)
 }
 func (l *loggingMiddleware) CreateUser(ctx context.Context, user *models.User) (u *models.User, err error) {
 	l.logger.Infow(module,
@@ -203,7 +221,7 @@ func (l *loggingMiddleware) RemoveUserSession(ctx context.Context, hash string) 
 
 func (l *loggingMiddleware) GetUserInfo(ctx context.Context, id int64) (u *models.User, err error) {
 	l.logger.Infow(module,
-		"Action", "GetUserByEmail",
+		"Action", "GetUserInfo",
 		"Request", id,
 	)
 	defer func() {

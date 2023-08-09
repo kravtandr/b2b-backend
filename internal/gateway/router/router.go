@@ -44,7 +44,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.GET(cnst.ProfileURL, lgrMw(authMw(cfg.UserDelivery.GetProfile)))
 	p.PATCH(cnst.ProfileURL, lgrMw(authMw(cfg.UserDelivery.UpdateProfile)))
 	p.POST(cnst.RegisterURL, lgrMw(cfg.UserDelivery.Register))
-	p.GET(cnst.UserInfoURL, lgrMw(cfg.UserDelivery.GetUserInfo))
+	//p.GET(cnst.UserInfoURL, lgrMw(cfg.UserDelivery.GetUserInfo))
 	p.POST(cnst.UserCheckEmailURL, lgrMw(cfg.UserDelivery.CheckEmail))
 	p.GET(cnst.UserInfoByCookieURL, lgrMw(authMw(cfg.UserDelivery.GetUserByCookie)))
 
@@ -63,6 +63,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.GET(cnst.ProductsListURL, lgrMw(cfg.ProductsCategoriesDelivery.GetProductsList))
 	p.POST(cnst.SearchProductsURL, lgrMw(cfg.ProductsCategoriesDelivery.SearchProducts))
 	p.GET(cnst.ProductChatURL, lgrMw(cfg.ChatDelivery.WSUpgradeRequest))
+	p.POST(cnst.AddProductURL, lgrMw(authMw(cfg.ProductsCategoriesDelivery.AddProduct)))
 
 	p.GET(cnst.AllChats, lgrMw(authMw(cfg.ChatDelivery.GetAllChatsAndLastMsg)))
 	p.GET(cnst.AllMsgsFromChat, lgrMw(authMw(cfg.ChatDelivery.GetMsgsFromChat)))

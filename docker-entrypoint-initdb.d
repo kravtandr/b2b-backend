@@ -49,7 +49,8 @@ CREATE TABLE Products
     name        TEXT        NOT NULL,
     description TEXT        ,
     price       INT         NOT NULL,
-    photo       TEXT        
+    photo       TEXT        DEFAULT 'empty',
+    docs        TEXT        DEFAULT 'empty'
 );
 
 CREATE TABLE ProductsSubCategories
@@ -168,6 +169,9 @@ CREATE TABLE CompaniesProducts
     company_id      INT         NOT NULL,
     product_id      INT         NOT NULL,
     amount          INT         NOT NULL,
+    pay_way         TEXT        DEFAULT 'empty',
+    delivery_way    TEXT        DEFAULT 'empty',
+    adress          TEXT        DEFAULT 'empty',
     FOREIGN KEY (company_id) REFERENCES Companies (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
 );

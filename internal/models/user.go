@@ -1,12 +1,14 @@
 package models
 
 type Profile struct {
-	Id          int64  `json:"id"`
-	Name        string `json:"name" valid:"required"`
-	Surname     string `json:"surname" valid:"required"`
-	Avatar      string `json:"avatar"`
-	Email       string `json:"email"`
-	Description string `json:"description"`
+	Id          int64       `json:"id"`
+	Name        string      `json:"name" valid:"required"`
+	Surname     string      `json:"surname" valid:"required"`
+	Avatar      string      `json:"avatar"`
+	Email       string      `json:"email"`
+	Description string      `json:"description"`
+	Company     Company     `json:"company"`
+	CompanyUser CompanyUser `json:"companyUser"`
 }
 
 type UpdateProfileRequest struct {

@@ -31,17 +31,10 @@ CREATE TABLE Categories
 (
     id          SERIAL      NOT NULL PRIMARY KEY,
     name        TEXT        NOT NULL ,
-    description TEXT
+    description TEXT        DEFAULT 'empty',
+    parent_id   INT
 );
 
-CREATE TABLE SubCategories
-(
-    id          SERIAL      NOT NULL PRIMARY KEY,
-    name        TEXT        NOT NULL,
-    description TEXT        ,
-    category_id INT         NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES Categories (id) ON DELETE CASCADE
-);
 
 CREATE TABLE Products
 (
@@ -49,10 +42,13 @@ CREATE TABLE Products
     name        TEXT        NOT NULL,
     description TEXT        ,
     price       INT         NOT NULL,
-    photo       TEXT        
+    photo       TEXT        DEFAULT 'empty',
+    docs        TEXT        DEFAULT 'empty',
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE ProductsSubCategories
+CREATE TABLE ProductsCategories
 (
     id              SERIAL      NOT NULL PRIMARY KEY,
     category_id     INT         NOT NULL,
@@ -167,7 +163,12 @@ CREATE TABLE CompaniesProducts
     id              SERIAL      NOT NULL PRIMARY KEY,
     company_id      INT         NOT NULL,
     product_id      INT         NOT NULL,
+    addedBy      INT         NOT NULL,
     amount          INT         NOT NULL,
+    pay_way         TEXT        DEFAULT 'empty',
+    delivery_way    TEXT        DEFAULT 'empty',
+    adress          TEXT        DEFAULT 'empty',
+    FOREIGN KEY (addedBy) REFERENCES Users (id) ON DELETE CASCADE,
     FOREIGN KEY (company_id) REFERENCES Companies (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
 );

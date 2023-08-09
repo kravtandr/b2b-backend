@@ -799,6 +799,239 @@ var _ interface {
 	ErrorName() string
 } = GetUserRequestValidationError{}
 
+// Validate checks the field values on UserIdRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *UserIdRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserIdRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in UserIdRequestMultiError, or
+// nil if none found.
+func (m *UserIdRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserIdRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetId() <= 0 {
+		err := UserIdRequestValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return UserIdRequestMultiError(errors)
+	}
+	return nil
+}
+
+// UserIdRequestMultiError is an error wrapping multiple validation errors
+// returned by UserIdRequest.ValidateAll() if the designated constraints
+// aren't met.
+type UserIdRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserIdRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserIdRequestMultiError) AllErrors() []error { return m }
+
+// UserIdRequestValidationError is the validation error returned by
+// UserIdRequest.Validate if the designated constraints aren't met.
+type UserIdRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserIdRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserIdRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserIdRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserIdRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserIdRequestValidationError) ErrorName() string { return "UserIdRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UserIdRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserIdRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserIdRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserIdRequestValidationError{}
+
+// Validate checks the field values on UserAndCompanyIdsRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UserAndCompanyIdsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserAndCompanyIdsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UserAndCompanyIdsRequestMultiError, or nil if none found.
+func (m *UserAndCompanyIdsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserAndCompanyIdsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetUserId() <= 0 {
+		err := UserAndCompanyIdsRequestValidationError{
+			field:  "UserId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetCompanyId() <= 0 {
+		err := UserAndCompanyIdsRequestValidationError{
+			field:  "CompanyId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return UserAndCompanyIdsRequestMultiError(errors)
+	}
+	return nil
+}
+
+// UserAndCompanyIdsRequestMultiError is an error wrapping multiple validation
+// errors returned by UserAndCompanyIdsRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UserAndCompanyIdsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserAndCompanyIdsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserAndCompanyIdsRequestMultiError) AllErrors() []error { return m }
+
+// UserAndCompanyIdsRequestValidationError is the validation error returned by
+// UserAndCompanyIdsRequest.Validate if the designated constraints aren't met.
+type UserAndCompanyIdsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserAndCompanyIdsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserAndCompanyIdsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserAndCompanyIdsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserAndCompanyIdsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserAndCompanyIdsRequestValidationError) ErrorName() string {
+	return "UserAndCompanyIdsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UserAndCompanyIdsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserAndCompanyIdsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserAndCompanyIdsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserAndCompanyIdsRequestValidationError{}
+
 // Validate checks the field values on FastRegisterRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -2188,3 +2421,263 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CheckEmailRequestValidationError{}
+
+// Validate checks the field values on GetPrivateCompanyResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetPrivateCompanyResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetPrivateCompanyResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetPrivateCompanyResponseMultiError, or nil if none found.
+func (m *GetPrivateCompanyResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetPrivateCompanyResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	// no validation rules for Description
+
+	// no validation rules for LegalName
+
+	// no validation rules for Itn
+
+	// no validation rules for Psrn
+
+	// no validation rules for Address
+
+	// no validation rules for LegalAddress
+
+	// no validation rules for Email
+
+	// no validation rules for Phone
+
+	// no validation rules for Link
+
+	// no validation rules for Activity
+
+	// no validation rules for OwnerId
+
+	// no validation rules for Rating
+
+	// no validation rules for Verified
+
+	if len(errors) > 0 {
+		return GetPrivateCompanyResponseMultiError(errors)
+	}
+	return nil
+}
+
+// GetPrivateCompanyResponseMultiError is an error wrapping multiple validation
+// errors returned by GetPrivateCompanyResponse.ValidateAll() if the
+// designated constraints aren't met.
+type GetPrivateCompanyResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetPrivateCompanyResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetPrivateCompanyResponseMultiError) AllErrors() []error { return m }
+
+// GetPrivateCompanyResponseValidationError is the validation error returned by
+// GetPrivateCompanyResponse.Validate if the designated constraints aren't met.
+type GetPrivateCompanyResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetPrivateCompanyResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetPrivateCompanyResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetPrivateCompanyResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetPrivateCompanyResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetPrivateCompanyResponseValidationError) ErrorName() string {
+	return "GetPrivateCompanyResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetPrivateCompanyResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetPrivateCompanyResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetPrivateCompanyResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetPrivateCompanyResponseValidationError{}
+
+// Validate checks the field values on GetCompanyUserLinkResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetCompanyUserLinkResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetCompanyUserLinkResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetCompanyUserLinkResponseMultiError, or nil if none found.
+func (m *GetCompanyUserLinkResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetCompanyUserLinkResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Post
+
+	if m.GetCompanyId() <= 0 {
+		err := GetCompanyUserLinkResponseValidationError{
+			field:  "CompanyId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetUserId() <= 0 {
+		err := GetCompanyUserLinkResponseValidationError{
+			field:  "UserId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for Itn
+
+	if len(errors) > 0 {
+		return GetCompanyUserLinkResponseMultiError(errors)
+	}
+	return nil
+}
+
+// GetCompanyUserLinkResponseMultiError is an error wrapping multiple
+// validation errors returned by GetCompanyUserLinkResponse.ValidateAll() if
+// the designated constraints aren't met.
+type GetCompanyUserLinkResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetCompanyUserLinkResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetCompanyUserLinkResponseMultiError) AllErrors() []error { return m }
+
+// GetCompanyUserLinkResponseValidationError is the validation error returned
+// by GetCompanyUserLinkResponse.Validate if the designated constraints aren't met.
+type GetCompanyUserLinkResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetCompanyUserLinkResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetCompanyUserLinkResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetCompanyUserLinkResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetCompanyUserLinkResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetCompanyUserLinkResponseValidationError) ErrorName() string {
+	return "GetCompanyUserLinkResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetCompanyUserLinkResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetCompanyUserLinkResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetCompanyUserLinkResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetCompanyUserLinkResponseValidationError{}

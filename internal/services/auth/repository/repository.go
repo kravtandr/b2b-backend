@@ -15,13 +15,14 @@ type AuthRepository interface {
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	GetUserByID(ctx context.Context, ID int64) (*models.User, error)
 	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
-	GetUserCompany(ctx context.Context, id int64) (*company_models.Company, error)
+	GetUsersCompany(ctx context.Context, userId int64) (*company_models.Company, error)
 	FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) error
 	UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
 	CreateUserSession(ctx context.Context, userID int64, hash string) error
 	ValidateUserSession(ctx context.Context, hash string) (int64, error)
 	RemoveUserSession(ctx context.Context, hash string) error
 	GetUserInfo(ctx context.Context, id int64) (*models.User, error)
+	GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error)
 }
 
 type authRepository struct {
@@ -115,7 +116,7 @@ func (a *authRepository) CreateUserSession(ctx context.Context, userID int64, ha
 	return nil
 }
 
-func (a *authRepository) GetUserCompany(ctx context.Context, id int64) (*company_models.Company, error) {
+func (a *authRepository) GetUsersCompany(ctx context.Context, userId int64) (*company_models.Company, error) {
 	conn, err := a.conn.Acquire(context.Background())
 	if err != nil {
 		return nil, err
@@ -125,13 +126,32 @@ func (a *authRepository) GetUserCompany(ctx context.Context, id int64) (*company
 	var company company_models.Company
 	err = conn.QueryRow(context.Background(),
 		createCompanyByUserId,
-		id,
+		userId,
 	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId, &company.Rating, &company.Verified)
 	if err != nil {
 		return nil, err
 	}
 
 	return &company, nil
+}
+
+func (a *authRepository) GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error) {
+	conn, err := a.conn.Acquire(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Release()
+
+	var cULink company_models.CompaniesUsersLink
+	err = conn.QueryRow(context.Background(),
+		createGetCompanyUserLink,
+		userId, companyId,
+	).Scan(&cULink.Id, &cULink.Post, &cULink.CompanyId, &cULink.UserId, &cULink.Itn)
+	if err != nil {
+		return nil, err
+	}
+
+	return &cULink, nil
 }
 
 func (a *authRepository) ValidateUserSession(ctx context.Context, hash string) (int64, error) {

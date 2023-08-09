@@ -19,7 +19,7 @@ type UserDelivery interface {
 	Login(ctx *fasthttp.RequestCtx)
 	Logout(ctx *fasthttp.RequestCtx)
 	Register(ctx *fasthttp.RequestCtx)
-	GetUserInfo(ctx *fasthttp.RequestCtx)
+	GetUserInfoById(ctx *fasthttp.RequestCtx)
 	GetUserByCookie(ctx *fasthttp.RequestCtx)
 	FastRegister(ctx *fasthttp.RequestCtx)
 	GetProfile(ctx *fasthttp.RequestCtx)
@@ -48,7 +48,7 @@ func (u *userDelivery) Login(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 	log.Println("Login SetCookie:", response.Cookie, " id ", response.Id, " email ", response.Email)
@@ -86,7 +86,7 @@ func (u *userDelivery) FastRegister(ctx *fasthttp.RequestCtx) {
 	}
 	log.Println("FastRegister SetCookie:", response.Cookie, " id ", response.Id, " email ", response.Email)
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 
@@ -109,7 +109,7 @@ func (u *userDelivery) Register(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 
@@ -126,7 +126,7 @@ func (u *userDelivery) GetProfile(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
@@ -141,7 +141,7 @@ func (u *userDelivery) GetUserByCookie(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 	log.Println("GetUserByCookie SetCookie:", string(ctx.Request.Header.Cookie(cnst.CookieName)), " id ", response.Id, " email ", response.Email)
@@ -164,7 +164,7 @@ func (u *userDelivery) UpdateProfile(ctx *fasthttp.RequestCtx) {
 	}
 	response, err := u.manager.UpdateProfile(ctx, userID, request)
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
@@ -185,12 +185,12 @@ func (u *userDelivery) CheckEmail(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, err := chttp.ApiResp(publicUser, err)
+	b, _ := chttp.ApiResp(publicUser, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
 
-func (u *userDelivery) GetUserInfo(ctx *fasthttp.RequestCtx) {
+func (u *userDelivery) GetUserInfoById(ctx *fasthttp.RequestCtx) {
 	param, err := strconv.ParseInt(ctx.UserValue("id").(string), 10, 64)
 	if err != nil {
 		log.Println("GetUserInfo ERROR ParseInt", err)
@@ -204,7 +204,7 @@ func (u *userDelivery) GetUserInfo(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte(httpError.MSG))
 		return
 	}
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }

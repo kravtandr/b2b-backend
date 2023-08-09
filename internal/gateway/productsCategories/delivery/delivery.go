@@ -8,6 +8,7 @@ import (
 	"b2b/m/pkg/error_adapter"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -15,6 +16,7 @@ import (
 )
 
 type ProductsCategoriesDelivery interface {
+	AddProduct(ctx *fasthttp.RequestCtx)
 	GetCategoryById(ctx *fasthttp.RequestCtx)
 	GetProductById(ctx *fasthttp.RequestCtx)
 	SearchCategories(ctx *fasthttp.RequestCtx)
@@ -25,6 +27,38 @@ type ProductsCategoriesDelivery interface {
 type productsCategoriesDelivery struct {
 	errorAdapter error_adapter.HttpAdapter
 	manager      usecase.ProductsCategoriesUseCase
+}
+
+func (u *productsCategoriesDelivery) AddProduct(ctx *fasthttp.RequestCtx) {
+	log.Println("Gateway AddProduct start")
+	var product = &models.AddProductByFormRequest{}
+	log.Println("Gateway AddProduct check_1")
+	if err := json.Unmarshal(ctx.Request.Body(), product); err != nil {
+		log.Println("Gateway AddProduct Unmarshal ERROR", err)
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+	var request = &models.UserInfoAndAddProductByFormRequest{}
+	log.Println("Gateway AddProduct check_2")
+	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
+	request.UserProfile.Id = userId
+	log.Println("Gateway AddProduct check_3")
+	log.Println("Gateway AddProduct check_4")
+	request.Product = *product
+	//request.UserProfile = *userInfo
+	log.Println("Gateway AddProduct check_5", request.Product, request.UserProfile)
+	response, err := u.manager.AddProduct(ctx, request)
+	if err != nil {
+		log.Println("Gateway AddProduct u.manager.AddProduct ERROR", err)
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, _ := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
 }
 
 func (u *productsCategoriesDelivery) GetCategoryById(ctx *fasthttp.RequestCtx) {
@@ -43,7 +77,7 @@ func (u *productsCategoriesDelivery) GetCategoryById(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
@@ -59,7 +93,7 @@ func (u *productsCategoriesDelivery) GetProductById(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte(httpError.MSG))
 		return
 	}
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
@@ -82,7 +116,7 @@ func (u *productsCategoriesDelivery) GetProductsList(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
@@ -114,7 +148,7 @@ func (u *productsCategoriesDelivery) SearchProducts(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }
@@ -146,7 +180,7 @@ func (u *productsCategoriesDelivery) SearchCategories(ctx *fasthttp.RequestCtx) 
 		return
 	}
 
-	b, err := chttp.ApiResp(response, err)
+	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 
@@ -165,7 +199,7 @@ func (u *productsCategoriesDelivery) SearchCategories(ctx *fasthttp.RequestCtx) 
 	// 	return
 	// }
 
-	// b, err := chttp.ApiResp(response, err)
+	// b, _ := chttp.ApiResp(response, err)
 	// ctx.SetStatusCode(http.StatusOK)
 	// ctx.SetBody(b)
 }

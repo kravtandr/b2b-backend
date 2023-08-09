@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductsCategoriesServiceClient interface {
+	AddProduct(ctx context.Context, in *AddProductRequest, opts ...grpc.CallOption) (*GetProduct, error)
 	GetCategoryById(ctx context.Context, in *GetCategoryByID, opts ...grpc.CallOption) (*GetCategory, error)
 	GetProductById(ctx context.Context, in *GetProductByID, opts ...grpc.CallOption) (*GetProduct, error)
 	SearchCategories(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetCategories, error)
@@ -35,6 +36,15 @@ type productsCategoriesServiceClient struct {
 
 func NewProductsCategoriesServiceClient(cc grpc.ClientConnInterface) ProductsCategoriesServiceClient {
 	return &productsCategoriesServiceClient{cc}
+}
+
+func (c *productsCategoriesServiceClient) AddProduct(ctx context.Context, in *AddProductRequest, opts ...grpc.CallOption) (*GetProduct, error) {
+	out := new(GetProduct)
+	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/AddProduct", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *productsCategoriesServiceClient) GetCategoryById(ctx context.Context, in *GetCategoryByID, opts ...grpc.CallOption) (*GetCategory, error) {
@@ -86,6 +96,7 @@ func (c *productsCategoriesServiceClient) GetProductsList(ctx context.Context, i
 // All implementations must embed UnimplementedProductsCategoriesServiceServer
 // for forward compatibility
 type ProductsCategoriesServiceServer interface {
+	AddProduct(context.Context, *AddProductRequest) (*GetProduct, error)
 	GetCategoryById(context.Context, *GetCategoryByID) (*GetCategory, error)
 	GetProductById(context.Context, *GetProductByID) (*GetProduct, error)
 	SearchCategories(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetCategories, error)
@@ -98,6 +109,9 @@ type ProductsCategoriesServiceServer interface {
 type UnimplementedProductsCategoriesServiceServer struct {
 }
 
+func (UnimplementedProductsCategoriesServiceServer) AddProduct(context.Context, *AddProductRequest) (*GetProduct, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddProduct not implemented")
+}
 func (UnimplementedProductsCategoriesServiceServer) GetCategoryById(context.Context, *GetCategoryByID) (*GetCategory, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCategoryById not implemented")
 }
@@ -125,6 +139,24 @@ type UnsafeProductsCategoriesServiceServer interface {
 
 func RegisterProductsCategoriesServiceServer(s grpc.ServiceRegistrar, srv ProductsCategoriesServiceServer) {
 	s.RegisterService(&ProductsCategoriesService_ServiceDesc, srv)
+}
+
+func _ProductsCategoriesService_AddProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductsCategoriesServiceServer).AddProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.productsCategories_service.ProductsCategoriesService/AddProduct",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductsCategoriesServiceServer).AddProduct(ctx, req.(*AddProductRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ProductsCategoriesService_GetCategoryById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -224,6 +256,10 @@ var ProductsCategoriesService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "services.productsCategories_service.ProductsCategoriesService",
 	HandlerType: (*ProductsCategoriesServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AddProduct",
+			Handler:    _ProductsCategoriesService_AddProduct_Handler,
+		},
 		{
 			MethodName: "GetCategoryById",
 			Handler:    _ProductsCategoriesService_GetCategoryById_Handler,

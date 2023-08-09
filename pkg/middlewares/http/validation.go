@@ -49,6 +49,7 @@ func (s *sessionValidator) ValidateSession(ctx *fasthttp.RequestCtx) (err error)
 		Cookie: string(ctx.Request.Header.Cookie(cnst.CookieName)),
 	})
 	if err != nil {
+		log.Println("Helpers ValidateSession ERROR With cookie: ", string(ctx.Request.Header.Cookie(cnst.CookieName)))
 		return err
 	}
 	ctx.SetUserValue(cnst.UserIDContextKey, response.UserId)

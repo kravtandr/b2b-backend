@@ -69,6 +69,21 @@ message GetUserRequest {
   }];
 }
 
+message UserIdRequest {
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+}
+
+message UserAndCompanyIdsRequest {
+  int64 user_id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64 company_id = 2 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+}
+
 message FastRegisterRequest {
   string name = 1;
   string legal_name = 2;
@@ -157,6 +172,35 @@ message CheckEmailRequest{
   }];
 }
 
+message GetPrivateCompanyResponse {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string legal_name = 4;
+  string itn = 5;
+  string psrn = 6;
+  string address = 7;
+  string legal_address = 8;
+  string email = 9;
+  string phone = 10;
+  string link = 11;
+  string activity = 12;
+  int64 owner_id = 13;
+  int64 rating = 14;
+  int64 verified = 15;
+}
+
+message GetCompanyUserLinkResponse {
+  int64 id = 1;
+  string post = 2;
+  int64 company_id = 3 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64 user_id = 4 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  string itn = 5;
+}
 
 
 
@@ -172,4 +216,6 @@ service AuthService {
   rpc GetUserByEmail(UserEmailRequest) returns (UserId) {}
   rpc GetUserIdByCookie(GetUserIdByCookieRequest) returns (UserId) {}
   rpc CheckEmail(CheckEmailRequest) returns (GetPublicUserResponse) {}
+  rpc GetUsersCompany (UserIdRequest) returns (GetPrivateCompanyResponse) {}
+  rpc GetCompanyUserLink (UserAndCompanyIdsRequest) returns (GetCompanyUserLinkResponse) {}
 }

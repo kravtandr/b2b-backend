@@ -77,6 +77,26 @@ func (mr *MockAuthServiceClientMockRecorder) FastRegister(ctx, in interface{}, o
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FastRegister", reflect.TypeOf((*MockAuthServiceClient)(nil).FastRegister), varargs...)
 }
 
+// GetCompanyUserLink mocks base method.
+func (m *MockAuthServiceClient) GetCompanyUserLink(ctx context.Context, in *auth_service.UserAndCompanyIdsRequest, opts ...grpc.CallOption) (*auth_service.GetCompanyUserLinkResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetCompanyUserLink", varargs...)
+	ret0, _ := ret[0].(*auth_service.GetCompanyUserLinkResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCompanyUserLink indicates an expected call of GetCompanyUserLink.
+func (mr *MockAuthServiceClientMockRecorder) GetCompanyUserLink(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyUserLink", reflect.TypeOf((*MockAuthServiceClient)(nil).GetCompanyUserLink), varargs...)
+}
+
 // GetUser mocks base method.
 func (m *MockAuthServiceClient) GetUser(ctx context.Context, in *auth_service.GetUserRequest, opts ...grpc.CallOption) (*auth_service.GetUserResponse, error) {
 	m.ctrl.T.Helper()
@@ -155,6 +175,26 @@ func (mr *MockAuthServiceClientMockRecorder) GetUserInfo(ctx, in interface{}, op
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserInfo", reflect.TypeOf((*MockAuthServiceClient)(nil).GetUserInfo), varargs...)
+}
+
+// GetUsersCompany mocks base method.
+func (m *MockAuthServiceClient) GetUsersCompany(ctx context.Context, in *auth_service.UserIdRequest, opts ...grpc.CallOption) (*auth_service.GetPrivateCompanyResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetUsersCompany", varargs...)
+	ret0, _ := ret[0].(*auth_service.GetPrivateCompanyResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsersCompany indicates an expected call of GetUsersCompany.
+func (mr *MockAuthServiceClientMockRecorder) GetUsersCompany(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersCompany", reflect.TypeOf((*MockAuthServiceClient)(nil).GetUsersCompany), varargs...)
 }
 
 // LoginUser mocks base method.
@@ -310,6 +350,21 @@ func (mr *MockAuthServiceServerMockRecorder) FastRegister(arg0, arg1 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FastRegister", reflect.TypeOf((*MockAuthServiceServer)(nil).FastRegister), arg0, arg1)
 }
 
+// GetCompanyUserLink mocks base method.
+func (m *MockAuthServiceServer) GetCompanyUserLink(arg0 context.Context, arg1 *auth_service.UserAndCompanyIdsRequest) (*auth_service.GetCompanyUserLinkResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCompanyUserLink", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.GetCompanyUserLinkResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCompanyUserLink indicates an expected call of GetCompanyUserLink.
+func (mr *MockAuthServiceServerMockRecorder) GetCompanyUserLink(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyUserLink", reflect.TypeOf((*MockAuthServiceServer)(nil).GetCompanyUserLink), arg0, arg1)
+}
+
 // GetUser mocks base method.
 func (m *MockAuthServiceServer) GetUser(arg0 context.Context, arg1 *auth_service.GetUserRequest) (*auth_service.GetUserResponse, error) {
 	m.ctrl.T.Helper()
@@ -368,6 +423,21 @@ func (m *MockAuthServiceServer) GetUserInfo(arg0 context.Context, arg1 *auth_ser
 func (mr *MockAuthServiceServerMockRecorder) GetUserInfo(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserInfo", reflect.TypeOf((*MockAuthServiceServer)(nil).GetUserInfo), arg0, arg1)
+}
+
+// GetUsersCompany mocks base method.
+func (m *MockAuthServiceServer) GetUsersCompany(arg0 context.Context, arg1 *auth_service.UserIdRequest) (*auth_service.GetPrivateCompanyResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsersCompany", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.GetPrivateCompanyResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsersCompany indicates an expected call of GetUsersCompany.
+func (mr *MockAuthServiceServerMockRecorder) GetUsersCompany(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersCompany", reflect.TypeOf((*MockAuthServiceServer)(nil).GetUsersCompany), arg0, arg1)
 }
 
 // LoginUser mocks base method.

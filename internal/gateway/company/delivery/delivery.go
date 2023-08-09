@@ -48,6 +48,19 @@ func (c *companyDelivery) GetCompanyById(ctx *fasthttp.RequestCtx) {
 	ctx.SetBody(b)
 }
 
+// func (c *companyDelivery) GetCompanyByUserCookie(ctx *fasthttp.RequestCtx) {
+// 	response, err := c.manager.GetCompanyByUserCookie(ctx, string(ctx.Request.Header.Cookie(cnst.CookieName)))
+// 	if err != nil {
+// 		httpError := c.errorAdapter.AdaptError(err)
+// 		ctx.SetStatusCode(httpError.Code)
+// 		ctx.SetBody([]byte(httpError.MSG))
+// 		return
+// 	}
+// 	b, err := chttp.ApiResp(response, err)
+// 	ctx.SetStatusCode(http.StatusOK)
+// 	ctx.SetBody(b)
+// }
+
 func NewCompanyDelivery(
 	errorAdapter error_adapter.HttpAdapter,
 	manager usecase.CompanyUseCase,

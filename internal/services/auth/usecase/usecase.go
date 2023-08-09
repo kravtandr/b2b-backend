@@ -20,6 +20,8 @@ type AuthUseCase interface {
 	UpdateUser(ctx context.Context, user *models.User) (*models.PublicUser, error)
 	GetUserInfo(ctx context.Context, id int64) (*models.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
+	GetUsersCompany(ctx context.Context, userId int64) (*company_models.Company, error)
+	GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error)
 }
 
 type authUseCase struct {
@@ -44,7 +46,7 @@ func (a *authUseCase) LoginUser(ctx context.Context, user *models.User) (models.
 		return models.CompanyWithCookie{}, err
 	}
 
-	userCompany, err := a.repo.GetUserCompany(ctx, repoUser.Id)
+	userCompany, err := a.repo.GetUsersCompany(ctx, repoUser.Id)
 	if err != nil {
 		return models.CompanyWithCookie{}, err
 	}
@@ -183,6 +185,14 @@ func (a *authUseCase) UpdateUser(ctx context.Context, user *models.User) (*model
 
 func (a *authUseCase) GetUserInfo(ctx context.Context, id int64) (*models.User, error) {
 	return a.repo.GetUserInfo(ctx, id)
+}
+
+func (a *authUseCase) GetUsersCompany(ctx context.Context, userId int64) (*company_models.Company, error) {
+	return a.repo.GetUsersCompany(ctx, userId)
+}
+
+func (a *authUseCase) GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error) {
+	return a.repo.GetCompanyUserLink(ctx, userId, companyId)
 }
 
 func NewAuthUseCase(
