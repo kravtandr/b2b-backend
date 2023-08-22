@@ -125,6 +125,10 @@ services:
     environment:
       - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
       - PRODUCTSCATEGORIES_GRPC_PORT=10126
+      - PRODUCTSCATEGORIES_MINIO_URL=host.docker.internal:9000
+      - PRODUCTSCATEGORIES_MINIO_USER=b2b
+      - PRODUCTSCATEGORIES_MINIO_PASS=b2b_pass
+      - PRODUCTSCATEGORIES_MINIO_SSL=false
     networks:
       - net
     restart: unless-stopped
@@ -178,6 +182,7 @@ services:
       - GATEWAY_COMPANY_ENDPOINT=host.docker.internal:10125
       - GATEWAY_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
       - GATEWAY_CHAT_ENDPOINT=host.docker.internal:10127
+      - GATEWAY_MINIO_ENDPOINT=host.docker.internal:9000
       - GATEWAY_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
     networks:
       - net

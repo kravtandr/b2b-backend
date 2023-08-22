@@ -37,7 +37,7 @@ message AddProductRequest {
   string pay_way = 6;
   string adress = 7;
   string delivery_way = 8;
-  string product_photo = 9;
+  repeated string product_photo = 9;
   string docs = 10;
   int64 user_id = 11 [(validate.rules).int64 = {
     gt: 0,
@@ -67,7 +67,7 @@ message GetProduct {
   string name = 2;
   sqlNullString description = 3;
   int64 price = 4;
-  string photo = 5;
+  repeated string photo = 5;
 }
 
 message GetProductsListRequest {

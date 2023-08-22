@@ -10,6 +10,7 @@ import (
 
 	"b2b/m/internal/services/productsCategories/config"
 	"b2b/m/internal/services/productsCategories/setup"
+
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -51,6 +52,22 @@ func main() {
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)
+
+	// //upload
+	// imageName := "test_png.png"
+	// filePath := "./test_png.png"
+	// info, err := minioClient.FPutObject(
+	// 	context.Background(),
+	// 	bucketName, // Константа с именем бакета
+	// 	imageName,
+	// 	filePath,
+	// 	minio.PutObjectOptions{ContentType: "image/png"},
+	// )
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	// log.Printf("Successfully uploaded %s of size %d\n", imageName, info.Size)
+	// fmt.Println("MINIP INFO", info)
 
 	defer func(sig os.Signal) {
 		logger.Info("msg", "received signal, exiting", "signal", sig)

@@ -1,11 +1,16 @@
 package setup
 
 import (
+	"context"
+	"log"
+
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	zap_middleware "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"google.golang.org/grpc"
 
 	"b2b/m/internal/services/productsCategories/config"
@@ -23,11 +28,35 @@ func SetupServer(cfg config.Config) (server *grpc.Server, cancel func(), err err
 	if err != nil {
 		return server, cancel, err
 	}
+	// Initialize minio client object.
+	minioClient, err := minio.New(cfg.MinioUrl, &minio.Options{
+		Creds:  credentials.NewStaticV4(cfg.MinioUser, cfg.MinioPass, ""),
+		Secure: cfg.MinioSSL,
+	})
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// Make a new bucket called mymusic.
+	BucketName := "photo"
+	location := "eu-central-1"
+	err = minioClient.MakeBucket(context.Background(), BucketName, minio.MakeBucketOptions{Region: location})
+	if err != nil {
+		// Check to see if we already own this bucket (which happens if you run this twice)
+		exists, errBucketExists := minioClient.BucketExists(context.Background(), BucketName)
+		if errBucketExists == nil && exists {
+			log.Printf("We already own %s\n", BucketName)
+		} else {
+			log.Fatalln(err)
+		}
+	} else {
+		log.Printf("Successfully created %s\n", BucketName)
+	}
 
 	productsCategoriesRepo := repository.NewLoggingMiddleware(
 		cfg.Logger.Sugar(),
 		repository.NewProductsCategoriesRepository(
-			repository.NewQueryFactory(), conn,
+			repository.NewQueryFactory(), conn, minioClient,
 		),
 	)
 	productsCategoriesUseCase := productsCategories_usecase.NewProductsCategoriesUseCase(productsCategoriesRepo)

@@ -542,8 +542,6 @@ func (m *AddProductRequest) validate(all bool) error {
 
 	// no validation rules for DeliveryWay
 
-	// no validation rules for ProductPhoto
-
 	// no validation rules for Docs
 
 	if m.GetUserId() <= 0 {
@@ -1070,8 +1068,6 @@ func (m *GetProduct) validate(all bool) error {
 	}
 
 	// no validation rules for Price
-
-	// no validation rules for Photo
 
 	if len(errors) > 0 {
 		return GetProductMultiError(errors)

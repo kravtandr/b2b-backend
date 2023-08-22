@@ -127,6 +127,7 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 
 	msg := &models.Msg{}
 	defer ws.Close()
+
 	//первое сообщение приходит с фронта
 	firstMsg := Msg{Text: "Сколько единиц в комлекте?", SenderID: 1, RecieverID: 1}
 	bytes, _ := json.Marshal(firstMsg)

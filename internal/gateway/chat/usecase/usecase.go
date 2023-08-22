@@ -155,9 +155,8 @@ func (u *chatUsecase) InitChat(ctx context.Context, userId int64, productId int6
 	if err != nil {
 		return false, -1, err
 	}
-	unique := true
 	chat := &models.Chat{}
-	if response.Unique == unique {
+	if response.Unique {
 		chat, err = u.NewChat(ctx, userId, productId)
 		if err != nil {
 			return false, -1, err

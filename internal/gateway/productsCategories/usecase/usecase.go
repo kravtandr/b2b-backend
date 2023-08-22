@@ -7,7 +7,6 @@ import (
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 )
 
@@ -53,6 +52,12 @@ func (u *productsCategoriesUseCase) AddProduct(ctx context.Context, request *mod
 		String_: request.Product.Description,
 		Valid:   true}
 
+	// var photo string
+	// var photos []string
+	// for _, result := range request.Product.Photo {
+
+	// 	modelCategories = append(modelCategories, modelCategory)
+	// }
 	response, err := u.ProductsCategoriesGRPC.AddProduct(ctx, &productsCategories_service.AddProductRequest{
 		Name:         request.Product.Name,
 		CategoryId:   request.Product.CategoryId,
@@ -87,10 +92,9 @@ func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request 
 		Id: request.Id,
 	})
 	if err != nil {
-		fmt.Println("us ERRR", err)
+		log.Println("Error GetProductById", err)
 		return &models.GetProductByIdResponse{}, err
 	}
-	fmt.Println("HERE HERE HERE", err)
 	description := sql.NullString{
 		String: response.Description.String_,
 		Valid:  response.Description.Valid}

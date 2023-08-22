@@ -27,8 +27,8 @@ var upgrader = websocket.FastHTTPUpgrader{}
 func main() {
 	var cfg config.Config
 	if err := cfg.Setup(); err != nil {
-		os.Exit(3)
 		log.Fatal("failed to setup cfg: ", err)
+		os.Exit(3)
 		return
 	}
 

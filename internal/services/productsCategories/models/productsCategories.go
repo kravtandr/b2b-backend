@@ -26,7 +26,7 @@ type Product struct {
 	Name        string
 	Description sql.NullString
 	Price       int64
-	Photo       string
+	Photo       []string
 	Docs        string
 	CreatedAt   string
 	UpdatedAt   string
@@ -49,7 +49,7 @@ type AddProductByFormRequest struct {
 	Name        string         `json:"name"`
 	Description sql.NullString `json:"info"`
 	Price       int64          `json:"price"`
-	Photo       string         `json:"product_photo"`
+	Photo       []string       `json:"product_photo"`
 	Docs        string         `json:"docs"`
 	CompanyId   int64          `json:"company_id"`
 	CategoryId  int64          `json:"category_id"`
