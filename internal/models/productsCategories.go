@@ -21,7 +21,7 @@ type AddProductByFormRequest struct {
 	Description string   `json:"info"`
 	Price       int64    `json:"price"`
 	Photo       []string `json:"product_photo"`
-	Docs        string   `json:"docs"`
+	Docs        []string `json:"docs"`
 	CategoryId  int64    `json:"category_id"`
 	Amount      int64    `json:"amount"`
 	PayWay      string   `json:"payWay"`
@@ -40,6 +40,7 @@ type GetProductByIdResponse struct {
 	Description sql.NullString `json:"description"`
 	Price       int64          `json:"price"`
 	Photo       []string       `json:"photo"`
+	Docs        []string       `json:"docs"`
 }
 
 type GetProduct struct {
@@ -48,6 +49,7 @@ type GetProduct struct {
 	Description sql.NullString `json:"description"`
 	Price       int64          `json:"price"`
 	Photo       []string       `json:"photo"`
+	Docs        []string       `json:"docs"`
 }
 
 type GetProductsList []GetProduct

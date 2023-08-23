@@ -85,6 +85,7 @@ func (u *productsCategoriesUseCase) AddProduct(ctx context.Context, request *mod
 		Description: respDescription,
 		Price:       response.Price,
 		Photo:       response.Photo,
+		Docs:        response.Documents,
 	}, nil
 }
 func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request *models.GetProductByIdRequest) (*models.GetProductByIdResponse, error) {
@@ -104,6 +105,7 @@ func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request 
 		Description: description,
 		Price:       response.Price,
 		Photo:       response.Photo,
+		Docs:        response.Documents,
 	}, nil
 }
 
@@ -155,6 +157,7 @@ func (u *productsCategoriesUseCase) SearchProducts(ctx context.Context, request 
 			Description: description,
 			Price:       result.Price,
 			Photo:       result.Photo,
+			Docs:        result.Documents,
 		}
 		modelProducts = append(modelProducts, modelProduct)
 	}
@@ -181,6 +184,7 @@ func (u *productsCategoriesUseCase) GetProductsList(ctx context.Context, request
 			Description: description,
 			Price:       result.Price,
 			Photo:       result.Photo,
+			Docs:        result.Documents,
 		}
 		modelProducts = append(modelProducts, modelProduct)
 	}

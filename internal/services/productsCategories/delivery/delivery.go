@@ -69,6 +69,7 @@ func (a *productsCategoriesDelivery) GetProductsList(ctx context.Context, reques
 			Description: &description,
 			Price:       result.Price,
 			Photo:       result.Photo,
+			Documents:   result.Docs,
 		}
 		res.Products = append(res.Products, modelProduct)
 

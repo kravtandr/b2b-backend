@@ -542,8 +542,6 @@ func (m *AddProductRequest) validate(all bool) error {
 
 	// no validation rules for DeliveryWay
 
-	// no validation rules for Docs
-
 	if m.GetUserId() <= 0 {
 		err := AddProductRequestValidationError{
 			field:  "UserId",

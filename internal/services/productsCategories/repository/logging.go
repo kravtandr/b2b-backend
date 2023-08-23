@@ -27,6 +27,24 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next ProductsCategoriesRepo
 	}
 }
 
+// func (l *loggingMiddleware) GetProductPhotos(ctx context.Context, Product *models.Product) (c *models.Product, err error) {
+// 	l.logger.Infow(module,
+// 		"Action", "GetProductPhotos",
+// 		"Request", Product,
+// 	)
+// 	defer func() {
+// 		if err != nil {
+// 			l.logger.Infow(module,
+// 				"Action", "GetProductPhotos",
+// 				"Request", Product,
+// 				"Error", err,
+// 			)
+// 		}
+// 	}()
+
+// 	return l.next.GetProductPhotos(ctx, Product)
+// }
+
 func (l *loggingMiddleware) GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (c *models.Category, err error) {
 	l.logger.Infow(module,
 		"Action", "GetCategoryById",

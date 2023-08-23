@@ -61,11 +61,4 @@ var (
 		MSG:  "Total fail",
 		Code: http.StatusBadRequest,
 	}
-
-	PreparedCountryErrors = map[error]error_adapter.HttpError{
-		errors.CountryDoesNotExist: {
-			MSG:  "Запись отсутствует",
-			Code: http.StatusNotFound,
-		},
-	}
 )

@@ -26,3 +26,8 @@ How to add test data:
 
     add test products: 
     COPY products(name, description, price, photo) FROM '/var/lib/postgresql/data/test_products.csv' DELIMITER ';' CSV HEADER;
+
+Minio:
+    http://127.0.0.1:9001/
+    b2b
+    b2b_pass

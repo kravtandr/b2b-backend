@@ -42,8 +42,6 @@ CREATE TABLE Products
     name        TEXT        NOT NULL,
     description TEXT        ,
     price       INT         NOT NULL,
-    photo       TEXT        DEFAULT 'empty',
-    docs        TEXT        DEFAULT 'empty',
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -56,6 +54,23 @@ CREATE TABLE ProductsCategories
     FOREIGN KEY (category_id) REFERENCES Categories (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
 );
+
+CREATE TABLE ProductPhotos
+(
+    id              SERIAL      NOT NULL PRIMARY KEY,
+    product_id      INT         NOT NULL,
+    photo_obj_name  Text         NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
+);
+
+CREATE TABLE ProductDocuments
+(
+    id              SERIAL      NOT NULL PRIMARY KEY,
+    product_id      INT         NOT NULL,
+    document_obj_name  Text         NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
+);
+
 
 CREATE TABLE GroupAccessRights
 (
@@ -248,8 +263,8 @@ CREATE TABLE Cookies (
 );
 
 
-INSERT INTO products(name, description, price, photo) VALUES('1_product', 'aaa', 1000, '/photo1');
-INSERT INTO products(name, description, price, photo) VALUES('2_product', 'bbb', 1000, '/photo1');
+INSERT INTO products(name, description, price) VALUES('1_product', 'test_desc1', 1001);
+INSERT INTO products(name, description, price) VALUES('2_product', 'test_desc2', 1002);
 
 
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);

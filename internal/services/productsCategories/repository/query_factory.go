@@ -16,14 +16,46 @@ type QueryFactory interface {
 	CreateAddProduct(Product *models.Product) *query.Query
 	CreateAddProductsCategoriesLink(productId int64, categoryId int64) *query.Query
 	CreateAddCompaniesProductsLink(CompaniesProducts *models.CompaniesProducts) *query.Query
+	CreateAddProductDocuments(productId int64, objName string) *query.Query
+	CreateAddProductPhotos(productId int64, objName string) *query.Query
+	CreateGetProductPhotos(productId int64) *query.Query
+	CreateGetProductDocuments(productId int64) *query.Query
 }
 
 type queryFactory struct{}
 
+func (q *queryFactory) CreateGetProductPhotos(productId int64) *query.Query {
+	return &query.Query{
+		Request: createGetProductPhotos,
+		Params:  []interface{}{productId},
+	}
+}
+
+func (q *queryFactory) CreateGetProductDocuments(productId int64) *query.Query {
+	return &query.Query{
+		Request: createGetProductPhotos,
+		Params:  []interface{}{productId},
+	}
+}
+
+func (q *queryFactory) CreateAddProductDocuments(productId int64, objName string) *query.Query {
+	return &query.Query{
+		Request: createAddProductDocuments,
+		Params:  []interface{}{productId, objName},
+	}
+}
+
+func (q *queryFactory) CreateAddProductPhotos(productId int64, objName string) *query.Query {
+	return &query.Query{
+		Request: createAddProductPhotos,
+		Params:  []interface{}{productId, objName},
+	}
+}
+
 func (q *queryFactory) CreateAddProduct(Product *models.Product) *query.Query {
 	return &query.Query{
 		Request: createAddProduct,
-		Params:  []interface{}{Product.Name, Product.Description, Product.Price, Product.Photo, Product.Docs}, //5
+		Params:  []interface{}{Product.Name, Product.Description, Product.Price},
 	}
 }
 
