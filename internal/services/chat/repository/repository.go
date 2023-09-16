@@ -64,7 +64,7 @@ func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*model
 	query := a.queryFactory.CreateGetChat(chat)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	getChat := &models.Chat{}
-	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId); err != nil {
+	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &chat.Status); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.UserDoesNotExist
 		}
@@ -78,21 +78,6 @@ func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*model
 func (a *chatRepository) WriteNewMsg(ctx context.Context, newMsg *models.Msg) error {
 	query := a.queryFactory.CreateWriteNewMsg(newMsg)
 	_ = a.conn.QueryRow(ctx, query.Request, query.Params...)
-
-	// type res struct {
-	// 	Id   int64
-	// 	Time string
-	// }
-
-	// chat := &res{}
-	// if err := row.Scan(&chat.Id, &chat.Time); err != nil {
-	// 	if err == pgx.ErrNoRows {
-	// 		return err
-	// 	}
-
-	// 	return err
-	// }
-
 	return nil
 }
 
@@ -140,17 +125,6 @@ func (a *chatRepository) GetUserLastMsgs(ctx context.Context, userId int64) (*mo
 }
 
 func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error) {
-	// chats, err := a.GetAllUserChats(ctx, userId)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// msgs, err := a.GetUserLastMsgs(ctx, userId)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// chatAndLastMsg := models.ChatAndLastMsg{}
-	// chatsAndLastMsg := models.ChatsAndLastMsg{}
-
 	query := a.queryFactory.CreateGetAllUserChatsAndLastMsgs(userId)
 	var chat models.ChatAndLastMsg
 	var chats models.ChatsAndLastMsg
@@ -160,7 +134,7 @@ func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&chat.Chat.Id, &chat.Chat.Name, &chat.Chat.CreatorId, &chat.Chat.ProductId, &chat.LastMsg.Id, &chat.LastMsg.SenderId, &chat.LastMsg.ReceiverId, &chat.LastMsg.Checked, &chat.LastMsg.Text, &chat.LastMsg.Type, &chat.LastMsg.Time)
+		err = rows.Scan(&chat.Chat.Id, &chat.Chat.Name, &chat.Chat.CreatorId, &chat.Chat.ProductId, &chat.Chat.Status, &chat.LastMsg.Id, &chat.LastMsg.SenderId, &chat.LastMsg.ReceiverId, &chat.LastMsg.Checked, &chat.LastMsg.Text, &chat.LastMsg.Type, &chat.LastMsg.Time)
 		chats = append(chats, chat)
 	}
 	if rows.Err() != nil {
@@ -180,7 +154,7 @@ func (a *chatRepository) GetAllUserChats(ctx context.Context, userId int64) (*mo
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId)
+		err = rows.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status)
 		chats = append(chats, chat)
 	}
 	if rows.Err() != nil {

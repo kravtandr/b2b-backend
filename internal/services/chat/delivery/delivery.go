@@ -17,6 +17,10 @@ type chatDelivery struct {
 	chat_service.UnimplementedChatServiceServer
 }
 
+func (a *chatDelivery) ChatHealthCheck(ctx context.Context, request *empty.Empty) (*empty.Empty, error) {
+	return &empty.Empty{}, nil
+}
+
 func (a *chatDelivery) CheckIfUniqChat(ctx context.Context, request *chat_service.CheckIfUniqChatRequest) (*chat_service.CheckIfUniqChatResponse, error) {
 	response, err := a.chatUsecase.CheckIfUniqChat(ctx, &models.UniqueCheck{
 		UserId:    request.UserId,
@@ -46,6 +50,7 @@ func (a *chatDelivery) NewChat(ctx context.Context, request *chat_service.NewCha
 		Name:      response.Name,
 		CreatorId: response.CreatorId,
 		ProductId: response.ProductId,
+		Status:    response.Status,
 	}, nil
 }
 
@@ -63,6 +68,7 @@ func (a *chatDelivery) GetChat(ctx context.Context, request *chat_service.GetCha
 		Name:      response.Name,
 		CreatorId: response.CreatorId,
 		ProductId: response.ProductId,
+		Status:    response.Status,
 	}, nil
 }
 
@@ -86,6 +92,7 @@ func (a *chatDelivery) GetMsgsFromChat(ctx context.Context, request *chat_servic
 	if err != nil {
 		return nil, a.errorAdapter.AdaptError(err)
 	}
+
 	var res chat_service.MsgsResponse
 	var msg *chat_service.MsgResponse
 
@@ -121,6 +128,7 @@ func (a *chatDelivery) GetAllChatsAndLastMsg(ctx context.Context, request *chat_
 			Name:      item.Chat.Name,
 			CreatorId: item.Chat.CreatorId,
 			ProductId: item.Chat.ProductId,
+			Status:    item.Chat.Status,
 			Msg: &chat_service.MsgResponse{
 				Id:         item.LastMsg.Id,
 				ChatId:     item.LastMsg.ChatId,

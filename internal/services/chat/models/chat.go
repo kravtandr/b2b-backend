@@ -12,19 +12,22 @@ type Chat struct {
 	Name      string
 	CreatorId int64
 	ProductId int64
+	Status    string
 }
 
 type Chats []Chat
 
 type Msg struct {
-	Id         int64
-	ChatId     int64
-	SenderId   int64
-	ReceiverId int64
-	Checked    bool
-	Text       string
-	Type       string
-	Time       time.Time
+	Id           int64
+	ChatId       int64
+	SenderId     int64
+	ReceiverId   int64
+	SenderName   string
+	ReceiverName string
+	Checked      bool
+	Text         string
+	Type         string
+	Time         time.Time
 }
 
 type Msgs []Msg

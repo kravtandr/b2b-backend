@@ -226,7 +226,8 @@ CREATE TABLE Chats
     name                      TEXT                      DEFAULT 'New Chat',
     creator_id                INT                       NOT NULL,
     product_id                INT                       NOT NULL,
-    FOREIGN KEY (creator_id)   REFERENCES Users (id)     ON DELETE CASCADE,
+    status                    TEXT                      DEFAULT 'Обсуждение',
+    FOREIGN KEY (creator_id)   REFERENCES Users (id)    ON DELETE CASCADE,
     FOREIGN KEY (product_id)  REFERENCES Products (id)  ON DELETE CASCADE,
     created_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW(),
     updated_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW()

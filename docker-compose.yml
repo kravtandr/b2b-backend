@@ -151,6 +151,11 @@ services:
       - CHAT_GRPC_PORT=10127
     networks:
       - net
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/chat/hjjjealth/live"]
+    #   interval: 3s
+    #   timeout: 2s
+    #   retries: 3
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -174,7 +179,7 @@ services:
     ports:
       - "8080:8081"
       - "18080:8080"
-      - "5001:5001"
+      # - "5001:5001"
     environment:
       - GATEWAY_HTTP_PORT=:8081
       - GATEWAY_AUTH_ENDPOINT=host.docker.internal:10123
@@ -191,21 +196,34 @@ services:
       - "host.docker.internal:host-gateway"
 
 
-
-#   minio:
-#     image: registry. astrovolga.ru/docker/base/minio: RELEASE.2020-03-14T02-21-58Z-all
-#     container name: minio
-#     labels:
-#         #traefik.frontend.rule=Host:s3.test.astrovolga.ru"
-#     volumes:
-#     . /data: /data
-#     ./log: /var/log
-#     environment:
-#     MINIO ACCESS KEY: minio admin
-#     MINIO SECRET KEY: minio pass
-# SHUEUNE@O∞NOUD "traefik.port=9000"
-# 19 MINIO HTTP TRACE: /var/log/minio.log
-# 18 MINIO PROMETHEUS AUTH TYPE: public
-# 19 command: server /data
-# 20
+  chat_test_gateway:
+    depends_on:
+      - minio
+      - postgres
+      - chat_service
+    build:
+      dockerfile: Dockerfile.gateway_chat
+      context: .
+      args:
+        - APP_PKG_NAME=b2b/m
+        - GOOS=linux
+#    image: net.entrypoint.gateway
+    ports:
+      - "5001:5001"
+      - "5555:5556"
+      - "15555:5555"
+    environment:
+      - GATEWAY_CHAT_HTTP_PORT=:5556
+      - GATEWAY_CHAT_AUTH_ENDPOINT=host.docker.internal:10123
+      - GATEWAY_CHAT_FASTORDER_ENDPOINT=host.docker.internal:10124
+      - GATEWAY_CHAT_COMPANY_ENDPOINT=host.docker.internal:10125
+      - GATEWAY_CHAT_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
+      - GATEWAY_CHAT_CHAT_ENDPOINT=host.docker.internal:10127
+      - GATEWAY_CHAT_MINIO_ENDPOINT=host.docker.internal:9000
+      - GATEWAY_CHAT_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+    networks:
+      - net
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 

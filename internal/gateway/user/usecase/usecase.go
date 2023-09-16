@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 
 	company_usecase "b2b/m/internal/gateway/company/usecase"
 	"b2b/m/internal/models"
@@ -138,9 +139,9 @@ func (u *userUsecase) Profile(ctx context.Context, userID int64) (*models.Profil
 		Id:          userID,
 		Name:        userInfo.Name,
 		Surname:     userInfo.Surname,
-		Avatar:      userInfo.Image,
+		Avatar:      "????",
 		Email:       userInfo.Email,
-		Description: userInfo.Description,
+		Description: "????",
 		Company: models.Company{
 			Id:           usersCompany.Id,
 			Name:         usersCompany.Name,
@@ -226,16 +227,17 @@ func (u *userUsecase) UpdateProfile(ctx context.Context, userID int64, request *
 }
 
 func (u *userUsecase) GetUserInfo(ctx context.Context, id int64) (*models.Profile, error) {
+	log.Println("start GetUserInfo")
 	response, err := u.AuthGRPC.GetUserInfo(ctx, &auth_service.GetUserRequest{Id: int64(id)})
 	if err != nil {
 		return nil, err
 	}
+	log.Println("got GetUserInfo", response)
 
 	return &models.Profile{
 		Id:      response.UserId,
 		Name:    response.Name,
 		Surname: response.Surname,
-		Avatar:  response.Image,
 	}, nil
 }
 

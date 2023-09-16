@@ -6,6 +6,7 @@ import (
 	"b2b/m/pkg/error_adapter"
 	auth_service "b2b/m/pkg/services/auth"
 	"context"
+	"log"
 
 	"github.com/golang/protobuf/ptypes/empty"
 )
@@ -126,6 +127,7 @@ func (a *authDelivery) RegisterUser(ctx context.Context, request *auth_service.R
 }
 
 func (a *authDelivery) GetUser(ctx context.Context, request *auth_service.GetUserRequest) (*auth_service.GetUserResponse, error) {
+	log.Println("authDelivery -> GetUser", request.Id)
 	response, err := a.authUsecase.GetUser(ctx, request.Id)
 	if err != nil {
 		return &auth_service.GetUserResponse{}, a.errorAdapter.AdaptError(err)
@@ -160,15 +162,17 @@ func (a *authDelivery) UpdateUser(ctx context.Context, request *auth_service.Upd
 }
 
 func (a *authDelivery) GetUserInfo(ctx context.Context, request *auth_service.GetUserRequest) (*auth_service.UserInfo, error) {
-	responce, err := a.authUsecase.GetUserInfo(ctx, request.Id)
+	log.Println("authDelivery -> GetUserInfo", request.Id)
+	response, err := a.authUsecase.GetUserInfo(ctx, request.Id)
 	if err != nil {
+		log.Println("Error: authDelivery -> GetUserInfo", err)
 		return &auth_service.UserInfo{}, a.errorAdapter.AdaptError(err)
 	}
 
 	return &auth_service.UserInfo{
-		UserId:  responce.Id,
-		Name:    responce.Name,
-		Surname: responce.Surname,
+		UserId:  response.Id,
+		Name:    response.Name,
+		Surname: response.Surname,
 	}, nil
 }
 

@@ -37,6 +37,26 @@ func (m *MockChatServiceClient) EXPECT() *MockChatServiceClientMockRecorder {
 	return m.recorder
 }
 
+// ChatHealthCheck mocks base method.
+func (m *MockChatServiceClient) ChatHealthCheck(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ChatHealthCheck", varargs...)
+	ret0, _ := ret[0].(*emptypb.Empty)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ChatHealthCheck indicates an expected call of ChatHealthCheck.
+func (mr *MockChatServiceClientMockRecorder) ChatHealthCheck(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChatHealthCheck", reflect.TypeOf((*MockChatServiceClient)(nil).ChatHealthCheck), varargs...)
+}
+
 // CheckIfUniqChat mocks base method.
 func (m *MockChatServiceClient) CheckIfUniqChat(ctx context.Context, in *chat_service.CheckIfUniqChatRequest, opts ...grpc.CallOption) (*chat_service.CheckIfUniqChatResponse, error) {
 	m.ctrl.T.Helper()
@@ -198,6 +218,21 @@ func NewMockChatServiceServer(ctrl *gomock.Controller) *MockChatServiceServer {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockChatServiceServer) EXPECT() *MockChatServiceServerMockRecorder {
 	return m.recorder
+}
+
+// ChatHealthCheck mocks base method.
+func (m *MockChatServiceServer) ChatHealthCheck(arg0 context.Context, arg1 *emptypb.Empty) (*emptypb.Empty, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ChatHealthCheck", arg0, arg1)
+	ret0, _ := ret[0].(*emptypb.Empty)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ChatHealthCheck indicates an expected call of ChatHealthCheck.
+func (mr *MockChatServiceServerMockRecorder) ChatHealthCheck(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChatHealthCheck", reflect.TypeOf((*MockChatServiceServer)(nil).ChatHealthCheck), arg0, arg1)
 }
 
 // CheckIfUniqChat mocks base method.

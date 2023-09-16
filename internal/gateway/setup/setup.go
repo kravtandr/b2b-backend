@@ -40,8 +40,8 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 	if err != nil {
 		return p, stopFunc, err
 	}
-	companyGRPC := company_service.NewCompanyServiceClient(companyConn)
-	companyUseCase := company_usecase.NewCompanyUseCase(companyGRPC, daData)
+	CompanyGRPC := company_service.NewCompanyServiceClient(companyConn)
+	companyUseCase := company_usecase.NewCompanyUseCase(CompanyGRPC, daData)
 	companyDelivery := cd.NewCompanyDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.Fail,
@@ -53,8 +53,8 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 	if err != nil {
 		return p, stopFunc, err
 	}
-	userGRPC := auth_service.NewAuthServiceClient(conn)
-	userUsecase := uu.NewUserUsecase(userGRPC, companyGRPC)
+	UserGRPC := auth_service.NewAuthServiceClient(conn)
+	userUsecase := uu.NewUserUsecase(UserGRPC, CompanyGRPC)
 	userDelivery := ud.NewUserDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
@@ -93,7 +93,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		return p, stopFunc, err
 	}
 	chatGRPC := chat_service.NewChatServiceClient(ChatConn)
-	chatUsecase := chatu.NewChatUsecase(chatGRPC, companyGRPC, ProductsCategoriesGRPC)
+	chatUsecase := chatu.NewChatUsecase(chatGRPC, CompanyGRPC, ProductsCategoriesGRPC)
 	chatDelivery := chatd.NewChatDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
@@ -102,7 +102,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 	)
 
 	p = router.SetupRouter(router.RouterConfig{
-		AuthGRPC:                   userGRPC,
+		AuthGRPC:                   UserGRPC,
 		UserDelivery:               userDelivery,
 		CompanyDelivery:            companyDelivery,
 		FastOrderDelivery:          fastOrderDelivery,

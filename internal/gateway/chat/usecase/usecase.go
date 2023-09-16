@@ -27,12 +27,13 @@ type chatUsecase struct {
 	chatGRPC    chatGRPC
 	companyGRPC company_usecase.CompanyGRPC
 	productGRPC product_usecase.ProductsCategoriesGRPC
-	AuthGRPC    auth_usecase.AuthGRPC
+	authGRPC    auth_usecase.AuthGRPC
+	AuthUsecase auth_usecase.UserUsecase
 }
 
 func (u *chatUsecase) GetAllUserChats(ctx context.Context, userId int64, cookie string) (*models.Chats, error) {
 
-	userId_test, err := u.AuthGRPC.GetUserIdByCookie(ctx, &auth_service.GetUserIdByCookieRequest{
+	userId_test, err := u.authGRPC.GetUserIdByCookie(ctx, &auth_service.GetUserIdByCookieRequest{
 		Hash: cookie,
 	})
 	log.Println("======== USECASE userId_test:", userId_test)
@@ -64,12 +65,26 @@ func (u *chatUsecase) GetAllUserChats(ctx context.Context, userId int64, cookie 
 func (u *chatUsecase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error) {
 	//userId, err := u.AuthGRPC.GetUserIdByCookie(ctx)
 	//userId := ctx.UserValue(cnst.UserIDContextKey).(int)
+	log.Println("start GetAllChatsAndLastMsg")
 	response, err := u.chatGRPC.GetAllChatsAndLastMsg(ctx, &chat_service.IdRequest{
 		Id: userId,
 	})
 	if err != nil {
 		return nil, err
 	}
+	// log.Println("got GetAllChatsAndLastMsg", response)
+	// sender, err := u.AuthUsecase.Profile(ctx, response.Chats[0].Msg.SenderId)
+	// if err != nil {
+	// 	log.Println("ERROR: GetAllChatsAndLastMsg -> GetUserInfo for sender ", err)
+	// 	return nil, err
+	// }
+	// log.Println("------")
+	// reciever, err := u.AuthUsecase.Profile(ctx, response.Chats[0].Msg.ReceiverId)
+	// if err != nil {
+	// 	log.Println("ERROR: GetAllChatsAndLastMsg -> GetUserInfo for reciever ", err)
+	// 	return nil, err
+	// }
+	// log.Println("got sender and reciever", sender)
 
 	var chat models.Chat
 	var msg models.Msg
@@ -83,14 +98,16 @@ func (u *chatUsecase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (
 			ProductId: result.ProductId,
 		}
 		msg = models.Msg{
-			Id:         result.Msg.Id,
-			ChatId:     result.Msg.ChatId,
-			SenderId:   result.Msg.SenderId,
-			ReceiverId: result.Msg.ReceiverId,
-			Checked:    result.Msg.Checked,
-			Text:       result.Msg.Text,
-			Type:       result.Msg.Type,
-			Time:       result.Msg.Time,
+			Id:           result.Msg.Id,
+			ChatId:       result.Msg.ChatId,
+			SenderId:     result.Msg.SenderId,
+			ReceiverId:   result.Msg.ReceiverId,
+			SenderName:   "Test1",
+			ReceiverName: "Test2",
+			Checked:      result.Msg.Checked,
+			Text:         result.Msg.Text,
+			Type:         result.Msg.Type,
+			Time:         result.Msg.Time,
 		}
 		chatAndLastMsg.Chat = chat
 		chatAndLastMsg.LastMsg = msg
@@ -100,6 +117,7 @@ func (u *chatUsecase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (
 }
 
 func (u *chatUsecase) GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error) {
+	log.Println("start GetMsgsFromChat")
 	response, err := u.chatGRPC.GetMsgsFromChat(ctx, &chat_service.ChatAndUserIdRequest{
 		ChatId: chatId,
 		UserId: userId,
@@ -107,19 +125,33 @@ func (u *chatUsecase) GetMsgsFromChat(ctx context.Context, chatId int64, userId 
 	if err != nil {
 		return nil, err
 	}
-
+	// sender, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: int64(userId)})
+	// if err != nil {
+	// 	log.Println("ERROR: GetMsgsFromChat -> GetUserInfo for sender ", err)
+	// 	return nil, err
+	// }
+	// log.Println("------")
+	// reciever := sender
+	// reciever, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: 1})
+	// if err != nil {
+	// 	log.Println("ERROR: GetMsgsFromChat -> GetUserInfo for reciever ", err)
+	// 	return nil, err
+	// }
+	// log.Println("got sender and reciever", sender)
 	var msg models.Msg
 	var msgs models.Msgs
 	for _, result := range response.Msgs {
 		msg = models.Msg{
-			Id:         result.Id,
-			ChatId:     result.ChatId,
-			SenderId:   result.SenderId,
-			ReceiverId: result.ReceiverId,
-			Checked:    result.Checked,
-			Text:       result.Text,
-			Type:       result.Type,
-			Time:       result.Time,
+			Id:           result.Id,
+			ChatId:       result.ChatId,
+			SenderId:     result.SenderId,
+			ReceiverId:   result.ReceiverId,
+			SenderName:   "Test1",
+			ReceiverName: "Test2",
+			Checked:      result.Checked,
+			Text:         result.Text,
+			Type:         result.Type,
+			Time:         result.Time,
 		}
 		msgs = append(msgs, msg)
 	}
@@ -144,6 +176,7 @@ func (u *chatUsecase) NewChat(ctx context.Context, userId int64, productId int64
 		Name:      response.Name,
 		CreatorId: response.CreatorId,
 		ProductId: response.ProductId,
+		Status:    response.Status,
 	}, nil
 }
 
@@ -185,6 +218,7 @@ func (u *chatUsecase) GetChat(ctx context.Context, userId int64, productId int64
 		Name:      response.Name,
 		CreatorId: response.CreatorId,
 		ProductId: response.ProductId,
+		Status:    response.Status,
 	}, nil
 }
 

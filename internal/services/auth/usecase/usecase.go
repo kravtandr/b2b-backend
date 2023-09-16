@@ -6,6 +6,7 @@ import (
 	"b2b/m/pkg/errors"
 	"b2b/m/pkg/generator"
 	"context"
+	"log"
 
 	"github.com/gofrs/uuid"
 )
@@ -184,6 +185,7 @@ func (a *authUseCase) UpdateUser(ctx context.Context, user *models.User) (*model
 }
 
 func (a *authUseCase) GetUserInfo(ctx context.Context, id int64) (*models.User, error) {
+	log.Println("authUseCase -> GetUserInfo", id)
 	return a.repo.GetUserInfo(ctx, id)
 }
 

@@ -6,6 +6,7 @@ import (
 	"b2b/m/pkg/errors"
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/jackc/pgx/v4"
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
@@ -78,22 +79,20 @@ func (a *authRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 }
 
 func (a *authRepository) GetUserInfo(ctx context.Context, id int64) (*models.User, error) {
-	conn, err := a.conn.Acquire(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Release()
+	log.Println("authRepository -> GetUserInfo", id)
+	query := a.queryFactory.CreateGetUserByID(id)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 
-	var user models.User
-	err = conn.QueryRow(context.Background(),
-		GetUserInfoQuery,
-		id,
-	).Scan(&user.Id, &user.Name, &user.Surname)
-	if err != nil {
+	user := &models.User{}
+	if err := row.Scan(&user.Id, &user.Name, &user.Surname, &user.Patronymic, &user.Email, &user.Password); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.UserDoesNotExist
+		}
+
 		return nil, err
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 func (a *authRepository) CreateUser(ctx context.Context, user *models.User) (*models.User, error) {

@@ -686,6 +686,8 @@ func (m *ChatResponse) validate(all bool) error {
 
 	// no validation rules for ProductId
 
+	// no validation rules for Status
+
 	if len(errors) > 0 {
 		return ChatResponseMultiError(errors)
 	}
@@ -1020,6 +1022,8 @@ func (m *ChatAndLastMsgResponse) validate(all bool) error {
 	// no validation rules for CreatorId
 
 	// no validation rules for ProductId
+
+	// no validation rules for Status
 
 	if all {
 		switch v := interface{}(m.GetMsg()).(type) {

@@ -1181,10 +1181,6 @@ func (m *GetUserResponse) validate(all bool) error {
 
 	// no validation rules for Email
 
-	// no validation rules for Image
-
-	// no validation rules for Description
-
 	if len(errors) > 0 {
 		return GetUserResponseMultiError(errors)
 	}

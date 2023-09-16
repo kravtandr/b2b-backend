@@ -39,6 +39,7 @@ message ChatResponse {
   string Name = 2;
   int64  CreatorId = 3;
   int64  ProductId = 4;
+  string  Status = 5;
 }
 
 message WriteNewMsgRequest {
@@ -66,7 +67,8 @@ message ChatAndLastMsgResponse {
   string Name = 2;
   int64  CreatorId = 3;
   int64  ProductId = 4;
-  MsgResponse Msg = 5;
+  string  Status = 5;
+  MsgResponse Msg = 6;
 }
 
 message MsgsResponse {
@@ -90,4 +92,5 @@ service ChatService {
   rpc GetMsgsFromChat(ChatAndUserIdRequest) returns (MsgsResponse) {}
   rpc GetAllUserChats(IdRequest) returns (GetAllUserChatsResponse) {}
   rpc GetAllChatsAndLastMsg(IdRequest) returns (GetAllChatsAndLastMsgResponse) {}
+  rpc ChatHealthCheck (google.protobuf.Empty)  returns (google.protobuf.Empty) {}
 }

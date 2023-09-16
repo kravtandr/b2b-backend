@@ -26,6 +26,13 @@ protogen-api-productsCategories-service:
 protogen-api-review-service:
 	make protogen-api-with-validator path=pkg/services/review
 
+all:
+	make protogen-api-with-validator path=pkg/services/auth && \
+	make protogen-api-with-validator path=pkg/services/chat && \
+	make protogen-api-with-validator path=pkg/services/fastOrder && \
+	make protogen-api-with-validator path=pkg/services/company && \
+	make protogen-api-with-validator path=pkg/services/productsCategories 
+
 protogen-all-services:
 	make protogen-api-auth-service && \
 	make protogen-api-trip-service && \
