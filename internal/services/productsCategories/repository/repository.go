@@ -356,8 +356,12 @@ func (a productsCategoriesRepository) SearchProducts(ctx context.Context, Search
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.Photo)
-		products = append(products, product)
+		err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price)
+		product, err := a.GetProductWithPhotosAndDocuments(ctx, &product)
+		if err != nil {
+			return &products, err
+		}
+		products = append(products, *product)
 	}
 	if rows.Err() != nil {
 		return &products, err
