@@ -264,8 +264,8 @@ CREATE TABLE Cookies (
 );
 
 
-INSERT INTO products(name, description, price) VALUES('1_product', 'test_desc1', 1001);
-INSERT INTO products(name, description, price) VALUES('2_product', 'test_desc2', 1002);
+-- INSERT INTO products(name, description, price) VALUES('1_product', 'test_desc1', 1001);
+-- INSERT INTO products(name, description, price) VALUES('2_product', 'test_desc2', 1002);
 
 
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
