@@ -165,14 +165,17 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	// decoding base64 easier way to store in minio and have previev
 	// if store base64 how to put base64 to minio??? what size? on the other side no decoding
 	// decode to img -> minio store -> encode to base64
-
+	log.Println("Start AddProduct")
 	product := &models.Product{}
 	product = Product
+	log.Println("PutPhotos...")
 	product, err := a.PutPhotos(ctx, Product)
 	if err != nil {
 		log.Println("Error in PutPhotos ", err)
 		return &models.Product{}, err
 	}
+	log.Println("PutPhotos - OK")
+	log.Println("CreateAddProduct...")
 	query := a.queryFactory.CreateAddProduct(product)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	if err := row.Scan(
@@ -183,22 +186,30 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 		}
 		return &models.Product{}, err
 	}
+	log.Println("CreateAddProduct - OK")
+	log.Println("AddProductPhotos...")
 	err = a.AddProductPhotos(ctx, product)
 	if err != nil {
 		log.Println("Error in AddProductPhotos ", err)
 		return &models.Product{}, err
 	}
+	log.Println("AddProductPhotos - OK")
+	log.Println("AddProductDocuments...")
 	err = a.AddProductDocuments(ctx, product)
 	if err != nil {
 		log.Println("Error in AddProductDocuments ", err)
 		return &models.Product{}, err
 	}
+	log.Println("AddProductDocuments - OK")
 	//base64 in response
+	log.Println("GetProductById...")
 	result, err := a.GetProductById(ctx, &models.ProductId{Id: product.Id})
 	if err != nil {
 		log.Println("Error in GetProductById ", err)
 		return &models.Product{}, err
 	}
+	log.Println("GetProductById - OK")
+	log.Println("END AddProduct")
 	return result, nil
 }
 

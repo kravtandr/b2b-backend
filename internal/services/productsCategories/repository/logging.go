@@ -66,13 +66,13 @@ func (l *loggingMiddleware) GetCategoryById(ctx context.Context, CategoryId *mod
 func (l *loggingMiddleware) AddProduct(ctx context.Context, Product *models.Product) (c *models.Product, err error) {
 	l.logger.Infow(module,
 		"Action", "AddProduct",
-		"Request (name, price)", Product.Name, Product.Price,
+		"Request (name)", Product.Name,
 	)
 	defer func() {
 		if err != nil {
 			l.logger.Infow(module,
 				"Action", "AddProduct",
-				"Request (name, price)", Product.Name, Product.Price,
+				"Request (name)", Product.Name,
 				"Error", err,
 			)
 		}
