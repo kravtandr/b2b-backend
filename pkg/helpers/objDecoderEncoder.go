@@ -24,8 +24,8 @@ func DecodeImgFromBase64(ctx context.Context, imgBase64 string) (decoded []byte,
 		return dec, "", err
 	}
 
-	bounds := m.Bounds()
-	log.Println(m, bounds, formatString)
+	//bounds := m.Bounds()
+	//log.Println(m, bounds, formatString)
 
 	buff := new(bytes.Buffer)
 	switch formatString {

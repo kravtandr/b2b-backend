@@ -73,7 +73,7 @@ func (a productsCategoriesRepository) GetProductWithPhotosAndDocuments(ctx conte
 	if err != nil {
 		return &models.Product{}, err
 	}
-	log.Println("productWithPhotos ", productWithPhotos)
+	//log.Println("productWithPhotos ", productWithPhotos)
 	//TODO add documents
 	// productWithPhotosAndDocuments, err := a.GetProductDocuments(ctx, productWithPhotos)
 	// if err != nil {
@@ -126,11 +126,15 @@ func (a productsCategoriesRepository) PutPhotos(ctx context.Context, Product *mo
 		}
 		//fmt.Println(info)
 		Product.Photo[i] = f.Name()
-		defer f.Close()
+		if err := f.Close(); err != nil {
+			log.Println(err)
+			return &models.Product{}, errors.ErrorMinioFPutObject
+		}
 		//delite tmp file
 		os.Remove(f.Name())
 		if err != nil {
 			log.Println(err)
+			return &models.Product{}, errors.ErrorMinioFPutObject
 		}
 
 	}
@@ -241,7 +245,7 @@ func (a productsCategoriesRepository) GetProductPhotos(ctx context.Context, Prod
 		err = rows.Scan(&objName)
 		//filename := strings.Split(objName, "_")
 		//log.Println("GET FROM MINO objName", objName, "........")
-		log.Println("GET FROM MINO objName", objName, "........")
+		//log.Println("GET FROM MINO objName", objName, "........")
 
 		BucketName := "photo"
 		// image, err := a.minioClient.GetObject(
@@ -266,14 +270,14 @@ func (a productsCategoriesRepository) GetProductPhotos(ctx context.Context, Prod
 			log.Println("Error in a.minioClient.GetObject ", err)
 			return &models.Product{}, err
 		}
-		log.Println("image from minio ", reader)
+		//log.Println("image from minio ", reader)
 		//base64.StdEncoding.Encode(image)
 		imageBytes, err := io.ReadAll(reader)
 		if err != nil {
 			log.Println("Error in io.ReadAll(image) ", err)
 			return &models.Product{}, err
 		}
-		log.Println("imageBytes  = ", imageBytes)
+		//log.Println("imageBytes  = ", imageBytes)
 		Product.Photo = append(Product.Photo, helpers.EncodeImgToBase64(ctx, imageBytes))
 	}
 	if rows.Err() != nil {
