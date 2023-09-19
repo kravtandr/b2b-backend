@@ -176,8 +176,12 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	}
 	log.Println("PutPhotos - OK")
 	log.Println("CreateAddProduct...")
+	log.Println("a.queryFactory.CreateAddProduct...")
 	query := a.queryFactory.CreateAddProduct(product)
+	log.Println("a.queryFactory.CreateAddProduct - OK")
+	log.Println("a.conn.QueryRow...")
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	log.Println("a.conn.QueryRow - OK")
 	if err := row.Scan(
 		&product.Id, &product.Name, &product.Description, &product.Price,
 	); err != nil {
