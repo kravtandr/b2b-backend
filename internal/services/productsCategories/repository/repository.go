@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
@@ -178,8 +179,8 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	query := a.queryFactory.CreateAddProduct(Product)
 	log.Println("a.queryFactory.CreateAddProduct - OK")
 	log.Println("a.conn.QueryRow...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5000)
+	// timeout 15 sek
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
