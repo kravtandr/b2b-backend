@@ -185,7 +185,7 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	log.Println("_______________________________")
 	err = a.conn.Ping(ctx)
 	if err != nil {
-		log.Println("PING ERR err")
+		log.Println("PING ERR", err)
 	} else {
 		log.Println("PING OK")
 	}
