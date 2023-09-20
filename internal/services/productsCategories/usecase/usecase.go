@@ -36,7 +36,7 @@ func (a *productsCategoriesUseCase) GetProductById(ctx context.Context, ProductI
 }
 
 func (a *productsCategoriesUseCase) AddProduct(ctx context.Context, Product *models.Product, CompaniesProducts *models.CompaniesProducts, userId int64, companyId int64, categoryId int64) (*models.Product, error) {
-	product, err := a.repo.AddProduct(ctx, Product)
+	Product, err := a.repo.AddProduct(ctx, Product)
 	if err != nil {
 		return &models.Product{}, err
 	}
@@ -44,12 +44,12 @@ func (a *productsCategoriesUseCase) AddProduct(ctx context.Context, Product *mod
 	if err != nil {
 		return &models.Product{}, err
 	}
-	CompaniesProducts.ProductId = product.Id
+	CompaniesProducts.ProductId = Product.Id
 	err = a.repo.AddCompaniesProductsLink(ctx, CompaniesProducts)
 	if err != nil {
 		return &models.Product{}, err
 	}
-	return product, nil
+	return Product, nil
 }
 
 func (a *productsCategoriesUseCase) SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error) {
