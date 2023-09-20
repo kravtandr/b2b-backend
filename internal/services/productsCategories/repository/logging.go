@@ -84,13 +84,13 @@ func (l *loggingMiddleware) AddProduct(ctx context.Context, Product *models.Prod
 func (l *loggingMiddleware) AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) (err error) {
 	l.logger.Infow(module,
 		"Action", "AddProductsCategoriesLink",
-		"Request", productId, categoryId,
+		"Request", productId,
 	)
 	defer func() {
 		if err != nil {
 			l.logger.Infow(module,
 				"Action", "AddProductsCategoriesLink",
-				"Request", productId, categoryId,
+				"Request", productId,
 				"Error", err,
 			)
 		}
