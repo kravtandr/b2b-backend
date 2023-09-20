@@ -4,6 +4,7 @@ import (
 	"b2b/m/internal/services/productsCategories/models"
 	chttp "b2b/m/pkg/customhttp"
 	"context"
+	"log"
 )
 
 type ProductsCategoriesUseCase interface {
@@ -36,19 +37,27 @@ func (a *productsCategoriesUseCase) GetProductById(ctx context.Context, ProductI
 }
 
 func (a *productsCategoriesUseCase) AddProduct(ctx context.Context, Product *models.Product, CompaniesProducts *models.CompaniesProducts, userId int64, companyId int64, categoryId int64) (*models.Product, error) {
+	log.Panicln("productsCategoriesUseCase -> AddProduct")
 	Product, err := a.repo.AddProduct(ctx, Product)
 	if err != nil {
 		return &models.Product{}, err
 	}
+	log.Panicln("productsCategoriesUseCase -> AddProductsCategoriesLink")
 	err = a.repo.AddProductsCategoriesLink(ctx, Product.Id, categoryId)
 	if err != nil {
+		log.Panicln("productsCategoriesUseCase -> AddProductsCategoriesLink", err)
 		return &models.Product{}, err
 	}
 	CompaniesProducts.ProductId = Product.Id
+	log.Panicln("productsCategoriesUseCase: GET product id from db = ", CompaniesProducts.ProductId)
+	log.Panicln("productsCategoriesUseCase -> AddCompaniesProductsLink")
 	err = a.repo.AddCompaniesProductsLink(ctx, CompaniesProducts)
 	if err != nil {
+		log.Panicln("productsCategoriesUseCase -> AddCompaniesProductsLink", err)
 		return &models.Product{}, err
 	}
+	log.Panicln("OK ||| productsCategoriesUseCase -> AddProduct -> all done. New product")
+	log.Panicln(Product)
 	return Product, nil
 }
 

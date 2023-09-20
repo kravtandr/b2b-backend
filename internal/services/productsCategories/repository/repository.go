@@ -232,6 +232,7 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 func (a productsCategoriesRepository) AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error {
 	query := a.queryFactory.CreateAddProductsCategoriesLink(productId, categoryId)
 	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+		log.Println("ERROR AddProductsCategoriesLink", err)
 		return err
 	}
 	return nil
@@ -240,6 +241,7 @@ func (a productsCategoriesRepository) AddProductsCategoriesLink(ctx context.Cont
 func (a productsCategoriesRepository) AddCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error {
 	query := a.queryFactory.CreateAddCompaniesProductsLink(CompaniesProducts)
 	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+		log.Println("ERROR AddCompaniesProductsLink", err)
 		return err
 	}
 	return nil
