@@ -132,8 +132,7 @@ func (a productsCategoriesRepository) PutPhotos(ctx context.Context, Product *mo
 			return &models.Product{}, errors.ErrorMinioFPutObject
 		}
 		//delite tmp file
-		os.Remove(f.Name())
-		if err != nil {
+		if err := os.Remove(f.Name()); err != nil {
 			log.Println(err)
 			return &models.Product{}, errors.ErrorMinioFPutObject
 		}
@@ -145,7 +144,11 @@ func (a productsCategoriesRepository) PutPhotos(ctx context.Context, Product *mo
 func (a productsCategoriesRepository) AddProductDocuments(ctx context.Context, Product *models.Product) error {
 	for _, document := range Product.Docs {
 		query := a.queryFactory.CreateAddProductDocuments(Product.Id, document)
-		_ = a.conn.QueryRow(ctx, query.Request, query.Params...)
+		if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+			log.Println("ERROR AddProductDocuments", err)
+			return err
+		}
+
 	}
 	return nil
 }
@@ -153,7 +156,10 @@ func (a productsCategoriesRepository) AddProductDocuments(ctx context.Context, P
 func (a productsCategoriesRepository) AddProductPhotos(ctx context.Context, Product *models.Product) error {
 	for _, photo := range Product.Photo {
 		query := a.queryFactory.CreateAddProductPhotos(Product.Id, photo)
-		_ = a.conn.QueryRow(ctx, query.Request, query.Params...)
+		if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+			log.Println("ERROR AddProductPhotos", err)
+			return err
+		}
 	}
 	return nil
 }
