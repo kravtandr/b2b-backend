@@ -166,10 +166,8 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	// if store base64 how to put base64 to minio??? what size? on the other side no decoding
 	// decode to img -> minio store -> encode to base64
 	log.Println("Start AddProduct")
-	product := &models.Product{}
-	product = Product
 	log.Println("PutPhotos...")
-	product, err := a.PutPhotos(ctx, Product)
+	Product, err := a.PutPhotos(ctx, Product)
 	if err != nil {
 		log.Println("Error in PutPhotos ", err)
 		return &models.Product{}, err
@@ -177,13 +175,17 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	log.Println("PutPhotos - OK")
 	log.Println("CreateAddProduct...")
 	log.Println("a.queryFactory.CreateAddProduct...")
-	query := a.queryFactory.CreateAddProduct(product)
+	query := a.queryFactory.CreateAddProduct(Product)
 	log.Println("a.queryFactory.CreateAddProduct - OK")
 	log.Println("a.conn.QueryRow...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5000)
+	defer cancel()
+
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	log.Println("a.conn.QueryRow - OK")
 	if err := row.Scan(
-		&product.Id, &product.Name, &product.Description, &product.Price,
+		&Product.Id, &Product.Name, &Product.Description, &Product.Price,
 	); err != nil {
 		if err == pgx.ErrNoRows {
 			return &models.Product{}, errors.ProductDoesNotExist
@@ -192,14 +194,14 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	}
 	log.Println("CreateAddProduct - OK")
 	log.Println("AddProductPhotos...")
-	err = a.AddProductPhotos(ctx, product)
+	err = a.AddProductPhotos(ctx, Product)
 	if err != nil {
 		log.Println("Error in AddProductPhotos ", err)
 		return &models.Product{}, err
 	}
 	log.Println("AddProductPhotos - OK")
 	log.Println("AddProductDocuments...")
-	err = a.AddProductDocuments(ctx, product)
+	err = a.AddProductDocuments(ctx, Product)
 	if err != nil {
 		log.Println("Error in AddProductDocuments ", err)
 		return &models.Product{}, err
@@ -207,7 +209,7 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	log.Println("AddProductDocuments - OK")
 	//base64 in response
 	log.Println("GetProductById...")
-	result, err := a.GetProductById(ctx, &models.ProductId{Id: product.Id})
+	result, err := a.GetProductById(ctx, &models.ProductId{Id: Product.Id})
 	if err != nil {
 		log.Println("Error in GetProductById ", err)
 		return &models.Product{}, err
