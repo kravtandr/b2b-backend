@@ -37,27 +37,27 @@ func (a *productsCategoriesUseCase) GetProductById(ctx context.Context, ProductI
 }
 
 func (a *productsCategoriesUseCase) AddProduct(ctx context.Context, Product *models.Product, CompaniesProducts *models.CompaniesProducts, userId int64, companyId int64, categoryId int64) (*models.Product, error) {
-	log.Panicln("productsCategoriesUseCase -> AddProduct")
+	log.Println("productsCategoriesUseCase -> AddProduct")
 	Product, err := a.repo.AddProduct(ctx, Product)
 	if err != nil {
 		return &models.Product{}, err
 	}
-	log.Panicln("productsCategoriesUseCase -> AddProductsCategoriesLink")
+	log.Println("productsCategoriesUseCase -> AddProductsCategoriesLink")
 	err = a.repo.AddProductsCategoriesLink(ctx, Product.Id, categoryId)
 	if err != nil {
-		log.Panicln("productsCategoriesUseCase -> AddProductsCategoriesLink", err)
+		log.Println("productsCategoriesUseCase -> AddProductsCategoriesLink", err)
 		return &models.Product{}, err
 	}
 	CompaniesProducts.ProductId = Product.Id
-	log.Panicln("productsCategoriesUseCase: GET product id from db = ", CompaniesProducts.ProductId)
-	log.Panicln("productsCategoriesUseCase -> AddCompaniesProductsLink")
+	log.Println("productsCategoriesUseCase: GET product id from db = ", CompaniesProducts.ProductId)
+	log.Println("productsCategoriesUseCase -> AddCompaniesProductsLink")
 	err = a.repo.AddCompaniesProductsLink(ctx, CompaniesProducts)
 	if err != nil {
-		log.Panicln("productsCategoriesUseCase -> AddCompaniesProductsLink", err)
+		log.Println("productsCategoriesUseCase -> AddCompaniesProductsLink", err)
 		return &models.Product{}, err
 	}
-	log.Panicln("OK ||| productsCategoriesUseCase -> AddProduct -> all done. New product")
-	log.Panicln(Product)
+	log.Println("OK ||| productsCategoriesUseCase -> AddProduct -> all done. New product")
+	log.Println(Product)
 	return Product, nil
 }
 
