@@ -9,7 +9,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"time"
 
 	"github.com/jackc/pgx/v4"
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
@@ -180,15 +179,15 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	log.Println("a.queryFactory.CreateAddProduct - OK")
 	log.Println("a.conn.QueryRow...")
 	// timeout 15 sek
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	// defer cancel()
 	log.Println("_______________________________")
-	err := a.conn.Ping(ctx)
-	if err != nil {
-		log.Println("PING ERR", err)
-	} else {
-		log.Println("PING OK")
-	}
+	// err := a.conn.Ping(ctx)
+	// if err != nil {
+	// 	log.Println("PING ERR", err)
+	// } else {
+	// 	log.Println("PING OK")
+	// }
 	log.Println(ctx, query.Request, query.Params)
 	log.Println("_______________________________")
 	// row := a.conn.QueryRow(ctx, query.Request, query.Params...)
