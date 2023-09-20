@@ -231,13 +231,17 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 
 func (a productsCategoriesRepository) AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error {
 	query := a.queryFactory.CreateAddProductsCategoriesLink(productId, categoryId)
-	_ = a.conn.QueryRow(ctx, query.Request, query.Params...)
+	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+		return err
+	}
 	return nil
 }
 
 func (a productsCategoriesRepository) AddCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error {
 	query := a.queryFactory.CreateAddCompaniesProductsLink(CompaniesProducts)
-	_ = a.conn.QueryRow(ctx, query.Request, query.Params...)
+	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+		return err
+	}
 	return nil
 }
 

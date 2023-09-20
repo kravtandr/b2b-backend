@@ -40,15 +40,15 @@ func (a *productsCategoriesUseCase) AddProduct(ctx context.Context, Product *mod
 	if err != nil {
 		return &models.Product{}, err
 	}
-	// err = a.repo.AddProductsCategoriesLink(ctx, Product.Id, categoryId)
-	// if err != nil {
-	// 	return &models.Product{}, err
-	// }
-	// CompaniesProducts.ProductId = Product.Id
-	// err = a.repo.AddCompaniesProductsLink(ctx, CompaniesProducts)
-	// if err != nil {
-	// 	return &models.Product{}, err
-	// }
+	err = a.repo.AddProductsCategoriesLink(ctx, Product.Id, categoryId)
+	if err != nil {
+		return &models.Product{}, err
+	}
+	CompaniesProducts.ProductId = Product.Id
+	err = a.repo.AddCompaniesProductsLink(ctx, CompaniesProducts)
+	if err != nil {
+		return &models.Product{}, err
+	}
 	return Product, nil
 }
 

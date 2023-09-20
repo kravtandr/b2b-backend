@@ -28,9 +28,7 @@ message SearchItemNameWithSkipLimitRequest {
 
 message AddProductRequest {
   string name = 1;
-  int64 category_id = 2 [(validate.rules).int64 = {
-    gt: 0,
-  }];
+  int64 category_id = 2 ;
   sqlNullString description = 3;
   int64 price = 4;
   int64 amount = 5;
@@ -39,12 +37,8 @@ message AddProductRequest {
   string delivery_way = 8;
   repeated string product_photo = 9;
   repeated string docs = 10;
-  int64 user_id = 11 [(validate.rules).int64 = {
-    gt: 0,
-  }];
-  int64 company_id = 12 [(validate.rules).int64 = {
-    gt: 0,
-  }];
+  int64 user_id = 11;
+  int64 company_id = 12;
 }
 
 message sqlNullString {
