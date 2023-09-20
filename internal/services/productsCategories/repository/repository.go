@@ -168,11 +168,11 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	// decode to img -> minio store -> encode to base64
 	log.Println("Start AddProduct")
 	log.Println("PutPhotos...")
-	Product, err := a.PutPhotos(ctx, Product)
-	if err != nil {
-		log.Println("Error in PutPhotos ", err)
-		return &models.Product{}, err
-	}
+	// Product, err := a.PutPhotos(ctx, Product)
+	// if err != nil {
+	// 	log.Println("Error in PutPhotos ", err)
+	// 	return &models.Product{}, err
+	// }
 	log.Println("PutPhotos - OK")
 	log.Println("CreateAddProduct...")
 	log.Println("a.queryFactory.CreateAddProduct...")
@@ -183,7 +183,7 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	log.Println("_______________________________")
-	err = a.conn.Ping(ctx)
+	err := a.conn.Ping(ctx)
 	if err != nil {
 		log.Println("PING ERR", err)
 	} else {
