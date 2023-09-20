@@ -9,7 +9,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"time"
 
 	"github.com/jackc/pgx/v4"
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
@@ -166,67 +165,67 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	// decoding base64 easier way to store in minio and have previev
 	// if store base64 how to put base64 to minio??? what size? on the other side no decoding
 	// decode to img -> minio store -> encode to base64
-	log.Println("Start AddProduct")
-	log.Println("PutPhotos...")
-	Product, err := a.PutPhotos(ctx, Product)
-	if err != nil {
-		log.Println("Error in PutPhotos ", err)
-		return &models.Product{}, err
-	}
-	log.Println("PutPhotos - OK")
-	log.Println("CreateAddProduct...")
-	log.Println("a.queryFactory.CreateAddProduct...")
-	query := a.queryFactory.CreateAddProduct(Product)
-	log.Println("a.queryFactory.CreateAddProduct - OK")
-	log.Println("a.conn.QueryRow...")
-	//timeout 15 sek
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	log.Println("_______________________________")
-	err = a.conn.Ping(ctx)
-	if err != nil {
-		log.Println("PING ERR", err)
-	} else {
-		log.Println("PING OK")
-	}
-	log.Println(ctx, query.Request, query.Params)
-	log.Println("_______________________________")
-	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-	log.Println("a.conn.QueryRow - OK")
-	if err := row.Scan(
-		&Product.Id, &Product.Name, &Product.Description, &Product.Price,
-	); err != nil {
-		if err == pgx.ErrNoRows {
-			return &models.Product{}, errors.ProductDoesNotExist
-		}
-		return &models.Product{}, err
-	}
-	log.Println("CreateAddProduct - OK")
-	log.Println("AddProductPhotos...")
-	err = a.AddProductPhotos(ctx, Product)
-	if err != nil {
-		log.Println("Error in AddProductPhotos ", err)
-		return &models.Product{}, err
-	}
-	log.Println("AddProductPhotos - OK")
-	log.Println("AddProductDocuments...")
-	err = a.AddProductDocuments(ctx, Product)
-	if err != nil {
-		log.Println("Error in AddProductDocuments ", err)
-		return &models.Product{}, err
-	}
-	log.Println("AddProductDocuments - OK")
-	//base64 in response
-	log.Println("GetProductById...")
-	result, err := a.GetProductById(ctx, &models.ProductId{Id: Product.Id})
-	if err != nil {
-		log.Println("Error in GetProductById ", err)
-		return &models.Product{}, err
-	}
-	log.Println("GetProductById - OK")
-	log.Println("END AddProduct")
-	return result, nil
-	//return &models.Product{}, nil
+	// log.Println("Start AddProduct")
+	// log.Println("PutPhotos...")
+	// Product, err := a.PutPhotos(ctx, Product)
+	// if err != nil {
+	// 	log.Println("Error in PutPhotos ", err)
+	// 	return &models.Product{}, err
+	// }
+	// log.Println("PutPhotos - OK")
+	// log.Println("CreateAddProduct...")
+	// log.Println("a.queryFactory.CreateAddProduct...")
+	// query := a.queryFactory.CreateAddProduct(Product)
+	// log.Println("a.queryFactory.CreateAddProduct - OK")
+	// log.Println("a.conn.QueryRow...")
+	// //timeout 15 sek
+	// ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	// defer cancel()
+	// log.Println("_______________________________")
+	// err = a.conn.Ping(ctx)
+	// if err != nil {
+	// 	log.Println("PING ERR", err)
+	// } else {
+	// 	log.Println("PING OK")
+	// }
+	// log.Println(ctx, query.Request, query.Params)
+	// log.Println("_______________________________")
+	// row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	// log.Println("a.conn.QueryRow - OK")
+	// if err := row.Scan(
+	// 	&Product.Id, &Product.Name, &Product.Description, &Product.Price,
+	// ); err != nil {
+	// 	if err == pgx.ErrNoRows {
+	// 		return &models.Product{}, errors.ProductDoesNotExist
+	// 	}
+	// 	return &models.Product{}, err
+	// }
+	// log.Println("CreateAddProduct - OK")
+	// log.Println("AddProductPhotos...")
+	// err = a.AddProductPhotos(ctx, Product)
+	// if err != nil {
+	// 	log.Println("Error in AddProductPhotos ", err)
+	// 	return &models.Product{}, err
+	// }
+	// log.Println("AddProductPhotos - OK")
+	// log.Println("AddProductDocuments...")
+	// err = a.AddProductDocuments(ctx, Product)
+	// if err != nil {
+	// 	log.Println("Error in AddProductDocuments ", err)
+	// 	return &models.Product{}, err
+	// }
+	// log.Println("AddProductDocuments - OK")
+	// //base64 in response
+	// log.Println("GetProductById...")
+	// result, err := a.GetProductById(ctx, &models.ProductId{Id: Product.Id})
+	// if err != nil {
+	// 	log.Println("Error in GetProductById ", err)
+	// 	return &models.Product{}, err
+	// }
+	// log.Println("GetProductById - OK")
+	// log.Println("END AddProduct")
+	// return result, nil
+	return &models.Product{}, nil
 
 }
 
