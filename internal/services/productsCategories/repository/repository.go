@@ -191,16 +191,16 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	}
 	log.Println(ctx, query.Request, query.Params)
 	log.Println("_______________________________")
-	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-	log.Println("a.conn.QueryRow - OK")
-	if err := row.Scan(
-		&Product.Id, &Product.Name, &Product.Description, &Product.Price,
-	); err != nil {
-		if err == pgx.ErrNoRows {
-			return &models.Product{}, errors.ProductDoesNotExist
-		}
-		return &models.Product{}, err
-	}
+	// row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	// log.Println("a.conn.QueryRow - OK")
+	// if err := row.Scan(
+	// 	&Product.Id, &Product.Name, &Product.Description, &Product.Price,
+	// ); err != nil {
+	// 	if err == pgx.ErrNoRows {
+	// 		return &models.Product{}, errors.ProductDoesNotExist
+	// 	}
+	// 	return &models.Product{}, err
+	// }
 	log.Println("CreateAddProduct - OK")
 	log.Println("AddProductPhotos...")
 	// err = a.AddProductPhotos(ctx, Product)
