@@ -42,13 +42,14 @@ func (a *productsCategoriesUseCase) AddProduct(ctx context.Context, Product *mod
 	if err != nil {
 		return &models.Product{}, err
 	}
+	CompaniesProducts.ProductId = Product.Id
 	log.Println("productsCategoriesUseCase -> AddProductsCategoriesLink")
 	err = a.repo.AddProductsCategoriesLink(ctx, Product.Id, categoryId)
 	if err != nil {
 		log.Println("productsCategoriesUseCase -> AddProductsCategoriesLink", err)
 		return &models.Product{}, err
 	}
-	CompaniesProducts.ProductId = Product.Id
+
 	log.Println("productsCategoriesUseCase: GET product id from db = ", CompaniesProducts.ProductId)
 	log.Println("productsCategoriesUseCase -> AddCompaniesProductsLink")
 	err = a.repo.AddCompaniesProductsLink(ctx, CompaniesProducts)
