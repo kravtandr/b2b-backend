@@ -203,29 +203,31 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 	}
 	log.Println("CreateAddProduct - OK")
 	log.Println("AddProductPhotos...")
-	err = a.AddProductPhotos(ctx, Product)
-	if err != nil {
-		log.Println("Error in AddProductPhotos ", err)
-		return &models.Product{}, err
-	}
+	// err = a.AddProductPhotos(ctx, Product)
+	// if err != nil {
+	// 	log.Println("Error in AddProductPhotos ", err)
+	// 	return &models.Product{}, err
+	// }
 	log.Println("AddProductPhotos - OK")
 	log.Println("AddProductDocuments...")
-	err = a.AddProductDocuments(ctx, Product)
-	if err != nil {
-		log.Println("Error in AddProductDocuments ", err)
-		return &models.Product{}, err
-	}
+	// err = a.AddProductDocuments(ctx, Product)
+	// if err != nil {
+	// 	log.Println("Error in AddProductDocuments ", err)
+	// 	return &models.Product{}, err
+	// }
 	log.Println("AddProductDocuments - OK")
 	//base64 in response
 	log.Println("GetProductById...")
-	result, err := a.GetProductById(ctx, &models.ProductId{Id: Product.Id})
-	if err != nil {
-		log.Println("Error in GetProductById ", err)
-		return &models.Product{}, err
-	}
+	// result, err := a.GetProductById(ctx, &models.ProductId{Id: Product.Id})
+	// if err != nil {
+	// 	log.Println("Error in GetProductById ", err)
+	// 	return &models.Product{}, err
+	// }
 	log.Println("GetProductById - OK")
 	log.Println("END AddProduct")
-	return result, nil
+	//return result, nil
+	return &models.Product{}, nil
+
 }
 
 func (a productsCategoriesRepository) AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error {
