@@ -1,11 +1,11 @@
 package setup
 
 import (
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	zap_middleware "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
-	"github.com/grpc-ecosystem/go-grpc-prometheus"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+
 	"google.golang.org/grpc"
 
 	"b2b/m/internal/services/auth/config"
@@ -35,7 +35,7 @@ func SetupServer(cfg config.Config) (server *grpc.Server, cancel func(), err err
 	authDelivery := delivery.NewAuthDelivery(authUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 
 	server = grpc.NewServer(
-		grpc_middleware.WithUnaryServerChain(
+		grpc.ChainUnaryInterceptor(
 			grpc_ctxtags.UnaryServerInterceptor(grpc_ctxtags.WithFieldExtractor(grpc_ctxtags.CodeGenRequestFieldExtractor)),
 			zap_middleware.UnaryServerInterceptor(cfg.Logger),
 			grpc_validator.UnaryServerInterceptor(),

@@ -34,13 +34,17 @@ type authRepository struct {
 func (a *authRepository) FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) error {
 	query := a.queryFactory.CreateCreateCompany(user, newCompany)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-
 	if err := row.Scan(&newCompany.Id); err != nil {
+		log.Println("ERROR: authRepository->FastRegistration->CreateCreateCompany")
 		return err
 	}
 
 	query = a.queryFactory.CreateCreateUserCompanyLink(user, newCompany, post)
-	row = a.conn.QueryRow(ctx, query.Request, query.Params...)
+	_, err := a.conn.Exec(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Println("ERROR: authRepository->FastRegistration->CreateCreateUserCompanyLink")
+		return nil
+	}
 	return nil
 }
 
@@ -116,14 +120,13 @@ func (a *authRepository) CreateUserSession(ctx context.Context, userID int64, ha
 }
 
 func (a *authRepository) GetUsersCompany(ctx context.Context, userId int64) (*company_models.Company, error) {
-	conn, err := a.conn.Acquire(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Release()
-
+	// conn, err := a.conn.Acquire(context.Background())
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer conn.Release()
 	var company company_models.Company
-	err = conn.QueryRow(context.Background(),
+	err := a.conn.QueryRow(context.Background(),
 		createCompanyByUserId,
 		userId,
 	).Scan(&company.Id, &company.Name, &company.Description, &company.LegalName, &company.Itn, &company.Psrn, &company.Address, &company.LegalAddress, &company.Email, &company.Phone, &company.Link, &company.Activity, &company.OwnerId, &company.Rating, &company.Verified)
@@ -135,14 +138,14 @@ func (a *authRepository) GetUsersCompany(ctx context.Context, userId int64) (*co
 }
 
 func (a *authRepository) GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error) {
-	conn, err := a.conn.Acquire(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Release()
+	// conn, err := a.conn.Acquire(context.Background())
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer conn.Release()
 
 	var cULink company_models.CompaniesUsersLink
-	err = conn.QueryRow(context.Background(),
+	err := a.conn.QueryRow(context.Background(),
 		createGetCompanyUserLink,
 		userId, companyId,
 	).Scan(&cULink.Id, &cULink.Post, &cULink.CompanyId, &cULink.UserId, &cULink.Itn)
@@ -170,6 +173,7 @@ func (a *authRepository) ValidateUserSession(ctx context.Context, hash string) (
 func (a *authRepository) RemoveUserSession(ctx context.Context, hash string) error {
 	query := a.queryFactory.CreateRemoveUserSession(hash)
 	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+		log.Println("ERROR: authRepository->RemoveUserSession", err)
 		return err
 	}
 
