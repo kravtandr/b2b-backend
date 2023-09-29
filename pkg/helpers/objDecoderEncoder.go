@@ -43,6 +43,13 @@ func DecodeImgFromBase64(ctx context.Context, imgBase64 string) (decoded []byte,
 			log.Println("failed to create buffer", err)
 		}
 
+	case "gif":
+		contentType = "image/gif"
+		err = png.Encode(buff, m)
+		if err != nil {
+			log.Println("failed to create buffer", err)
+		}
+
 	default:
 		log.Println("Unsuppotred file type")
 		return dec, "", err
@@ -57,6 +64,8 @@ func EncodeImgToBase64(ctx context.Context, imgInBytes []byte) (encoded string) 
 		encoded += "data:image/jpeg;base64,"
 	case "image/png":
 		encoded += "data:image/png;base64,"
+	case "image/gif":
+		encoded += "data:image/gif;base64,"
 	}
 	encoded += base64.StdEncoding.EncodeToString(imgInBytes)
 	return encoded
