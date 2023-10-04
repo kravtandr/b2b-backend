@@ -3,28 +3,15 @@ import pandas as pd
 from types import NoneType
 import os
 
-class Product:
-    start = 0
-    end = 0
-    data = ""
-    Id = "null" 
-    CategoryId = "null"
-    CategoryName = "null"
-    Amount = "null"
-    Name = "null"
-    Info = "null"
-    Price = "null"
-    Photo = "null"
 
-
-
+# files[x] - тут менять индексы, если появились лишние файлы в катологе
 def ParseGoods(path, files, categories):
     prices = pd.DataFrame(columns=['Id','Price'])
     rests = pd.DataFrame(columns=['Id','Amount'])
     data = pd.DataFrame(columns=['Ид_товара', 'НомерВерсии', 'ПометкаУдаления', 'Штрихкод', 'Артикул', 
                                  'БазоваяЕдиница', 'Ид_категории', "Название_категории","Количество", 'Наименование', 'Описание', "Цена", 
                                 'Картинка', 'Страна', 'Вес'])
-        # # Чтение Товаров из 1
+    # Чтение Товаров из папок
     with open(path+'/'+files[1], 'r', encoding='utf-8', newline='') as xml_file:
         tree = ET.parse(xml_file)
         root = tree.getroot()
@@ -84,8 +71,6 @@ def ParseGoods(path, files, categories):
                                         'БазоваяЕдиница': BasedElem, 'Ид_категории': CategoryId, 'Название_категории': CategoryName,'Количество': Amount,  'Описание': Info, 
                                         'Цена': Price, 'Картинка': Photo, 'Страна': Country, 'Вес': Weight}, ignore_index=True)
     
-    # df = pd.DataFrame(data)
-    # df.to_excel('data_'+path+'.xlsx', index=False)
     print("Done import", path)
     return data
 
@@ -129,63 +114,7 @@ def main():
     print("All done. save in ./data.xlsx")
     df = pd.DataFrame(data)
     df.to_excel('data.xlsx', index=False)
-    # Выводим список файлов
-    # print(files)
-     
-
-
-        
-
-
 
 
 if __name__ == "__main__":
      main()
-
-
-
-# def main():
-#     print("Hello World!")
-#     f = open('goods/1/import___97cf0a59-7d9d-4a5e-9dbe-80d54bcdb49f.xml', 'r', encoding='utf-8', newline='')
-#     findProducts = False
-#     findProduct = False
-#     findProductStart = 0
-#     findProductEnd = 0
-#     lineNumber = 0
-#     product = Product()
-#     products = []
-#     parsedProducts = 0
-#     skip =False
-#     for line in f:
-#         if lineNumber == 500:
-#             break
-#         line = line.strip()
-#         if line.find("<Товары>") != -1:
-#             findProducts=True
-#         if line.find("</Товары>") != -1:
-#             findProducts=False
-#             break
-#         if findProducts:
-#              if line.find("</Товар>") != -1:
-#                  findProduct = False
-#                  findProductEnd = lineNumber
-#                  if product.data != "":
-#                     parsedProducts+=1
-#                     products.append(product)
-#                     product = Product()
-#              if line.find("<Товар>") != -1:
-#                 findProduct = True
-#                 findProductStart = lineNumber
-#              if  line.find("<ЗначенияСвойств>") != -1 or line.find("<СтавкиНалогов>") != -1 or line.find("<ЗначенияРеквизитов>") != -1: 
-#                 skip = True
-#              if findProduct and skip == False:
-#                 product.data += line
-#              if  line.find("</ЗначенияСвойств>") != -1 or line.find("</СтавкиНалогов>") != -1 or line.find("</ЗначенияРеквизитов>") != -1: 
-#                 skip = False
-
-#         print(lineNumber," = ", line)
-#         lineNumber+=1
-#     f.close()
-#     print("End! Parsed Products = ", parsedProducts)
-#     print("End! Parsed Products = ", products[0].data)
-
