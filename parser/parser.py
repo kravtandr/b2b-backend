@@ -25,7 +25,7 @@ def ParseGoods(path, files, categories):
                                  'БазоваяЕдиница', 'Ид_категории', "Название_категории","Количество", 'Наименование', 'Описание', "Цена", 
                                 'Картинка', 'Страна', 'Вес'])
         # # Чтение Товаров из 1
-    with open(path+'/'+files[2], 'r', encoding='utf-8', newline='') as xml_file:
+    with open(path+'/'+files[1], 'r', encoding='utf-8', newline='') as xml_file:
         tree = ET.parse(xml_file)
         root = tree.getroot()
         for price in root.iter('{urn:1C.ru:commerceml_3}Предложение'):
@@ -36,7 +36,7 @@ def ParseGoods(path, files, categories):
         prices_df = pd.DataFrame(prices)
         # print(prices.loc[prices['Id'] == '34f0baf5-7924-11e4-8798-10bf48207869'].iat[0, 1])
     print("Done prices", path)
-    with open(path+'/'+files[3], 'r', encoding='utf-8', newline='') as xml_file:
+    with open(path+'/'+files[2], 'r', encoding='utf-8', newline='') as xml_file:
         tree = ET.parse(xml_file)
         root = tree.getroot()
         for rest in root.iter('{urn:1C.ru:commerceml_3}Предложение'):
@@ -47,7 +47,7 @@ def ParseGoods(path, files, categories):
         rests_df = pd.DataFrame(rests)
         # print(rests.loc[rests['Id'] == '34f0baf5-7924-11e4-8798-10bf48207869'].iat[0, 1])
     print("Done rests", path)
-    with open(path+'/'+files[1], 'r', encoding='utf-8', newline='') as xml_file:
+    with open(path+'/'+files[0], 'r', encoding='utf-8', newline='') as xml_file:
         tree = ET.parse(xml_file)
         root = tree.getroot()
         # print(ET.tostring(root, encoding='utf8').decode('utf8'))
@@ -64,7 +64,7 @@ def ParseGoods(path, files, categories):
             CategoryId = product.find('{urn:1C.ru:commerceml_3}Группы').find('{urn:1C.ru:commerceml_3}Ид').text
             Info = product.find('{urn:1C.ru:commerceml_3}Описание').text
             if type(product.find('{urn:1C.ru:commerceml_3}Картинка')) != NoneType:
-                Photo = product.find('{urn:1C.ru:commerceml_3}Картинка').text
+                Photo = path+'/'+product.find('{urn:1C.ru:commerceml_3}Картинка').text
             Country = product.find('{urn:1C.ru:commerceml_3}Страна').text
             Weight = product.find('{urn:1C.ru:commerceml_3}Вес').text
             if categories.loc[categories['Id'] == CategoryId].size != 0:
@@ -115,11 +115,18 @@ def main():
     
     # Получаем список файлов
     files = os.listdir(basePath)
+    # print(files)
+    files.remove(".DS_Store")
+    files.sort()
     for directory in files:
         path = basePath+'/'+directory
         files = os.listdir(basePath+'/'+directory)
+        files.remove("import_files")
+        files.sort()
+        # print(files)
         data = data._append(ParseGoods(path, files, categories))
-        print(os.listdir(basePath+'/'+directory))
+        # print(os.listdir(basePath+'/'+directory))
+    print("All done. save in ./data.xlsx")
     df = pd.DataFrame(data)
     df.to_excel('data.xlsx', index=False)
     # Выводим список файлов
