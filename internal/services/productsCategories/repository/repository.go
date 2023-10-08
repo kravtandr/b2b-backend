@@ -7,6 +7,7 @@ import (
 	hasher "b2b/m/pkg/hasher"
 	helpers "b2b/m/pkg/helpers"
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -309,8 +310,12 @@ func (a productsCategoriesRepository) GetProductPhotos(ctx context.Context, Prod
 				log.Println("Error in io.ReadAll(image) ", err)
 			}
 			data := imageBytes
+			base64photo := helpers.EncodeImgToBase64(ctx, data)
 			log.Println("imageBytes  = ", data[10:40])
-			log.Println("ImgToBase64  = ", helpers.EncodeImgToBase64(ctx, data)[10:40])
+			log.Println("ImgToBase64  = ", base64photo[10:40])
+			Product.Photo = append(Product.Photo, base64photo)
+			Product.Photo = append(Product.Photo, fmt.Sprint(helpers.CheckSum(base64photo)))
+
 		}()
 	}
 	if rows.Err() != nil {

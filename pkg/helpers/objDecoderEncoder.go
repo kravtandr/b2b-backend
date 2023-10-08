@@ -3,6 +3,7 @@ package helpers
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"encoding/base64"
 	"image"
 	"image/jpeg"
@@ -55,6 +56,15 @@ func DecodeImgFromBase64(ctx context.Context, imgBase64 string) (decoded []byte,
 		return dec, "", err
 	}
 	return buff.Bytes(), contentType, nil
+}
+
+func CheckSum(s string) int {
+	result := 0
+	array := md5.Sum([]byte(s))
+	for _, v := range array {
+		result += int(v)
+	}
+	return result
 }
 
 func EncodeImgToBase64(ctx context.Context, imgInBytes []byte) (encoded string) {
