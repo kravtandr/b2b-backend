@@ -1,10 +1,12 @@
 package hasher
 
 import (
+	"b2b/m/pkg/generator"
 	"encoding/base64"
 	"errors"
+	"fmt"
+	"hash/fnv"
 
-	"b2b/m/pkg/generator"
 	"github.com/gofrs/uuid"
 )
 
@@ -37,4 +39,10 @@ func NewHasher(prefixLen int) Hasher {
 		prefixLen: prefixLen,
 		gen:       generator.NewUUIDGenerator(uuid.NewGen()),
 	}
+}
+
+func SimpleHash(s string) string {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return fmt.Sprint(h.Sum32())
 }

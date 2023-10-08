@@ -31,3 +31,13 @@ type ChatAndLastMsg struct {
 }
 
 type ChatsAndLastMsg []ChatAndLastMsg
+
+type CheckUnique struct {
+	SenderId int64 `json:"sender_id"`
+	ProducId int64 `json:"product_id"`
+}
+
+type InitChatResponce struct {
+	ChatId        int64 `json:"chat_id"`
+	CreateNewChat bool  `json:"create_new_chat"`
+}

@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	company_usecase "b2b/m/internal/gateway/company/usecase"
 	auth_usecase "b2b/m/internal/gateway/user/usecase"
 	"b2b/m/internal/models"
 	chttp "b2b/m/pkg/customhttp"
@@ -22,6 +23,7 @@ type ProductsCategoriesUseCase interface {
 type productsCategoriesUseCase struct {
 	ProductsCategoriesGRPC ProductsCategoriesGRPC
 	AuthUsecase            auth_usecase.UserUsecase
+	CompanyUsecase         company_usecase.CompanyUseCase
 }
 
 func (u *productsCategoriesUseCase) GetCategoryById(ctx context.Context, request *models.GetCategoryByIdRequest) (*models.GetCategoryByIdResponse, error) {
@@ -93,7 +95,12 @@ func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request 
 		Id: request.Id,
 	})
 	if err != nil {
-		log.Println("Error GetProductById", err)
+		log.Println("Error GetProductById -> GetProductById", err)
+		return &models.GetProductByIdResponse{}, err
+	}
+	productCompany, err := u.CompanyUsecase.GetCompanyByProductId(ctx, request.Id)
+	if err != nil {
+		log.Println("Error GetProductById -> GetCompanyByProductId", err)
 		return &models.GetProductByIdResponse{}, err
 	}
 	description := sql.NullString{
@@ -106,6 +113,22 @@ func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request 
 		Price:       response.Price,
 		Photo:       response.Photo,
 		Docs:        response.Documents,
+		Company: models.Company{
+			Name:         productCompany.Name,
+			Description:  productCompany.Description,
+			LegalName:    productCompany.LegalName,
+			Itn:          productCompany.Itn,
+			Psrn:         productCompany.Psrn,
+			Address:      productCompany.Address,
+			LegalAddress: productCompany.LegalAddress,
+			Email:        productCompany.Email,
+			Phone:        productCompany.Phone,
+			Link:         productCompany.Link,
+			Activity:     productCompany.Activity,
+			OwnerId:      productCompany.OwnerId,
+			Rating:       productCompany.Rating,
+			Verified:     productCompany.Verified,
+		},
 	}, nil
 }
 
@@ -191,6 +214,6 @@ func (u *productsCategoriesUseCase) GetProductsList(ctx context.Context, request
 	return &modelProducts, nil
 }
 
-func NewProductsCategoriesUseCase(PCgrpc ProductsCategoriesGRPC, authUsecase auth_usecase.UserUsecase) ProductsCategoriesUseCase {
-	return &productsCategoriesUseCase{ProductsCategoriesGRPC: PCgrpc, AuthUsecase: authUsecase}
+func NewProductsCategoriesUseCase(PCgrpc ProductsCategoriesGRPC, authUsecase auth_usecase.UserUsecase, companyUsecase company_usecase.CompanyUseCase) ProductsCategoriesUseCase {
+	return &productsCategoriesUseCase{ProductsCategoriesGRPC: PCgrpc, AuthUsecase: authUsecase, CompanyUsecase: companyUsecase}
 }

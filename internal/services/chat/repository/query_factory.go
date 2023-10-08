@@ -35,7 +35,7 @@ func (q *queryFactory) CreateNewChat(newChat *models.Chat) *query.Query {
 func (q *queryFactory) CreateGetChat(chat *models.Chat) *query.Query {
 	return &query.Query{
 		Request: createGetChat,
-		Params:  []interface{}{chat.CreatorId, chat.ProductId},
+		Params:  []interface{}{chat.ProductId, chat.CreatorId},
 	}
 }
 

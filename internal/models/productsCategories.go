@@ -41,6 +41,7 @@ type GetProductByIdResponse struct {
 	Price       int64          `json:"price"`
 	Photo       []string       `json:"photo"`
 	Docs        []string       `json:"docs"`
+	Company     Company        `json:"company"`
 }
 
 type GetProduct struct {

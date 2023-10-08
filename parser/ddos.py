@@ -20,7 +20,7 @@ def base64_string_to_pillow_image(base64_str):
 def main():
     url = "https://bi-tu-bi.ru/api"
     local_url = "http://127.0.0.1:8080"
-    # url = local_url
+    url = local_url
     auth = {
         "email": "test@mail.ru", 
         "password": "password123"
@@ -36,8 +36,8 @@ def main():
     lineNumber = 0
     err = 0
     # stopLine = 100
-    stopLine = 8683
-    startLine = 207
+    stopLine = 10
+    startLine = 1
     for row in df.itertuples():
         if lineNumber>= startLine:
             product = {}

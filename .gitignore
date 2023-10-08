@@ -15,5 +15,10 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 .idea/
-*.xlsx
 pgdata/
+
+#parser
+*.xlsx
+*.xml
+parser/goods/
+parser/properties/

@@ -15,6 +15,7 @@ import (
 
 type ChatUsecase interface {
 	InitChat(ctx context.Context, userId int64, productId int64) (bool, int64, error)
+	CheckIfUniqChat(ctx context.Context, userId int64, productId int64) (bool, error)
 	NewChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
 	GetChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
 	WriteNewMsg(ctx context.Context, request *models.Msg) error
@@ -196,12 +197,24 @@ func (u *chatUsecase) InitChat(ctx context.Context, userId int64, productId int6
 		}
 	} else {
 		chat, err = u.GetChat(ctx, userId, productId)
+		log.Println("CHATTTTTT", chat)
 		if err != nil {
 			return false, -1, err
 		}
 	}
 
 	return response.Unique, chat.Id, nil
+}
+
+func (u *chatUsecase) CheckIfUniqChat(ctx context.Context, userId int64, productId int64) (bool, error) {
+	response, err := u.chatGRPC.CheckIfUniqChat(ctx, &chat_service.CheckIfUniqChatRequest{
+		UserId:    userId,
+		ProductId: productId,
+	})
+	if err != nil {
+		return false, err
+	}
+	return response.Unique, nil
 }
 
 func (u *chatUsecase) GetChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error) {

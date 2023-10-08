@@ -4,6 +4,7 @@ import (
 	"b2b/m/internal/services/productsCategories/models"
 	chttp "b2b/m/pkg/customhttp"
 	"b2b/m/pkg/errors"
+	hasher "b2b/m/pkg/hasher"
 	helpers "b2b/m/pkg/helpers"
 	"context"
 	"io"
@@ -96,7 +97,7 @@ func (a productsCategoriesRepository) PutPhotos(ctx context.Context, Product *mo
 		opts := minio.PutObjectOptions{ContentType: contentType}
 
 		// create tmp file to avoid creating file with eq filename
-		f, err := os.CreateTemp("", Product.Name)
+		f, err := os.CreateTemp("", hasher.SimpleHash(Product.Name))
 		if err != nil {
 			log.Println("Error while create tmp file", err)
 			return &models.Product{}, errors.CantCreateTmpFile
@@ -280,51 +281,84 @@ func (a productsCategoriesRepository) GetProductPhotos(ctx context.Context, Prod
 	if err != nil {
 		return &models.Product{}, err
 	}
+	// Обнуляем Product.Photo перед циклом
+	Product.Photo = nil
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&objName)
-		//filename := strings.Split(objName, "_")
-		//log.Println("GET FROM MINO objName", objName, "........")
-		//log.Println("GET FROM MINO objName", objName, "........")
-
-		BucketName := "photo"
-		// image, err := a.minioClient.GetObject(
-		// 	ctx,
-		// 	BucketName,               // константа с именем бакета
-		// 	objName,                  // имя
-		// 	minio.GetObjectOptions{}, // тип контента
-		// )
-
-		reader, err := a.minioClient.GetObject(
-			ctx,
-			BucketName,
-			objName,
-			minio.GetObjectOptions{},
-		)
-		if err != nil {
-			log.Println("Cant`t get image from image-storage:", err)
-			return &models.Product{}, err
-		}
-		defer reader.Close()
-		if err != nil {
-			log.Println("Error in a.minioClient.GetObject ", err)
-			return &models.Product{}, err
-		}
-		//log.Println("image from minio ", reader)
-		//base64.StdEncoding.Encode(image)
-		imageBytes, err := io.ReadAll(reader)
-		if err != nil {
-			log.Println("Error in io.ReadAll(image) ", err)
-			return &models.Product{}, err
-		}
-		//log.Println("imageBytes  = ", imageBytes)
-		Product.Photo = append(Product.Photo, helpers.EncodeImgToBase64(ctx, imageBytes))
+		func() {
+			err = rows.Scan(&objName)
+			var BucketName string = "photo"
+			reader, err := a.minioClient.GetObject(
+				ctx,
+				BucketName,               // константа с именем бакета
+				objName,                  // имя
+				minio.GetObjectOptions{}, // тип контента
+			)
+			if err != nil {
+				log.Println("Cant`t get image from image-storage:", err)
+			}
+			defer reader.Close()
+			log.Println("reader  = ", reader)
+			log.Println("objName  = ", objName)
+			if err != nil {
+				log.Println("Error in a.minioClient.GetObject ", err)
+			}
+			imageBytes := make([]byte, 1)
+			imageBytes, err = io.ReadAll(reader)
+			if err != nil && err != io.EOF {
+				log.Println("Error in io.ReadAll(image) ", err)
+			}
+			data := imageBytes
+			log.Println("imageBytes  = ", data[10:40])
+			log.Println("ImgToBase64  = ", helpers.EncodeImgToBase64(ctx, data)[10:40])
+		}()
 	}
 	if rows.Err() != nil {
 		return &models.Product{}, err
 	}
 	return Product, err
 }
+
+// func (a productsCategoriesRepository) GetProductPhotos(ctx context.Context, Product *models.Product) (*models.Product, error) {
+// 	query := a.queryFactory.CreateGetProductPhotos(Product.Id)
+// 	var objName string
+// 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
+// 	if err != nil {
+// 		return &models.Product{}, err
+// 	}
+// 	defer rows.Close()
+
+// 	for rows.Next() {
+// 		func() {
+// 			err = rows.Scan(&objName)
+// 			var BucketName string = "photo"
+// 			reader, err := a.minioClient.GetObject(
+// 				ctx,
+// 				BucketName,
+// 				objName,
+// 				minio.GetObjectOptions{},
+// 			)
+// 			if err != nil {
+// 				log.Println("Error", err)
+// 			}
+// 			defer reader.Close()
+// 			if err != nil {
+// 				log.Println("Error ", err)
+// 			}
+// 			imageBytes, err := io.ReadAll(reader)
+// 			if err != nil && err != io.EOF {
+// 				log.Println("Error", err)
+// 			}
+// 			data := imageBytes
+// 			Product.Photo = append(Product.Photo, helpers.EncodeImgToBase64(ctx, data))
+// 		}()
+
+// 	}
+// 	if rows.Err() != nil {
+// 		return &models.Product{}, err
+// 	}
+// 	return Product, err
+// }
 
 func (a productsCategoriesRepository) GetProductDocuments(ctx context.Context, Product *models.Product) (*models.Product, error) {
 	query := a.queryFactory.CreateGetProductDocuments(Product.Id)
@@ -364,6 +398,7 @@ func (a productsCategoriesRepository) GetProductsList(ctx context.Context, SkipL
 	query := a.queryFactory.CreateGetProductsList(SkipLimit)
 	var product models.Product
 	var products models.ProductsList
+	var productsWithPhoto models.ProductsList
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
 	if err != nil {
 		log.Println("Error in Query GetProductsList", err)
@@ -371,15 +406,33 @@ func (a productsCategoriesRepository) GetProductsList(ctx context.Context, SkipL
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price)
-		productWithPhotos, err := a.GetProductWithPhotosAndDocuments(ctx, &product)
-		if err != nil {
-			log.Println("Error in  GetProductsList->GetProductWithPhotosAndDocuments", err)
-			return &products, err
-		}
-		log.Println(productWithPhotos.Photo)
-		product.Photo = productWithPhotos.Photo
-		products = append(products, product)
+		func() {
+			product = models.Product{}
+			//productWithPhotos := &models.Product{}
+			err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price)
+			if err != nil {
+				log.Println("Error in  GetProductsList->GetProductWithPhotosAndDocuments", err)
+				//return &products, err
+			}
+			// productWithPhotos, err = a.GetProductWithPhotosAndDocuments(ctx, &product)
+			// if err != nil {
+			// 	log.Println("Error in  GetProductsList->GetProductWithPhotosAndDocuments", err)
+			// 	//return &products, err
+			// }
+			//log.Println(productWithPhotos.Photo)
+			//product.Photo = productWithPhotos.Photo
+			products = append(products, product)
+		}()
+	}
+	for _, item := range products {
+		func() {
+			productWithPhotos, err := a.GetProductWithPhotosAndDocuments(ctx, &item)
+			if err != nil {
+				log.Println("Error in  GetProductsList->GetProductWithPhotosAndDocuments", err)
+				//return &products, err
+			}
+			productsWithPhoto = append(productsWithPhoto, *productWithPhotos)
+		}()
 	}
 
 	if rows.Err() != nil {
@@ -387,7 +440,7 @@ func (a productsCategoriesRepository) GetProductsList(ctx context.Context, SkipL
 		return &products, err
 	}
 
-	return &products, err
+	return &productsWithPhoto, err
 }
 
 func (a productsCategoriesRepository) SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error) {

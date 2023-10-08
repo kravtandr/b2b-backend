@@ -33,7 +33,7 @@ func (a *chatRepository) CheckIfUniqChat(ctx context.Context, productId int64, u
 	unique := false
 	if err := row.Scan(&count); err != nil {
 		if err == pgx.ErrNoRows {
-			return false, errors.UserDoesNotExist
+			return false, errors.ChatDoesNotExist
 		}
 
 		return false, err
@@ -49,9 +49,9 @@ func (a *chatRepository) NewChat(ctx context.Context, newChat *models.Chat) (*mo
 	query := a.queryFactory.CreateNewChat(newChat)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	chat := &models.Chat{}
-	if err := row.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId); err != nil {
+	if err := row.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status); err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, errors.UserDoesNotExist
+			return nil, errors.ChatDoesNotExist
 		}
 
 		return nil, err
@@ -66,13 +66,13 @@ func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*model
 	getChat := &models.Chat{}
 	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &chat.Status); err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, errors.UserDoesNotExist
+			return nil, errors.ChatDoesNotExist
 		}
 
 		return nil, err
 	}
 
-	return chat, nil
+	return getChat, nil
 }
 
 func (a *chatRepository) WriteNewMsg(ctx context.Context, newMsg *models.Msg) error {
@@ -125,20 +125,49 @@ func (a *chatRepository) GetUserLastMsgs(ctx context.Context, userId int64) (*mo
 }
 
 func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error) {
-	query := a.queryFactory.CreateGetAllUserChatsAndLastMsgs(userId)
 	var chat models.ChatAndLastMsg
+
 	var chats models.ChatsAndLastMsg
+
+	//if chat with no msgs
+	onlyChats, err := a.GetAllUserChats(ctx, userId)
+
+	if err != nil {
+		return &chats, err
+	}
+	//for onlyChats
+	var onlyChatsLM models.ChatsAndLastMsg
+	for _, chat := range *onlyChats {
+		onlyChatsLM = append(onlyChatsLM,
+			models.ChatAndLastMsg{
+				Chat: models.Chat{
+					Id:        chat.Id,
+					Name:      chat.Name,
+					CreatorId: chat.CreatorId,
+					ProductId: chat.ProductId,
+					Status:    chat.Status,
+				},
+				LastMsg: models.Msg{},
+			})
+	}
+	query := a.queryFactory.CreateGetAllUserChatsAndLastMsgs(userId)
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
 	if err != nil {
 		return &chats, err
 	}
 	defer rows.Close()
+	rows_count := 0
 	for rows.Next() {
+		rows_count += 1
 		err = rows.Scan(&chat.Chat.Id, &chat.Chat.Name, &chat.Chat.CreatorId, &chat.Chat.ProductId, &chat.Chat.Status, &chat.LastMsg.Id, &chat.LastMsg.SenderId, &chat.LastMsg.ReceiverId, &chat.LastMsg.Checked, &chat.LastMsg.Text, &chat.LastMsg.Type, &chat.LastMsg.Time)
 		chats = append(chats, chat)
 	}
 	if rows.Err() != nil {
 		return &chats, err
+	}
+	log.Println(chats)
+	if rows_count == 0 {
+		chats = onlyChatsLM
 	}
 	return &chats, err
 

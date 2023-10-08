@@ -58,7 +58,7 @@ func (a *productsCategoriesUseCase) AddProduct(ctx context.Context, Product *mod
 		return &models.Product{}, err
 	}
 	log.Println("OK ||| productsCategoriesUseCase -> AddProduct -> all done. New product")
-	log.Println(Product)
+	// log.Println(Product)
 	return Product, nil
 }
 

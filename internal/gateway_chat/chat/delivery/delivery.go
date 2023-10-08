@@ -3,14 +3,11 @@ package delivery
 import (
 	"b2b/m/internal/gateway_chat/chat/usecase"
 	"b2b/m/internal/models"
-	cnst "b2b/m/pkg/constants"
-	chttp "b2b/m/pkg/customhttp"
 	"b2b/m/pkg/error_adapter"
 	"context"
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/fasthttp/websocket"
 
@@ -19,7 +16,6 @@ import (
 
 type ChatDelivery interface {
 	WSUpgradeRequest(ctx *fasthttp.RequestCtx)
-	InitChat(ctx *fasthttp.RequestCtx)
 	TestCh(ctx *fasthttp.RequestCtx)
 }
 type Msg struct {
@@ -36,31 +32,6 @@ type chatDelivery struct {
 func (u *chatDelivery) TestCh(ctx *fasthttp.RequestCtx) {
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody([]byte("PASS TEST chat gateway router"))
-}
-
-func (u *chatDelivery) InitChat(ctx *fasthttp.RequestCtx) {
-	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
-	product_id, err := strconv.ParseInt(ctx.UserValue("id").(string), 10, 64)
-	if err != nil {
-		httpError := u.errorAdapter.AdaptError(err)
-		ctx.SetStatusCode(httpError.Code)
-		ctx.SetBody([]byte(httpError.MSG))
-		return
-	}
-	newChat, chat_id, err := u.manager.InitChat(ctx, userId, product_id)
-
-	log.Println("+++++ CheckIfUniqChat userId from cookie: ", userId, " +++++")
-	log.Println("+++++ CheckIfUniqChat newChat : ", newChat, " +++++")
-	log.Println("+++++ CheckIfUniqChat chat_id : ", chat_id, " +++++")
-	if err != nil {
-		httpError := u.errorAdapter.AdaptError(err)
-		ctx.SetStatusCode(httpError.Code)
-		ctx.SetBody([]byte(httpError.MSG))
-		return
-	}
-	b, err := chttp.ApiResp(chat_id, err)
-	ctx.SetStatusCode(http.StatusOK)
-	ctx.SetBody(b)
 }
 
 func (u *chatDelivery) ChatLogic(ctx *fasthttp.RequestCtx) {
