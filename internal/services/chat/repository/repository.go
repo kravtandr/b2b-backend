@@ -77,7 +77,11 @@ func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*model
 
 func (a *chatRepository) WriteNewMsg(ctx context.Context, newMsg *models.Msg) error {
 	query := a.queryFactory.CreateWriteNewMsg(newMsg)
-	_ = a.conn.QueryRow(ctx, query.Request, query.Params...)
+	_, err := a.conn.Exec(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Panicln("Error: WriteNewMsg", err)
+		return err
+	}
 	return nil
 }
 
@@ -125,7 +129,7 @@ func (a *chatRepository) GetUserLastMsgs(ctx context.Context, userId int64) (*mo
 }
 
 func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error) {
-	var chat models.ChatAndLastMsg
+	//var chat models.ChatAndLastMsg
 
 	var chats models.ChatsAndLastMsg
 
@@ -137,7 +141,9 @@ func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64
 	}
 	//for onlyChats
 	var onlyChatsLM models.ChatsAndLastMsg
+	chats_count := 0
 	for _, chat := range *onlyChats {
+		chats_count += 1
 		onlyChatsLM = append(onlyChatsLM,
 			models.ChatAndLastMsg{
 				Chat: models.Chat{
@@ -158,18 +164,24 @@ func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64
 	defer rows.Close()
 	rows_count := 0
 	for rows.Next() {
+		err = rows.Scan(&onlyChatsLM[rows_count].Chat.Id, &onlyChatsLM[rows_count].Chat.Name, &onlyChatsLM[rows_count].Chat.CreatorId, &onlyChatsLM[rows_count].Chat.ProductId, &onlyChatsLM[rows_count].Chat.Status, &onlyChatsLM[rows_count].LastMsg.Id, &onlyChatsLM[rows_count].LastMsg.SenderId, &onlyChatsLM[rows_count].LastMsg.ReceiverId, &onlyChatsLM[rows_count].LastMsg.Checked, &onlyChatsLM[rows_count].LastMsg.Text, &onlyChatsLM[rows_count].LastMsg.Type, &onlyChatsLM[rows_count].LastMsg.Time)
+		//chat.LastMsg.ChatId = chat.Chat.Id
+		onlyChatsLM[rows_count].LastMsg.ChatId = onlyChatsLM[rows_count].Chat.Id
+		//chats = append(chats, chat)
 		rows_count += 1
-		err = rows.Scan(&chat.Chat.Id, &chat.Chat.Name, &chat.Chat.CreatorId, &chat.Chat.ProductId, &chat.Chat.Status, &chat.LastMsg.Id, &chat.LastMsg.SenderId, &chat.LastMsg.ReceiverId, &chat.LastMsg.Checked, &chat.LastMsg.Text, &chat.LastMsg.Type, &chat.LastMsg.Time)
-		chats = append(chats, chat)
 	}
 	if rows.Err() != nil {
 		return &chats, err
 	}
-	log.Println(chats)
-	if rows_count == 0 {
-		chats = onlyChatsLM
-	}
-	return &chats, err
+	//log.Println(chats)
+	// if rows_count < chats_count{
+	// 	chats = append(chats, chat)
+	// }
+	// if rows_count == 0 {
+	// 	chats = onlyChatsLM
+	// }
+
+	return &onlyChatsLM, err
 
 }
 

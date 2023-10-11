@@ -299,8 +299,8 @@ func (a productsCategoriesRepository) GetProductPhotos(ctx context.Context, Prod
 				log.Println("Cant`t get image from image-storage:", err)
 			}
 			defer reader.Close()
-			log.Println("reader  = ", reader)
-			log.Println("objName  = ", objName)
+			// log.Println("reader  = ", reader)
+			// log.Println("objName  = ", objName)
 			if err != nil {
 				log.Println("Error in a.minioClient.GetObject ", err)
 			}
@@ -311,8 +311,8 @@ func (a productsCategoriesRepository) GetProductPhotos(ctx context.Context, Prod
 			}
 			data := imageBytes
 			base64photo := helpers.EncodeImgToBase64(ctx, data)
-			log.Println("imageBytes  = ", data[10:40])
-			log.Println("ImgToBase64  = ", base64photo[10:40])
+			//log.Println("imageBytes  = ", data[10:40])
+			//log.Println("ImgToBase64  = ", base64photo[10:40])
 			Product.Photo = append(Product.Photo, base64photo)
 			Product.Photo = append(Product.Photo, fmt.Sprint(helpers.CheckSum(base64photo)))
 

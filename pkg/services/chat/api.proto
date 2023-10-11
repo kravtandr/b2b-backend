@@ -56,10 +56,12 @@ message MsgResponse{
   int64 ChatId = 2;
   int64  SenderId = 3;
   int64  ReceiverId = 4;
-  bool  Checked = 5;
-  string  Text = 6;
-  string  Type = 7;
-  string   Time = 8;
+  string SenderName = 5;
+  string ReceiverName = 6;
+  bool  Checked = 7;
+  string  Text = 8;
+  string  Type = 9;
+  string   Time = 10;
 }
 
 message ChatAndLastMsgResponse {

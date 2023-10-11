@@ -228,7 +228,7 @@ services:
       - "host.docker.internal:host-gateway"
 
 
-  chat_test_gateway:
+  gateway_chat:
     depends_on:
       - minio
       - postgres

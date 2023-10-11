@@ -54,17 +54,8 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 	msg := &models.Msg{}
 	defer ws.Close()
 
-	//первое сообщение приходит с фронта
-	firstMsg := Msg{Text: "Сколько единиц в комлекте?", SenderID: 1, RecieverID: 1}
-	bytes, _ := json.Marshal(firstMsg)
-	// 1 - binary, 2 - text
-	err := ws.WriteMessage(1, bytes)
-	//initDB(ctx)
-	if err != nil {
-		log.Println("WS write:", err)
-	}
 	for {
-		mt, message, err := ws.ReadMessage()
+		_, message, err := ws.ReadMessage()
 		if err != nil {
 			//когда приходит сообщение записываю его в бд
 			log.Println("read:", err)
@@ -72,16 +63,16 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 		if err := json.Unmarshal(message, msg); err != nil {
 			log.Println("Unmarshal err:", err)
 		}
-		log.Println("read:", msg)
-		u.manager.WriteNewMsg(context.Background(), &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId})
-		log.Println("recv msg:", msg)
+		//log.Println("read:", msg)
+		u.manager.WriteNewMsg(context.Background(), &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type})
+		//log.Println("recv msg:", msg)
 		//когда отправляю сообщение записываю его в бд
 		//echo
-		err = ws.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
+		// err = ws.WriteMessage(mt, message)
+		// if err != nil {
+		// 	log.Println("write:", err)
+		// 	break
+		// }
 	}
 }
 

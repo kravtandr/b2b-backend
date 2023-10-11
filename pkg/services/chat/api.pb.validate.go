@@ -909,6 +909,10 @@ func (m *MsgResponse) validate(all bool) error {
 
 	// no validation rules for ReceiverId
 
+	// no validation rules for SenderName
+
+	// no validation rules for ReceiverName
+
 	// no validation rules for Checked
 
 	// no validation rules for Text

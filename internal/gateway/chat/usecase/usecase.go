@@ -5,6 +5,7 @@ import (
 	product_usecase "b2b/m/internal/gateway/productsCategories/usecase"
 	auth_usecase "b2b/m/internal/gateway/user/usecase"
 	"b2b/m/internal/models"
+	"errors"
 	"log"
 
 	auth_service "b2b/m/pkg/services/auth"
@@ -29,7 +30,6 @@ type chatUsecase struct {
 	companyGRPC company_usecase.CompanyGRPC
 	productGRPC product_usecase.ProductsCategoriesGRPC
 	authGRPC    auth_usecase.AuthGRPC
-	AuthUsecase auth_usecase.UserUsecase
 }
 
 func (u *chatUsecase) GetAllUserChats(ctx context.Context, userId int64, cookie string) (*models.Chats, error) {
@@ -103,8 +103,8 @@ func (u *chatUsecase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (
 			ChatId:       result.Msg.ChatId,
 			SenderId:     result.Msg.SenderId,
 			ReceiverId:   result.Msg.ReceiverId,
-			SenderName:   "Test1",
-			ReceiverName: "Test2",
+			SenderName:   result.Msg.SenderName,
+			ReceiverName: result.Msg.ReceiverName,
 			Checked:      result.Msg.Checked,
 			Text:         result.Msg.Text,
 			Type:         result.Msg.Type,
@@ -126,37 +126,45 @@ func (u *chatUsecase) GetMsgsFromChat(ctx context.Context, chatId int64, userId 
 	if err != nil {
 		return nil, err
 	}
-	// sender, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: int64(userId)})
-	// if err != nil {
-	// 	log.Println("ERROR: GetMsgsFromChat -> GetUserInfo for sender ", err)
-	// 	return nil, err
-	// }
-	// log.Println("------")
-	// reciever := sender
-	// reciever, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: 1})
-	// if err != nil {
-	// 	log.Println("ERROR: GetMsgsFromChat -> GetUserInfo for reciever ", err)
-	// 	return nil, err
-	// }
-	// log.Println("got sender and reciever", sender)
+	//log.Println("---Get names---")
+	// log.Println(response.Msgs[0].SenderId)
+	// log.Println(response.Msgs[0].ReceiverId)
 	var msg models.Msg
 	var msgs models.Msgs
-	for _, result := range response.Msgs {
-		msg = models.Msg{
-			Id:           result.Id,
-			ChatId:       result.ChatId,
-			SenderId:     result.SenderId,
-			ReceiverId:   result.ReceiverId,
-			SenderName:   "Test1",
-			ReceiverName: "Test2",
-			Checked:      result.Checked,
-			Text:         result.Text,
-			Type:         result.Type,
-			Time:         result.Time,
+	log.Println("---names---")
+	if len(response.Msgs) > 0 {
+		sender, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: response.Msgs[0].SenderId})
+		if err != nil {
+			log.Println("ERROR: GetMsgsFromChat -> GetUserInfo for sender ", err)
+			return nil, err
 		}
-		msgs = append(msgs, msg)
+		log.Println("------")
+		reciever, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: response.Msgs[0].ReceiverId})
+		if err != nil {
+			log.Println("ERROR: GetMsgsFromChat -> GetUserInfo for reciever ", err)
+			return nil, err
+		}
+		log.Println(sender, reciever)
+		for _, result := range response.Msgs {
+			msg = models.Msg{
+				Id:           result.Id,
+				ChatId:       result.ChatId,
+				SenderId:     result.SenderId,
+				ReceiverId:   result.ReceiverId,
+				SenderName:   sender.Name,
+				ReceiverName: reciever.Name,
+				Checked:      result.Checked,
+				Text:         result.Text,
+				Type:         result.Type,
+				Time:         result.Time,
+			}
+			msgs = append(msgs, msg)
+		}
+		return &msgs, nil
+	} else {
+		log.Println("No msgs in chat")
+		return &msgs, errors.New("No msgs in chat")
 	}
-	return &msgs, nil
 }
 
 func (u *chatUsecase) NewChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error) {
@@ -252,6 +260,6 @@ func (u *chatUsecase) WriteNewMsg(ctx context.Context, request *models.Msg) erro
 	return nil
 }
 
-func NewChatUsecase(chatGRPC chatGRPC, companyGRPC company_usecase.CompanyGRPC, productGRPC product_usecase.ProductsCategoriesGRPC) ChatUsecase {
-	return &chatUsecase{chatGRPC: chatGRPC, companyGRPC: companyGRPC, productGRPC: productGRPC}
+func NewChatUsecase(chatGRPC chatGRPC, companyGRPC company_usecase.CompanyGRPC, productGRPC product_usecase.ProductsCategoriesGRPC, authGRPC auth_usecase.AuthGRPC) ChatUsecase {
+	return &chatUsecase{chatGRPC: chatGRPC, companyGRPC: companyGRPC, productGRPC: productGRPC, authGRPC: authGRPC}
 }

@@ -135,7 +135,7 @@ func (u *chatDelivery) GetMsgsFromChat(ctx *fasthttp.RequestCtx) {
 	if err != nil {
 		httpError := u.errorAdapter.AdaptError(err)
 		ctx.SetStatusCode(httpError.Code)
-		ctx.SetBody([]byte(httpError.MSG))
+		ctx.SetBody([]byte(err.Error()))
 		return
 	}
 	b, err := chttp.ApiResp(response, err)
