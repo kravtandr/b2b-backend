@@ -26,7 +26,7 @@ type ChatServiceClient interface {
 	CheckIfUniqChat(ctx context.Context, in *CheckIfUniqChatRequest, opts ...grpc.CallOption) (*CheckIfUniqChatResponse, error)
 	NewChat(ctx context.Context, in *NewChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
 	GetChat(ctx context.Context, in *GetChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
-	WriteNewMsg(ctx context.Context, in *WriteNewMsgRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	WriteNewMsg(ctx context.Context, in *WriteNewMsgRequest, opts ...grpc.CallOption) (*IdResponse, error)
 	GetMsgsFromChat(ctx context.Context, in *ChatAndUserIdRequest, opts ...grpc.CallOption) (*MsgsResponse, error)
 	GetAllUserChats(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*GetAllUserChatsResponse, error)
 	GetAllChatsAndLastMsg(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*GetAllChatsAndLastMsgResponse, error)
@@ -68,8 +68,8 @@ func (c *chatServiceClient) GetChat(ctx context.Context, in *GetChatRequest, opt
 	return out, nil
 }
 
-func (c *chatServiceClient) WriteNewMsg(ctx context.Context, in *WriteNewMsgRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *chatServiceClient) WriteNewMsg(ctx context.Context, in *WriteNewMsgRequest, opts ...grpc.CallOption) (*IdResponse, error) {
+	out := new(IdResponse)
 	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/WriteNewMsg", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -120,7 +120,7 @@ type ChatServiceServer interface {
 	CheckIfUniqChat(context.Context, *CheckIfUniqChatRequest) (*CheckIfUniqChatResponse, error)
 	NewChat(context.Context, *NewChatRequest) (*ChatResponse, error)
 	GetChat(context.Context, *GetChatRequest) (*ChatResponse, error)
-	WriteNewMsg(context.Context, *WriteNewMsgRequest) (*emptypb.Empty, error)
+	WriteNewMsg(context.Context, *WriteNewMsgRequest) (*IdResponse, error)
 	GetMsgsFromChat(context.Context, *ChatAndUserIdRequest) (*MsgsResponse, error)
 	GetAllUserChats(context.Context, *IdRequest) (*GetAllUserChatsResponse, error)
 	GetAllChatsAndLastMsg(context.Context, *IdRequest) (*GetAllChatsAndLastMsgResponse, error)
@@ -141,7 +141,7 @@ func (UnimplementedChatServiceServer) NewChat(context.Context, *NewChatRequest) 
 func (UnimplementedChatServiceServer) GetChat(context.Context, *GetChatRequest) (*ChatResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChat not implemented")
 }
-func (UnimplementedChatServiceServer) WriteNewMsg(context.Context, *WriteNewMsgRequest) (*emptypb.Empty, error) {
+func (UnimplementedChatServiceServer) WriteNewMsg(context.Context, *WriteNewMsgRequest) (*IdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WriteNewMsg not implemented")
 }
 func (UnimplementedChatServiceServer) GetMsgsFromChat(context.Context, *ChatAndUserIdRequest) (*MsgsResponse, error) {

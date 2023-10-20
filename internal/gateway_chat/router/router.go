@@ -1,6 +1,7 @@
 package router
 
 import (
+	restchatd "b2b/m/internal/gateway/chat/delivery"
 	chatd "b2b/m/internal/gateway_chat/chat/delivery"
 	cd "b2b/m/internal/gateway_chat/company/delivery"
 	fod "b2b/m/internal/gateway_chat/fastOrder/delivery"
@@ -23,6 +24,7 @@ type RouterConfig struct {
 	CompanyDelivery            cd.CompanyDelivery
 	ProductsCategoriesDelivery pcd.ProductsCategoriesDelivery
 	ChatDelivery               chatd.ChatDelivery
+	RestChatDelivery           restchatd.ChatDelivery
 
 	Logger *zap.Logger
 }

@@ -19,7 +19,6 @@ type ChatUsecase interface {
 	CheckIfUniqChat(ctx context.Context, userId int64, productId int64) (bool, error)
 	NewChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
 	GetChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
-	WriteNewMsg(ctx context.Context, request *models.Msg) error
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllUserChats(ctx context.Context, userId int64, cookie string) (*models.Chats, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
@@ -241,23 +240,6 @@ func (u *chatUsecase) GetChat(ctx context.Context, userId int64, productId int64
 		ProductId: response.ProductId,
 		Status:    response.Status,
 	}, nil
-}
-
-func (u *chatUsecase) WriteNewMsg(ctx context.Context, request *models.Msg) error {
-	_, err := u.chatGRPC.WriteNewMsg(ctx, &chat_service.WriteNewMsgRequest{
-		ChatId:     request.ChatId,
-		SenderId:   request.SenderId,
-		ReceiverId: request.ReceiverId,
-		Checked:    request.Checked,
-		Text:       request.Text,
-		Type:       request.Type,
-		Time:       request.Time,
-	})
-	log.Println("WriteNewMsg:", request)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 func NewChatUsecase(chatGRPC chatGRPC, companyGRPC company_usecase.CompanyGRPC, productGRPC product_usecase.ProductsCategoriesGRPC, authGRPC auth_usecase.AuthGRPC) ChatUsecase {

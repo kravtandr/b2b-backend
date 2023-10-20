@@ -1,6 +1,8 @@
 package setup
 
 import (
+	restchatd "b2b/m/internal/gateway/chat/delivery"
+	restchatu "b2b/m/internal/gateway/chat/usecase"
 	chatd "b2b/m/internal/gateway_chat/chat/delivery"
 	chatu "b2b/m/internal/gateway_chat/chat/usecase"
 	cd "b2b/m/internal/gateway_chat/company/delivery"
@@ -87,6 +89,18 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		),
 		productsCategoriesUseCase,
 	)
+	RestChatConn, err := grpc.Dial(cfg.ChatServiceEndpoint, grpc.WithTimeout(5*time.Second), grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return p, stopFunc, err
+	}
+	RestchatGRPC := chat_service.NewChatServiceClient(RestChatConn)
+	RestchatUsecase := restchatu.NewChatUsecase(RestchatGRPC, CompanyGRPC, ProductsCategoriesGRPC, userGRPC)
+	RestchatDelivery := restchatd.NewChatDelivery(
+		error_adapter.NewGrpcToHttpAdapter(
+			grpc_errors.UserGatewayError, grpc_errors.CommonError,
+		),
+		RestchatUsecase,
+	)
 
 	ChatConn, err := grpc.Dial(cfg.ChatServiceEndpoint, grpc.WithTimeout(5*time.Second), grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
@@ -98,7 +112,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
 		),
-		chatUsecase,
+		chatUsecase, RestchatUsecase,
 	)
 
 	p = router.SetupRouter(router.RouterConfig{
@@ -108,6 +122,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		FastOrderDelivery:          fastOrderDelivery,
 		ProductsCategoriesDelivery: productsCategoriesDelivery,
 		ChatDelivery:               chatDelivery,
+		RestChatDelivery:           RestchatDelivery,
 		Logger:                     cfg.Logger,
 	})
 

@@ -97,7 +97,7 @@ func (l *loggingMiddleware) GetChat(ctx context.Context, chat *models.Chat) (get
 	return l.next.GetChat(ctx, chat)
 }
 
-func (l *loggingMiddleware) WriteNewMsg(ctx context.Context, newMsg *models.Msg) (err error) {
+func (l *loggingMiddleware) WriteNewMsg(ctx context.Context, newMsg *models.Msg) (id int64, err error) {
 	l.logger.Infow(module,
 		"Action", "WriteNewMsg",
 		"Request", newMsg,

@@ -23,9 +23,6 @@ protogen-api-company-service:
 protogen-api-productsCategories-service:
 	make protogen-api-with-validator path=pkg/services/productsCategories
 
-protogen-api-review-service:
-	make protogen-api-with-validator path=pkg/services/review
-
 all:
 	make protogen-api-with-validator path=pkg/services/auth && \
 	make protogen-api-with-validator path=pkg/services/chat && \
@@ -33,21 +30,10 @@ all:
 	make protogen-api-with-validator path=pkg/services/company && \
 	make protogen-api-with-validator path=pkg/services/productsCategories 
 
-protogen-all-services:
-	make protogen-api-auth-service && \
-	make protogen-api-trip-service && \
-	make protogen-api-sight-service && \
-	make protogen-api-review-service
 
 prepare-auth_service-env:
 	export USER_DB_URL="postgres://tripadvisor:12345@localhost:5432/tripadvisor" && \
 			export USER_GRPC_PORT="10123" && export USER_PREFIX_LEN="0"
-
-
-prepare-trip_service-env:
-	export TRIP_DB_URL="postgres://tripadvisor:12345@localhost:5432/tripadvisor" && \
-			export TRIP_GRPC_PORT="6666"
-
 
 prepare-websocket_service-env:
 	export WEBSOCKET_DB_URL="postgres://tripadvisor:12345@localhost:5432/tripadvisor" && \
@@ -58,7 +44,5 @@ prepare-gateway-env:
 
 run-auth:
 	make prepare-auth_service-env && go run cmd/auth_service/main.go
-run-trip:
-	make prepare-trip_service-env && go run cmd/trip_service/main.go
 run-gateway:
 	make prepare-gateway-env && go run cmd/gateway/main.go

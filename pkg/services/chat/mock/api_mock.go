@@ -178,14 +178,14 @@ func (mr *MockChatServiceClientMockRecorder) NewChat(ctx, in interface{}, opts .
 }
 
 // WriteNewMsg mocks base method.
-func (m *MockChatServiceClient) WriteNewMsg(ctx context.Context, in *chat_service.WriteNewMsgRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (m *MockChatServiceClient) WriteNewMsg(ctx context.Context, in *chat_service.WriteNewMsgRequest, opts ...grpc.CallOption) (*chat_service.IdResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "WriteNewMsg", varargs...)
-	ret0, _ := ret[0].(*emptypb.Empty)
+	ret0, _ := ret[0].(*chat_service.IdResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -326,10 +326,10 @@ func (mr *MockChatServiceServerMockRecorder) NewChat(arg0, arg1 interface{}) *go
 }
 
 // WriteNewMsg mocks base method.
-func (m *MockChatServiceServer) WriteNewMsg(arg0 context.Context, arg1 *chat_service.WriteNewMsgRequest) (*emptypb.Empty, error) {
+func (m *MockChatServiceServer) WriteNewMsg(arg0 context.Context, arg1 *chat_service.WriteNewMsgRequest) (*chat_service.IdResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteNewMsg", arg0, arg1)
-	ret0, _ := ret[0].(*emptypb.Empty)
+	ret0, _ := ret[0].(*chat_service.IdResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	rest_chat "b2b/m/internal/gateway/chat/usecase"
 	"b2b/m/internal/gateway_chat/chat/usecase"
 	"b2b/m/internal/models"
 	"b2b/m/pkg/error_adapter"
@@ -25,8 +26,9 @@ type Msg struct {
 }
 
 type chatDelivery struct {
-	errorAdapter error_adapter.HttpAdapter
-	manager      usecase.ChatUsecase
+	errorAdapter      error_adapter.HttpAdapter
+	manager           usecase.ChatUsecase
+	rest_chat_manager rest_chat.ChatUsecase
 }
 
 func (u *chatDelivery) TestCh(ctx *fasthttp.RequestCtx) {
@@ -62,18 +64,28 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 		} else if err := json.Unmarshal(message, msg); err != nil {
 			log.Println("Unmarshal err:", err)
 		} else {
-			u.manager.WriteNewMsg(context.Background(), &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type})
+			ctx := context.Background()
+			newMsg_id, err := u.manager.WriteNewMsg(ctx, &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type})
+			if err != nil {
+				log.Println("ERROR: WSChatLoop->WriteNewMsg", err)
+			}
+			// далее нужно прочичать все сообщения из этого чата, которые идут после только что отправленно и отправить их по ws
+			// 1 получить все сообщения из чата
+			msgs, err := u.rest_chat_manager.GetMsgsFromChat(ctx, msg.ChatId, msg.SenderId)
+			var reducedMsgs models.Msgs
+			for _, item := range *msgs {
+				if item.Id > newMsg_id {
+					reducedMsgs = append(reducedMsgs, item)
+					ws.WriteJSON(item)
+				}
+			}
+			log.Println("reduced msgs: ", reducedMsgs)
+			if err != nil {
+				log.Println("ERROR: WSChatLoop->GetMsgsFromChat", err)
+			}
+			// 2 выделить те, которые идут после отправленного
+			// 3 отправить сообщения по ws
 		}
-		//log.Println("read:", msg)
-
-		//log.Println("recv msg:", msg)
-		//когда отправляю сообщение записываю его в бд
-		//echo
-		// err = ws.WriteMessage(mt, message)
-		// if err != nil {
-		// 	log.Println("write:", err)
-		// 	break
-		// }
 	}
 }
 
@@ -92,9 +104,10 @@ func (u *chatDelivery) WSUpgradeRequest(ctx *fasthttp.RequestCtx) {
 	}
 }
 
-func NewChatDelivery(errorAdapter error_adapter.HttpAdapter, manager usecase.ChatUsecase) ChatDelivery {
+func NewChatDelivery(errorAdapter error_adapter.HttpAdapter, manager usecase.ChatUsecase, rest_chat_manager rest_chat.ChatUsecase) ChatDelivery {
 	return &chatDelivery{
-		errorAdapter: errorAdapter,
-		manager:      manager,
+		errorAdapter:      errorAdapter,
+		manager:           manager,
+		rest_chat_manager: rest_chat_manager,
 	}
 }

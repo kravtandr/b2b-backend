@@ -14,7 +14,7 @@ type ChatRepository interface {
 	CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
 	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
-	WriteNewMsg(ctx context.Context, newMsg *models.Msg) error
+	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
 	GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error)
@@ -75,14 +75,18 @@ func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*model
 	return getChat, nil
 }
 
-func (a *chatRepository) WriteNewMsg(ctx context.Context, newMsg *models.Msg) error {
+func (a *chatRepository) WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error) {
 	query := a.queryFactory.CreateWriteNewMsg(newMsg)
-	_, err := a.conn.Exec(ctx, query.Request, query.Params...)
-	if err != nil {
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	var id int64
+	if err := row.Scan(&id); err != nil {
+		if err == pgx.ErrNoRows {
+			return -1, errors.MsgDoesNotExist
+		}
 		log.Panicln("Error: WriteNewMsg", err)
-		return err
+		return -1, err
 	}
-	return nil
+	return id, nil
 }
 
 func (a *chatRepository) GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error) {

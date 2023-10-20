@@ -72,8 +72,8 @@ func (a *chatDelivery) GetChat(ctx context.Context, request *chat_service.GetCha
 	}, nil
 }
 
-func (a *chatDelivery) WriteNewMsg(ctx context.Context, request *chat_service.WriteNewMsgRequest) (*empty.Empty, error) {
-	err := a.chatUsecase.WriteNewMsg(ctx, &models.Msg{
+func (a *chatDelivery) WriteNewMsg(ctx context.Context, request *chat_service.WriteNewMsgRequest) (*chat_service.IdResponse, error) {
+	id, err := a.chatUsecase.WriteNewMsg(ctx, &models.Msg{
 		ChatId:     request.ChatId,
 		SenderId:   request.SenderId,
 		ReceiverId: request.ReceiverId,
@@ -81,10 +81,10 @@ func (a *chatDelivery) WriteNewMsg(ctx context.Context, request *chat_service.Wr
 		Type:       request.Type,
 	})
 	if err != nil {
-		return &empty.Empty{}, a.errorAdapter.AdaptError(err)
+		return &chat_service.IdResponse{}, a.errorAdapter.AdaptError(err)
 	}
 
-	return &empty.Empty{}, nil
+	return &chat_service.IdResponse{Id: id}, nil
 }
 
 func (a *chatDelivery) GetMsgsFromChat(ctx context.Context, request *chat_service.ChatAndUserIdRequest) (*chat_service.MsgsResponse, error) {

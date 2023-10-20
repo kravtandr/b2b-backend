@@ -5,6 +5,7 @@ import "errors"
 var (
 	UserDoesNotExist         = errors.New("user does not exist")
 	ChatDoesNotExist         = errors.New("chat does not exist")
+	MsgDoesNotExist          = errors.New("msg does not exist")
 	ProductDoesNotExist      = errors.New("product does not exist")
 	CategoryDoesNotExist     = errors.New("category does not exist")
 	OrderDoesNotExist        = errors.New("order does not exist")

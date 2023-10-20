@@ -14,7 +14,7 @@ import (
 )
 
 type ChatUsecase interface {
-	WriteNewMsg(ctx context.Context, request *models.Msg) error
+	WriteNewMsg(ctx context.Context, request *models.Msg) (int64, error)
 	ChatHealthCheck(ctx context.Context) error
 }
 
@@ -33,8 +33,8 @@ func (u *chatUsecase) ChatHealthCheck(ctx context.Context) error {
 	return nil
 }
 
-func (u *chatUsecase) WriteNewMsg(ctx context.Context, request *models.Msg) error {
-	_, err := u.chatGRPC.WriteNewMsg(ctx, &chat_service.WriteNewMsgRequest{
+func (u *chatUsecase) WriteNewMsg(ctx context.Context, request *models.Msg) (int64, error) {
+	id, err := u.chatGRPC.WriteNewMsg(ctx, &chat_service.WriteNewMsgRequest{
 		ChatId:     request.ChatId,
 		SenderId:   request.SenderId,
 		ReceiverId: request.ReceiverId,
@@ -45,9 +45,9 @@ func (u *chatUsecase) WriteNewMsg(ctx context.Context, request *models.Msg) erro
 	})
 	log.Println("WriteNewMsg:", request)
 	if err != nil {
-		return err
+		return -1, err
 	}
-	return nil
+	return id.Id, nil
 }
 
 func NewChatUsecase(chatGRPC chatGRPC, companyGRPC company_usecase.CompanyGRPC, productGRPC product_usecase.ProductsCategoriesGRPC) ChatUsecase {

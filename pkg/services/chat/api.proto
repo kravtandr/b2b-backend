@@ -10,6 +10,10 @@ message IdRequest {
   int64 id = 1;
 }
 
+message IdResponse {
+  int64 id = 1;
+}
+
 message ChatAndUserIdRequest {
   int64 ChatId = 1;
   int64 UserId = 2;
@@ -90,7 +94,7 @@ service ChatService {
   rpc CheckIfUniqChat(CheckIfUniqChatRequest) returns (CheckIfUniqChatResponse) {}
   rpc NewChat(NewChatRequest) returns (ChatResponse) {}
   rpc GetChat(GetChatRequest) returns (ChatResponse) {}
-  rpc WriteNewMsg(WriteNewMsgRequest) returns (google.protobuf.Empty) {}
+  rpc WriteNewMsg(WriteNewMsgRequest) returns (IdResponse) {}
   rpc GetMsgsFromChat(ChatAndUserIdRequest) returns (MsgsResponse) {}
   rpc GetAllUserChats(IdRequest) returns (GetAllUserChatsResponse) {}
   rpc GetAllChatsAndLastMsg(IdRequest) returns (GetAllChatsAndLastMsgResponse) {}
