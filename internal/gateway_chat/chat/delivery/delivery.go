@@ -59,12 +59,13 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 		if err != nil {
 			//когда приходит сообщение записываю его в бд
 			log.Println("read:", err)
-		}
-		if err := json.Unmarshal(message, msg); err != nil {
+		} else if err := json.Unmarshal(message, msg); err != nil {
 			log.Println("Unmarshal err:", err)
+		} else {
+			u.manager.WriteNewMsg(context.Background(), &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type})
 		}
 		//log.Println("read:", msg)
-		u.manager.WriteNewMsg(context.Background(), &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type})
+
 		//log.Println("recv msg:", msg)
 		//когда отправляю сообщение записываю его в бд
 		//echo
