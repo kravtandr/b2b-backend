@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package services.productsCategories_service;
+import "third_party/go-proto-validators/validator.proto";
+option go_package = "b2b/m/pkg/services/productsCategories;productsCategories_service";
+
+message GetCategoryByID {
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+}
+
+message GetProductByID {
+  int64 id = 1[(validate.rules).int64 = {
+    gt: 0,
+  }];
+}
+
+message SearchItemNameRequest {
+  string name = 1;
+}
+
+message SearchItemNameWithSkipLimitRequest {
+  string name = 1;
+  int64 skip = 2;
+  int64 limit = 3;
+}
+
+message AddProductRequest {
+  string name = 1;
+  int64 category_id = 2 ;
+  sqlNullString description = 3;
+  int64 price = 4;
+  int64 amount = 5;
+  string pay_way = 6;
+  string adress = 7;
+  string delivery_way = 8;
+  repeated string product_photo = 9;
+  repeated string docs = 10;
+  int64 user_id = 11;
+  int64 company_id = 12;
+}
+
+message sqlNullString {
+  string String = 1;
+  bool Valid = 2;
+}
+
+message GetCategory {
+  int64 id = 1;
+  string name = 2;
+  sqlNullString description = 3;
+}
+
+message GetCategories {
+    repeated GetCategory categories = 1;
+}
+
+message GetProduct {
+  int64 id = 1;
+  string name = 2;
+  sqlNullString description = 3;
+  int64 price = 4;
+  repeated string photo = 5;
+  repeated string documents = 6;
+}
+
+message GetProductsListRequest {
+  int64 skip = 1;
+  int64 limit = 2;
+}
+
+message GetProductsListResponse {
+  repeated GetProduct products = 1;
+}
+
+service ProductsCategoriesService {
+  rpc AddProduct(AddProductRequest) returns (GetProduct) {}
+  rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
+  rpc GetProductById(GetProductByID) returns (GetProduct) {}
+  rpc SearchCategories(SearchItemNameWithSkipLimitRequest) returns (GetCategories) {}
+  rpc SearchProducts(SearchItemNameWithSkipLimitRequest) returns (GetProductsListResponse) {}
+  rpc GetProductsList(GetProductsListRequest) returns (GetProductsListResponse) {}
+}

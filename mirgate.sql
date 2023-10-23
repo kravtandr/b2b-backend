@@ -31,27 +31,22 @@ CREATE TABLE Categories
 (
     id          SERIAL      NOT NULL PRIMARY KEY,
     name        TEXT        NOT NULL ,
-    description TEXT
+    description TEXT        DEFAULT 'empty',
+    parent_id   INT
 );
 
-CREATE TABLE SubCategories
-(
-    id          SERIAL      NOT NULL PRIMARY KEY,
-    name        TEXT        NOT NULL,
-    description TEXT        ,
-    category_id INT         NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES Categories (id) ON DELETE CASCADE
-);
 
 CREATE TABLE Products
 (
     id          SERIAL      NOT NULL PRIMARY KEY,
     name        TEXT        NOT NULL,
     description TEXT        ,
-    price       int
+    price       INT         NOT NULL,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE ProductsSubCategories
+CREATE TABLE ProductsCategories
 (
     id              SERIAL      NOT NULL PRIMARY KEY,
     category_id     INT         NOT NULL,
@@ -59,6 +54,23 @@ CREATE TABLE ProductsSubCategories
     FOREIGN KEY (category_id) REFERENCES Categories (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
 );
+
+CREATE TABLE ProductPhotos
+(
+    id              SERIAL      NOT NULL PRIMARY KEY,
+    product_id      INT         NOT NULL,
+    photo_obj_name  Text         NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
+);
+
+CREATE TABLE ProductDocuments
+(
+    id              SERIAL      NOT NULL PRIMARY KEY,
+    product_id      INT         NOT NULL,
+    document_obj_name  Text         NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
+);
+
 
 CREATE TABLE GroupAccessRights
 (
@@ -128,6 +140,7 @@ CREATE TABLE CompaniesUsers
     post            TEXT        ,
     company_id      INT         NOT NULL,
     user_id         INT         NOT NULL,
+    itn             TEXT         NOT NULL,
     FOREIGN KEY (company_id) REFERENCES Companies (id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES Users (id) ON DELETE CASCADE
 );
@@ -165,7 +178,12 @@ CREATE TABLE CompaniesProducts
     id              SERIAL      NOT NULL PRIMARY KEY,
     company_id      INT         NOT NULL,
     product_id      INT         NOT NULL,
+    addedBy      INT         NOT NULL,
     amount          INT         NOT NULL,
+    pay_way         TEXT        DEFAULT 'empty',
+    delivery_way    TEXT        DEFAULT 'empty',
+    adress          TEXT        DEFAULT 'empty',
+    FOREIGN KEY (addedBy) REFERENCES Users (id) ON DELETE CASCADE,
     FOREIGN KEY (company_id) REFERENCES Companies (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES Products (id) ON DELETE CASCADE
 );
@@ -187,47 +205,71 @@ CREATE TABLE OrderForm
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE landing_request
+(
+    id                SERIAL      NOT NULL PRIMARY KEY,
+    product_category  TEXT        NOT NULL,
+    delivery_address  TEXT        NOT NULL,
+    delivery_date     TEXT        NOT NULL,
+    order_text        TEXT        DEFAULT 'empty',
+    email             TEXT        NOT NULL,
+    itn               TEXT        NOT NULL,
+    phone             TEXT        DEFAULT 'empty',
+    company_name      TEXT        DEFAULT 'empty',
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE Chats 
+(
+    id                        SERIAL                    NOT NULL PRIMARY KEY,
+    name                      TEXT                      DEFAULT 'New Chat',
+    creator_id                INT                       NOT NULL,
+    product_id                INT                       NOT NULL,
+    status                    TEXT                      DEFAULT 'Обсуждение',
+    FOREIGN KEY (creator_id)   REFERENCES Users (id)    ON DELETE CASCADE,
+    FOREIGN KEY (product_id)  REFERENCES Products (id)  ON DELETE CASCADE,
+    created_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW(),
+    updated_at                TIMESTAMPTZ               NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE Msgs 
+(
+    id                      SERIAL                  NOT NULL PRIMARY KEY,
+    chat_id                 INT                     NOT NULL,
+    sender_id               INT                       NOT NULL,
+    receiver_id             INT                       NOT NULL,
+    checked                 BOOLEAN                 NOT NULL DEFAULT FALSE,
+    text                    TEXT                    NOT NULL,
+    type                    TEXT                    NOT NULL DEFAULT 'regular msg',
+    created_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    updated_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (chat_id)   REFERENCES Chats (id)   ON DELETE CASCADE,
+    FOREIGN KEY (sender_id)   REFERENCES Users (id)   ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id)   REFERENCES Users (id)   ON DELETE CASCADE
+);
+
 CREATE TRIGGER set_timestamp
     BEFORE UPDATE
     ON OrderForm
     FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
 
+CREATE TABLE Cookies (
+  id SERIAL NOT NULL PRIMARY KEY,
+  hash TEXT NOT NULL,
+  user_id INT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+-- INSERT INTO products(name, description, price) VALUES('1_product', 'test_desc1', 1001);
+-- INSERT INTO products(name, description, price) VALUES('2_product', 'test_desc2', 1002);
+
 
 INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
-INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Иван', 'Иванович','Иванов','ivan@mail.ru','password123','Россия');
-INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Петр', 'Петрович','Петров','petr@mail.ru','password123','Россия');
-INSERT INTO Users ("name", "surname", "patronymic", "email", "password", "country") VALUES ('Алексндр', 'Александров','Александрович','alex@mail.ru','password123','Россия');
-INSERT INTO Companies ("name", "description", "legal_name", "itn", "psrn", "address","legal_address","email", "phone", "link", "activity", "owner_id", "rating"  ) VALUES ('Весна',
-'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-'ООО Весна',
- '7727563379', '1162225076155',
-'656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
-'656922, Алтайский край, г. Барнаул, ул. Попова, д. 185г, офис 21а',
-'tsvetiu@mail.ru',
-'89031223451',
-'tsvetiu.ru',
-'Розничная торговля',
-1,5);
-INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('CEO',1,1);
-INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('Manager',1,2);
-INSERT INTO companiesusers ("post", "company_id", "user_id") VALUES ('Driver',1,3);
---
--- INSERT INTO Industry(title) VALUES('Машиностроение');
--- INSERT INTO Industry(title) VALUES('MetalProd');
--- INSERT INTO Industry(title) VALUES('OilProd');
--- INSERT INTO Category(title, industry_id) VALUES('category1', 1);
--- INSERT INTO Category(title, industry_id) VALUES('category2', 1);
--- INSERT INTO Category(title, industry_id) VALUES('category3', 2);
--- INSERT INTO Category(title, industry_id) VALUES('category4', 3);
---
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id) VALUES('test2@mail.ru', 'password123','Ромашка','ООО Ромашка','7727563779','1056749631995','Москва','8(915)9999998','yandex.ru',1);
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id)  VALUES('test3@mail.ru', 'password123','Пчелка','ООО Пчелка','7727563719','1057749331995','Москва','8(915)9999918','yandex.ru',1);
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id)  VALUES('test4@mail.ru', 'password123','Пример','ООО Пример','7727563729','1057249631995','Москва','8(915)9999928','yandex.ru',1);
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id)  VALUES('test5@mail.ru', 'password123','Тест','ООО Тест','7727533779','1057741631995','Москва','8(915)9999938','yandex.ru',2);
--- INSERT INTO Company(email, password, name, legal_name, itn, psrn, adress, phone, link, category_id)  VALUES('test6@mail.ru', 'password123','Последний','ООО Последний','7727463779','1057749631995','Москва','8(915)9399998','yandex.ru',3);
 
 
--- SELECT   cu.post, cu.user_id, u.name, u.surname, u.patronymic, u.email, u.country, u.group_id
--- FROM companiesusers AS cu  JOIN Users u on u.id = cu.user_id WHERE cu.company_id = 1
+COPY categories(name) FROM '/var/lib/postgresql/data/export_base_categories.csv' DELIMITER ',' CSV HEADER;

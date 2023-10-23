@@ -1,26 +1,43 @@
 package constants
 
-const FastRegistrationURL = "/fastregister"
-
+// Auth
 const LoginURL = "/user/login"
-const UserURL = "/user/{id}"
 const RegisterURL = "/user/register"
-const LogoutURL = "/user/logout"
-const CheckEmailURL = "/user/check"
+const UserCheckEmailURL = "/user/check"
+const ProfileURL = "/profile"
+const LogoutURL = "/logout"
+const UserInfoURL = "/user/{id}"
+const UserInfoByCookieURL = "/user/me"
 
-const CompanyURL = "/company/{id}"
-const CompanyInfoURL = "/company/{id}/fullinfo"
-const CompanyEmployeesURL = "/company/{id}/employees"
-const RegisterCompanyURL = "/company/register"
-const CompanyFindByItnURL = "/company/itn/{itn}"
-
-const IndustryURL = "/industry/{id}"
-const IndustriesURL = "/industries"
-
-const CategoriesSearchURL = "/search/categories"
-const CategoriesURL = "/categories"
-
-const CompanySearchURL = "/search"
-const CategoryURL = "/category/{id}"
-
+// FastOrder
 const FastOrderURL = "/fastOrder"
+const LandingOrderURL = "/landingOrder"
+
+// Company
+const FastRegisterURL = "/fastregister"
+const CompanyURL = "/company/{id}"
+const CompanyByInnFromDaDataURL = "/company/itn/{itn}"
+
+// Categories
+const CategoryByIdURL = "/category"
+const SearchCategoryURL = "/search/categories"
+
+// Products
+const ProductURL = "/product/{id}"
+const AddProductURL = "/product/add"
+const ProductsListURL = "/products/list"
+const SearchProductsURL = "/search/products"
+
+// Chat
+const CheckIfUniqChat = "/chat/unique"
+const InitChat = "/chat/init"
+const ProductChatURL = "/ws"
+const AllChats = "/allchats"
+const AllMsgsFromChat = "/chat/{id}"
+
+// Healthchecks
+const AuthHealthCheck = "/auth/health/live"
+const ChatHealthCheck = "/chat/health/live"
+const CompanyHealthCheck = "/company/health/live"
+const FastOrderHealthCheck = "/fo/health/live"
+const ProductsCategoriesHealthCheck = "/pc/health/live"

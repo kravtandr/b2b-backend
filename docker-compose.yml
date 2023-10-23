@@ -1,0 +1,261 @@
+version: '3.7'
+networks:
+    net:
+volumes:
+  minio_storage: {}
+
+services:
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: b2b
+      MINIO_ROOT_PASSWORD: b2b_pass
+    command: server --console-address ":9001" /data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+  
+  postgres:
+    container_name: postgres_container
+    image: postgres:14.4-alpine3.16
+    environment:
+      POSTGRES_DB: "b2b"
+      POSTGRES_USER: "b2b"
+      POSTGRES_PASSWORD: "b2b"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+      - .:/var/lib/postgresql/data
+    ports:
+      - "5431:5432"
+    command:
+      - "postgres"
+      - "-c" 
+      - "stats_temp_directory=/tmp"
+      - "-c"
+      - "max_connections=100"
+      - "-c"
+      - "shared_buffers=1GB"
+      - "-c"
+      - "effective_cache_size=4GB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=512MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "temp_file_limit=10GB"
+      - "-c"
+      - "log_min_duration_statement=200ms"
+      - "-c"
+      - "idle_in_transaction_session_timeout=10s"
+      - "-c"
+      - "lock_timeout=1s"
+      - "-c"
+      - "statement_timeout=60s"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.max=10000"
+      - "-c"
+      - "pg_stat_statements.track=all"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U b2b -d b2b"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - net
+
+  auth_service:
+    build:
+      dockerfile: Dockerfile.auth_service
+      context: .
+      args:
+        - APP_PKG_NAME=b2b/m
+        - GOOS=linux
+#    image: net.entrypoint.auth_service
+    ports:
+      - "10123:10123"
+      - "11123:8080"
+    environment:
+      - USER_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - USER_GRPC_PORT=10123
+      - USER_PREFIX_LEN=3
+    networks:
+      - net
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  fastorder_service:
+    build:
+      dockerfile: Dockerfile.fastOrder_service
+      context: .
+      args:
+        - APP_PKG_NAME=b2b/m
+        - GOOS=linux
+#    image: net.entrypoint.fastorder_service
+    ports:
+      - "10124:10124"
+      - "11124:8080"
+    environment:
+      - FASTORDER_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - FASTORDER_GRPC_PORT=10124
+    networks:
+      - net
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  company_service:
+    build:
+      dockerfile: Dockerfile.company_service
+      context: .
+      args:
+        - APP_PKG_NAME=b2b/m
+        - GOOS=linux
+#    image: net.entrypoint.company_service
+    ports:
+      - "10125:10125"
+      - "11125:8080"
+    environment:
+      - COMPANY_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - COMPANY_GRPC_PORT=10125
+    networks:
+      - net
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  productscategories_service:
+    depends_on:
+      - postgres
+      - auth_service
+      - company_service
+    build:
+      dockerfile: Dockerfile.productsCategories_service
+      context: .
+      args:
+        - APP_PKG_NAME=b2b/m
+        - GOOS=linux
+#    image: net.entrypoint.productscategories_service
+    ports:
+      - "10126:10126"
+      - "11126:8080"
+    environment:
+      - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - PRODUCTSCATEGORIES_GRPC_PORT=10126
+      - PRODUCTSCATEGORIES_MINIO_URL=host.docker.internal:9000
+      - PRODUCTSCATEGORIES_MINIO_USER=b2b
+      - PRODUCTSCATEGORIES_MINIO_PASS=b2b_pass
+      - PRODUCTSCATEGORIES_MINIO_SSL=false
+    networks:
+      - net
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  chat_service:
+    build:
+      dockerfile: Dockerfile.chat_service
+      context: .
+      args:
+        - APP_PKG_NAME=b2b/m
+        - GOOS=linux
+#    image: net.entrypoint.chat_service
+    ports:
+      - "10127:10127"
+      - "11127:8080"
+    environment:
+      - CHAT_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - CHAT_GRPC_PORT=10127
+    networks:
+      - net
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/chat/hjjjealth/live"]
+    #   interval: 3s
+    #   timeout: 2s
+    #   retries: 3
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  gateway:
+    depends_on:
+      - minio
+      - postgres
+      - auth_service
+      - fastorder_service
+      - company_service
+      - productscategories_service
+      - chat_service
+    build:
+      dockerfile: Dockerfile.gateway
+      context: .
+      args:
+        - APP_PKG_NAME=b2b/m
+        - GOOS=linux
+#    image: net.entrypoint.gateway
+    ports:
+      - "8080:8081"
+      - "18080:8080"
+      # - "5001:5001"
+    environment:
+      - GATEWAY_HTTP_PORT=:8081
+      - GATEWAY_AUTH_ENDPOINT=host.docker.internal:10123
+      - GATEWAY_FASTORDER_ENDPOINT=host.docker.internal:10124
+      - GATEWAY_COMPANY_ENDPOINT=host.docker.internal:10125
+      - GATEWAY_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
+      - GATEWAY_CHAT_ENDPOINT=host.docker.internal:10127
+      - GATEWAY_MINIO_ENDPOINT=host.docker.internal:9000
+      - GATEWAY_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+    networks:
+      - net
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
+  gateway_chat:
+    depends_on:
+      - minio
+      - postgres
+      - chat_service
+    build:
+      dockerfile: Dockerfile.gateway_chat
+      context: .
+      args:
+        - APP_PKG_NAME=b2b/m
+        - GOOS=linux
+#    image: net.entrypoint.gateway
+    ports:
+      - "5001:5001"
+      - "5050:5051"
+      - "15050:5050"
+    environment:
+      - GATEWAY_CHAT_HTTP_PORT=:5051
+      - GATEWAY_CHAT_AUTH_ENDPOINT=host.docker.internal:10123
+      - GATEWAY_CHAT_FASTORDER_ENDPOINT=host.docker.internal:10124
+      - GATEWAY_CHAT_COMPANY_ENDPOINT=host.docker.internal:10125
+      - GATEWAY_CHAT_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
+      - GATEWAY_CHAT_CHAT_ENDPOINT=host.docker.internal:10127
+      - GATEWAY_CHAT_MINIO_ENDPOINT=host.docker.internal:9000
+      - GATEWAY_CHAT_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+    networks:
+      - net
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+

@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package services.fastOrder_service;
+option go_package = "b2b/m/pkg/services/fastOrder;fastOrder_service";
+
+import "third_party/go-proto-validators/validator.proto";
+import "google/protobuf/empty.proto";
+
+
+message FastOrderRequest {
+  bool role = 1;
+  string product_category = 2 [(validate.rules).string = {
+    min_len: 3,
+    max_len: 128,
+  }];
+  string product_name = 3 [(validate.rules).string = {
+    min_len: 3,
+    max_len: 256,
+  }];
+  string order_text = 4 [(validate.rules).string = {
+    min_len: 3,
+    max_len: 1000,
+  }];
+  string order_comments = 5 [(validate.rules).string = {
+    min_len: 3,
+    max_len: 1000,
+  }];
+  string fio = 6 [(validate.rules).string = {
+    min_len: 7,
+    max_len: 768,
+  }];
+  string email = 7 [(validate.rules).string = {
+    email: true,
+    min_len: 3,
+    max_len: 256,
+  }];
+  string phone = 8 [(validate.rules).string = {
+    min_len: 11,
+    max_len: 13,
+  }];
+  string company_name = 9 [(validate.rules).string = {
+    min_len: 3,
+    max_len: 128,
+  }];
+  string itn = 10 [(validate.rules).string = {
+    min_len: 10,
+    max_len: 12,
+  }];
+}
+
+message LandingOrderRequest {
+  string product_category = 1 [(validate.rules).string = {
+    min_len: 3,
+    max_len: 128,
+  }];
+  string delivery_address = 2 [(validate.rules).string = {
+    min_len: 3,
+    max_len: 256,
+  }];
+  string delivery_date = 3 [(validate.rules).string = {
+    min_len: 3,
+    max_len: 256,
+  }];
+  string order_text = 4 [(validate.rules).string = {
+    min_len: 3,
+    max_len: 1000,
+  }];
+  string email = 5 [(validate.rules).string = {
+    email: true,
+    min_len: 3,
+    max_len: 256,
+  }];
+  string itn = 6 [(validate.rules).string = {
+    min_len: 10,
+    max_len: 12,
+  }];
+}
+
+service FastOrderService {
+  rpc FastOrder(FastOrderRequest) returns (google.protobuf.Empty) {}
+  rpc LandingOrder(LandingOrderRequest) returns (google.protobuf.Empty) {}
+}
