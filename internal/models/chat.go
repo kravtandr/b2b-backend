@@ -1,5 +1,7 @@
 package models
 
+import "github.com/fasthttp/websocket"
+
 type Chat struct {
 	Id        int64  `json:"id"`
 	Name      string `json:"name"`
@@ -41,3 +43,10 @@ type InitChatResponce struct {
 	ChatId        int64 `json:"chat_id"`
 	CreateNewChat bool  `json:"create_new_chat"`
 }
+
+type Client struct {
+	Id int64
+	Ws *websocket.Conn
+}
+
+type Clients []Client
