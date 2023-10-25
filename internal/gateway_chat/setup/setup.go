@@ -3,18 +3,18 @@ package setup
 import (
 	restchatd "b2b/m/internal/gateway/chat/delivery"
 	restchatu "b2b/m/internal/gateway/chat/usecase"
+	cd "b2b/m/internal/gateway/company/delivery"
+	company_usecase "b2b/m/internal/gateway/company/usecase"
+	fod "b2b/m/internal/gateway/fastOrder/delivery"
+	fastOrder_usecase "b2b/m/internal/gateway/fastOrder/usecase"
+	pcd "b2b/m/internal/gateway/productsCategories/delivery"
+	productsCategories_usecase "b2b/m/internal/gateway/productsCategories/usecase"
+	ud "b2b/m/internal/gateway/user/delivery"
+	uu "b2b/m/internal/gateway/user/usecase"
 	chatd "b2b/m/internal/gateway_chat/chat/delivery"
 	chatu "b2b/m/internal/gateway_chat/chat/usecase"
-	cd "b2b/m/internal/gateway_chat/company/delivery"
-	company_usecase "b2b/m/internal/gateway_chat/company/usecase"
 	"b2b/m/internal/gateway_chat/config"
-	fod "b2b/m/internal/gateway_chat/fastOrder/delivery"
-	fastOrder_usecase "b2b/m/internal/gateway_chat/fastOrder/usecase"
-	pcd "b2b/m/internal/gateway_chat/productsCategories/delivery"
-	productsCategories_usecase "b2b/m/internal/gateway_chat/productsCategories/usecase"
 	"b2b/m/internal/gateway_chat/router"
-	ud "b2b/m/internal/gateway_chat/user/delivery"
-	uu "b2b/m/internal/gateway_chat/user/usecase"
 	"b2b/m/pkg/error_adapter"
 	fasthttpprom "b2b/m/pkg/fasthttp_prom"
 	"b2b/m/pkg/grpc_errors"
@@ -82,7 +82,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		return p, stopFunc, err
 	}
 	ProductsCategoriesGRPC := productsCategories_service.NewProductsCategoriesServiceClient(productsCategoriesConn)
-	productsCategoriesUseCase := productsCategories_usecase.NewProductsCategoriesUseCase(ProductsCategoriesGRPC, userUsecase)
+	productsCategoriesUseCase := productsCategories_usecase.NewProductsCategoriesUseCase(ProductsCategoriesGRPC, userUsecase, companyUseCase)
 	productsCategoriesDelivery := pcd.NewProductsCategoriesDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
@@ -112,7 +112,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
 		),
-		chatUsecase, RestchatUsecase,
+		chatUsecase, RestchatUsecase, userUsecase,
 	)
 
 	p = router.SetupRouter(router.RouterConfig{

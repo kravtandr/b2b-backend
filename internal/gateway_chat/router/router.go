@@ -2,11 +2,11 @@ package router
 
 import (
 	restchatd "b2b/m/internal/gateway/chat/delivery"
+	cd "b2b/m/internal/gateway/company/delivery"
+	fod "b2b/m/internal/gateway/fastOrder/delivery"
+	pcd "b2b/m/internal/gateway/productsCategories/delivery"
+	ud "b2b/m/internal/gateway/user/delivery"
 	chatd "b2b/m/internal/gateway_chat/chat/delivery"
-	cd "b2b/m/internal/gateway_chat/company/delivery"
-	fod "b2b/m/internal/gateway_chat/fastOrder/delivery"
-	pcd "b2b/m/internal/gateway_chat/productsCategories/delivery"
-	ud "b2b/m/internal/gateway_chat/user/delivery"
 	cnst "b2b/m/pkg/constants"
 	fasthttpprom "b2b/m/pkg/fasthttp_prom"
 	"b2b/m/pkg/middlewares/http"
