@@ -144,7 +144,7 @@ func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64
 		return &chats, err
 	}
 	//for onlyChats
-	var onlyChatsLM models.ChatsAndLastMsg
+	onlyChatsLM := make(models.ChatsAndLastMsg, 100)
 	chats_count := 0
 	for _, chat := range *onlyChats {
 		chats_count += 1
@@ -170,7 +170,11 @@ func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64
 	for rows.Next() {
 		err = rows.Scan(&onlyChatsLM[rows_count].Chat.Id, &onlyChatsLM[rows_count].Chat.Name, &onlyChatsLM[rows_count].Chat.CreatorId, &onlyChatsLM[rows_count].Chat.ProductId, &onlyChatsLM[rows_count].Chat.Status, &onlyChatsLM[rows_count].LastMsg.Id, &onlyChatsLM[rows_count].LastMsg.SenderId, &onlyChatsLM[rows_count].LastMsg.ReceiverId, &onlyChatsLM[rows_count].LastMsg.Checked, &onlyChatsLM[rows_count].LastMsg.Text, &onlyChatsLM[rows_count].LastMsg.Type, &onlyChatsLM[rows_count].LastMsg.Time)
 		//chat.LastMsg.ChatId = chat.Chat.Id
-		onlyChatsLM[rows_count].LastMsg.ChatId = onlyChatsLM[rows_count].Chat.Id
+		log.Println("len(onlyChatsLM)", len(onlyChatsLM))
+		if len(onlyChatsLM) < rows_count {
+			onlyChatsLM[rows_count].LastMsg.ChatId = onlyChatsLM[rows_count].Chat.Id
+		}
+
 		//chats = append(chats, chat)
 		rows_count += 1
 	}
