@@ -171,6 +171,11 @@ func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64
 
 }
 
+func (a *chatRepository) remove(slice models.ChatsAndLastMsg, s int) *models.ChatsAndLastMsg {
+	res := append(slice[:s], slice[s+1:]...)
+	return &res
+}
+
 func (a *chatRepository) CombineChatsWithAndWithoutMsgs(ctx context.Context, onlyChats *models.Chats, chatsAndLM *models.ChatsAndLastMsg) *models.ChatsAndLastMsg {
 	var resulting_chats models.ChatsAndLastMsg
 	fakeLM := models.Msg{
@@ -185,18 +190,21 @@ func (a *chatRepository) CombineChatsWithAndWithoutMsgs(ctx context.Context, onl
 	}
 	for _, chat := range *onlyChats {
 		have_msgs := false
-		for _, chatLM := range *chatsAndLM {
+		for j, chatLM := range *chatsAndLM {
 			if chat.Id == chatLM.Chat.Id {
 				resulting_chats = append(resulting_chats, chatLM)
 				have_msgs = true
+				chatsAndLM = a.remove((*chatsAndLM), j)
 			}
 		}
 		if !have_msgs {
-			resulting_chats = append(resulting_chats, *&models.ChatAndLastMsg{
+			resulting_chats = append(resulting_chats, models.ChatAndLastMsg{
 				Chat:    chat,
 				LastMsg: fakeLM,
 			})
 		}
+		resulting_chats = append(resulting_chats, *chatsAndLM...)
+
 	}
 	return &resulting_chats
 }
