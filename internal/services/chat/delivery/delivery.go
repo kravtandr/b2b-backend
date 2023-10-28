@@ -148,27 +148,6 @@ func (a *chatDelivery) GetAllChatsAndLastMsg(ctx context.Context, request *chat_
 	return &res, nil
 }
 
-func (a *chatDelivery) GetAllUserChats(ctx context.Context, request *chat_service.IdRequest) (*chat_service.GetAllUserChatsResponse, error) {
-	chats, err := a.chatUsecase.GetAllUserChats(ctx, request.Id)
-	if err != nil {
-		return nil, a.errorAdapter.AdaptError(err)
-	}
-	var res chat_service.GetAllUserChatsResponse
-	var chat *chat_service.ChatResponse
-
-	for _, item := range *chats {
-		chat = &chat_service.ChatResponse{
-			Id:        item.Id,
-			Name:      item.Name,
-			CreatorId: item.CreatorId,
-			ProductId: item.ProductId,
-		}
-		res.Chats = append(res.Chats, chat)
-
-	}
-	return &res, nil
-}
-
 func NewChatDelivery(
 	chatUsecase usecase.ChatUseCase,
 	errorAdapter error_adapter.ErrorAdapter,

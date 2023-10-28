@@ -15,7 +15,6 @@ type ChatUseCase interface {
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
-	GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error)
 }
 
 type chatUseCase struct {
@@ -66,14 +65,6 @@ func (a *chatUseCase) GetMsgsFromChat(ctx context.Context, chatId int64, userId 
 
 func (a *chatUseCase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error) {
 	result, err := a.repo.GetAllChatsAndLastMsg(ctx, userId)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-func (a *chatUseCase) GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error) {
-	result, err := a.repo.GetAllUserChats(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
