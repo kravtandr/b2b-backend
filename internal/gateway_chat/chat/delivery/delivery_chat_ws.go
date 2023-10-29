@@ -88,8 +88,12 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 				if err != nil {
 					log.Println("ERROR: WSChatLoop->WriteNewMsg", err)
 				}
-
-				WSClients[msg.ReceiverId].WriteJSON(newMsg_id)
+				if (WSClients[msg.ReceiverId] == &websocket.Conn{}) {
+					log.Println("WARN: Reciever WS client status offline")
+				} else {
+					log.Println("WS_INFO: Reciever WS client status online")
+					WSClients[msg.ReceiverId].WriteJSON(newMsg_id)
+				}
 				if err != nil {
 					log.Println("ERROR: WSChatLoop->GetMsgsFromChat", err)
 				}
