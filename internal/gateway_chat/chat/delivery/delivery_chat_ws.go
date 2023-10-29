@@ -89,18 +89,7 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 					log.Println("ERROR: WSChatLoop->WriteNewMsg", err)
 				}
 
-				// далее нужно прочичать все сообщения из этого чата, которые идут после только что отправленно и отправить их по ws
-				// 1 получить все сообщения из чата
-				msgs, err := u.rest_chat_manager.GetMsgsFromChat(ctx, msg.ChatId, msg.SenderId)
-				var reducedMsgs models.Msgs
-				for _, item := range *msgs {
-					if item.Id > newMsg_id {
-						reducedMsgs = append(reducedMsgs, item)
-						ws.WriteJSON(item)
-					}
-				}
 				WSClients[msg.ReceiverId].WriteJSON(newMsg_id)
-				log.Println("reduced msgs: ", reducedMsgs)
 				if err != nil {
 					log.Println("ERROR: WSChatLoop->GetMsgsFromChat", err)
 				}
