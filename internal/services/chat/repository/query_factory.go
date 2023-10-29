@@ -11,9 +11,10 @@ type QueryFactory interface {
 	CreateGetChat(newChat *models.Chat) *query.Query
 	CreateWriteNewMsg(newMsg *models.Msg) *query.Query
 	CreateGetMsgsFromChat(chatId int64, userId int64) *query.Query
-	CreateGetAllUserChats(userId int64) *query.Query
 	CreateGetUserLastMsgs(userId int64) *query.Query
 	CreateGetAllUserChatsAndLastMsgs(userId int64) *query.Query
+	CreateGetAmountOfUserChats(userId int64) *query.Query
+	CreateUserCreatedChats(userId int64) *query.Query
 }
 
 type queryFactory struct{}
@@ -22,6 +23,13 @@ func (q *queryFactory) CreateCheckIfUniqChat(productId int64, userId int64) *que
 	return &query.Query{
 		Request: createCheckIfUniqChat,
 		Params:  []interface{}{productId, userId},
+	}
+}
+
+func (q *queryFactory) CreateUserCreatedChats(userId int64) *query.Query {
+	return &query.Query{
+		Request: createUserCreatedChats,
+		Params:  []interface{}{userId},
 	}
 }
 
@@ -53,9 +61,9 @@ func (q *queryFactory) CreateGetMsgsFromChat(chatId int64, userId int64) *query.
 	}
 }
 
-func (q *queryFactory) CreateGetAllUserChats(userId int64) *query.Query {
+func (q *queryFactory) CreateGetAmountOfUserChats(userId int64) *query.Query {
 	return &query.Query{
-		Request: createGetAllUserChats,
+		Request: createGetAmountOfUserChats,
 		Params:  []interface{}{userId},
 	}
 }

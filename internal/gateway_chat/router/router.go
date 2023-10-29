@@ -34,6 +34,10 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.Use(router.New())
 
 	lgrMw := http.NewLoggingMiddleware(cfg.Logger)
+	// authMw := http.NewSessionValidatorMiddleware(
+	// 	cfg.AuthGRPC,
+	// 	error_adapter.NewGrpcToHttpAdapter(grpc_errors.PreparedAuthErrors, grpc_errors.CommonAuthError),
+	// )
 
 	p.GET(cnst.ProductChatURL, lgrMw(cfg.ChatDelivery.WSUpgradeRequest))
 	p.GET("/testch", lgrMw(cfg.ChatDelivery.TestCh))

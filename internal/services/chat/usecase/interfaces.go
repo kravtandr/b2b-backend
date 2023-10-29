@@ -12,7 +12,6 @@ type chatRepository interface {
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
-	GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error)
 	GetUserLastMsgs(ctx context.Context, userId int64) (*models.Msgs, error)
 }
 

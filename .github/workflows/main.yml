@@ -36,6 +36,6 @@ jobs:
           port: 22
           script: |
             su - postgres -c "cd /var/lib/postgresql/backend/b2b-backend && git pull && docker-compose up -d --build";
-            curl "https://api.telegram.org/bot${{secrets.BOT_TOKEN}}/sendMessage?&chat_id=${{secrets.CHAT_ID}}&text=[Backend]%20[${{ github.event.release.author.login }}]%20Successfully%20Deploy%20https://bi-tu-bi.ru/%0A${{ github.event.head_commit.message }}"
+            curl "https://api.telegram.org/bot${{secrets.BOT_TOKEN}}/sendMessage?&chat_id=${{secrets.CHAT_ID}}&text=[Backend]%20[${{ github.actor }}]%20Successfully%20Deploy%20https://bi-tu-bi.ru/%0A${{ github.event.head_commit.message }}"
 
 

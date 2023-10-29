@@ -5,6 +5,7 @@ import (
 	"b2b/m/pkg/errors"
 	"context"
 	"log"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
@@ -17,8 +18,9 @@ type ChatRepository interface {
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
-	GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error)
 	GetUserLastMsgs(ctx context.Context, userId int64) (*models.Msgs, error)
+	GetUserCreatedChats(ctx context.Context, userId int64) (*models.Chats, error)
+	CombineChatsWithAndWithoutMsgs(ctx context.Context, onlyChats *models.Chats, chatsAndLM *models.ChatsAndLastMsg) *models.ChatsAndLastMsg
 }
 
 type chatRepository struct {
@@ -133,33 +135,20 @@ func (a *chatRepository) GetUserLastMsgs(ctx context.Context, userId int64) (*mo
 }
 
 func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error) {
-	//var chat models.ChatAndLastMsg
-
+	//только чаты с сообщениями
 	var chats models.ChatsAndLastMsg
-
-	//if chat with no msgs
-	onlyChats, err := a.GetAllUserChats(ctx, userId)
-
+	userCreatedChats, err := a.GetUserCreatedChats(ctx, userId)
 	if err != nil {
 		return &chats, err
 	}
-	//for onlyChats
-	var onlyChatsLM models.ChatsAndLastMsg
-	chats_count := 0
-	for _, chat := range *onlyChats {
-		chats_count += 1
-		onlyChatsLM = append(onlyChatsLM,
-			models.ChatAndLastMsg{
-				Chat: models.Chat{
-					Id:        chat.Id,
-					Name:      chat.Name,
-					CreatorId: chat.CreatorId,
-					ProductId: chat.ProductId,
-					Status:    chat.Status,
-				},
-				LastMsg: models.Msg{},
-			})
+	chats_amount, err := a.GetAmountOfUserChats(ctx, userId)
+	if err != nil {
+		return &chats, err
 	}
+	log.Println("chats_amount = ", chats_amount)
+	//for onlyChats
+	onlyChatsLM := make(models.ChatsAndLastMsg, chats_amount)
+
 	query := a.queryFactory.CreateGetAllUserChatsAndLastMsgs(userId)
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
 	if err != nil {
@@ -170,27 +159,58 @@ func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64
 	for rows.Next() {
 		err = rows.Scan(&onlyChatsLM[rows_count].Chat.Id, &onlyChatsLM[rows_count].Chat.Name, &onlyChatsLM[rows_count].Chat.CreatorId, &onlyChatsLM[rows_count].Chat.ProductId, &onlyChatsLM[rows_count].Chat.Status, &onlyChatsLM[rows_count].LastMsg.Id, &onlyChatsLM[rows_count].LastMsg.SenderId, &onlyChatsLM[rows_count].LastMsg.ReceiverId, &onlyChatsLM[rows_count].LastMsg.Checked, &onlyChatsLM[rows_count].LastMsg.Text, &onlyChatsLM[rows_count].LastMsg.Type, &onlyChatsLM[rows_count].LastMsg.Time)
 		//chat.LastMsg.ChatId = chat.Chat.Id
-		onlyChatsLM[rows_count].LastMsg.ChatId = onlyChatsLM[rows_count].Chat.Id
 		//chats = append(chats, chat)
 		rows_count += 1
 	}
 	if rows.Err() != nil {
 		return &chats, err
 	}
-	//log.Println(chats)
-	// if rows_count < chats_count{
-	// 	chats = append(chats, chat)
-	// }
-	// if rows_count == 0 {
-	// 	chats = onlyChatsLM
-	// }
+	combinedChats := a.CombineChatsWithAndWithoutMsgs(ctx, userCreatedChats, &onlyChatsLM)
 
-	return &onlyChatsLM, err
+	return combinedChats, err
 
 }
 
-func (a *chatRepository) GetAllUserChats(ctx context.Context, userId int64) (*models.Chats, error) {
-	query := a.queryFactory.CreateGetAllUserChats(userId)
+func (a *chatRepository) remove(slice models.ChatsAndLastMsg, s int) *models.ChatsAndLastMsg {
+	res := append(slice[:s], slice[s+1:]...)
+	return &res
+}
+
+func (a *chatRepository) CombineChatsWithAndWithoutMsgs(ctx context.Context, onlyChats *models.Chats, chatsAndLM *models.ChatsAndLastMsg) *models.ChatsAndLastMsg {
+	var resulting_chats models.ChatsAndLastMsg
+	fakeLM := models.Msg{
+		Id:         -1,
+		ChatId:     -1,
+		SenderId:   -1,
+		ReceiverId: -1,
+		Checked:    false,
+		Text:       "",
+		Type:       "mock",
+		Time:       time.Now(),
+	}
+	for _, chat := range *onlyChats {
+		have_msgs := false
+		for j, chatLM := range *chatsAndLM {
+			if chat.Id == chatLM.Chat.Id {
+				resulting_chats = append(resulting_chats, chatLM)
+				have_msgs = true
+				chatsAndLM = a.remove((*chatsAndLM), j)
+			}
+		}
+		if !have_msgs {
+			resulting_chats = append(resulting_chats, models.ChatAndLastMsg{
+				Chat:    chat,
+				LastMsg: fakeLM,
+			})
+		}
+		resulting_chats = append(resulting_chats, *chatsAndLM...)
+
+	}
+	return &resulting_chats
+}
+
+func (a *chatRepository) GetUserCreatedChats(ctx context.Context, userId int64) (*models.Chats, error) {
+	query := a.queryFactory.CreateUserCreatedChats(userId)
 	var chat models.Chat
 	var chats models.Chats
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
@@ -206,6 +226,23 @@ func (a *chatRepository) GetAllUserChats(ctx context.Context, userId int64) (*mo
 		return &chats, err
 	}
 	return &chats, err
+}
+
+func (a *chatRepository) GetAmountOfUserChats(ctx context.Context, userId int64) (int, error) {
+	query := a.queryFactory.CreateGetAmountOfUserChats(userId)
+	var chats_amount int
+	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
+	if err != nil {
+		return -1, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&chats_amount)
+	}
+	if rows.Err() != nil {
+		return -1, err
+	}
+	return chats_amount, nil
 }
 
 func NewChatRepository(

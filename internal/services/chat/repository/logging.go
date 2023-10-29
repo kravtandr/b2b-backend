@@ -43,6 +43,38 @@ func (l *loggingMiddleware) CheckIfUniqChat(ctx context.Context, productId int64
 	return l.next.CheckIfUniqChat(ctx, productId, userId)
 }
 
+func (l *loggingMiddleware) CombineChatsWithAndWithoutMsgs(ctx context.Context, onlyChats *models.Chats, chatsAndLM *models.ChatsAndLastMsg) *models.ChatsAndLastMsg {
+	l.logger.Infow(module,
+		"Action", "CombineChatsWithAndWithoutMsgs",
+		"Request", onlyChats, chatsAndLM,
+	)
+	defer func() {
+		l.logger.Infow(module,
+			"Action", "CombineChatsWithAndWithoutMsgs",
+			"Request", onlyChats, chatsAndLM,
+		)
+	}()
+
+	return l.next.CombineChatsWithAndWithoutMsgs(ctx, onlyChats, chatsAndLM)
+}
+func (l *loggingMiddleware) GetUserCreatedChats(ctx context.Context, userId int64) (c *models.Chats, err error) {
+	l.logger.Infow(module,
+		"Action", "GetUserCreatedChats",
+		"Request", userId,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetUserCreatedChats",
+				"Request", userId,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetUserCreatedChats(ctx, userId)
+}
+
 func (l *loggingMiddleware) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (c *models.ChatsAndLastMsg, err error) {
 	l.logger.Infow(module,
 		"Action", "GetAllChatsAndLastMsg",
@@ -131,24 +163,6 @@ func (l *loggingMiddleware) GetMsgsFromChat(ctx context.Context, chatId int64, u
 	}()
 
 	return l.next.GetMsgsFromChat(ctx, chatId, userId)
-}
-
-func (l *loggingMiddleware) GetAllUserChats(ctx context.Context, userId int64) (chats *models.Chats, err error) {
-	l.logger.Infow(module,
-		"Action", "GetAllUserChats",
-		"Request", userId,
-	)
-	defer func() {
-		if err != nil {
-			l.logger.Infow(module,
-				"Action", "GetAllUserChats",
-				"Request", userId,
-				"Error", err,
-			)
-		}
-	}()
-
-	return l.next.GetAllUserChats(ctx, userId)
 }
 
 func (l *loggingMiddleware) GetUserLastMsgs(ctx context.Context, userId int64) (msgs *models.Msgs, err error) {

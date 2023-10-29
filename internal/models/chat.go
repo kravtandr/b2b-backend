@@ -25,6 +25,10 @@ type Msg struct {
 	Time         string `json:"time"`
 }
 
+type InitMsg struct {
+	SenderId int64 `json:"sender_id"`
+}
+
 type Msgs []Msg
 
 type ChatAndLastMsg struct {
