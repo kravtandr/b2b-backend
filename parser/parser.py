@@ -101,7 +101,7 @@ def main():
     # Получаем список файлов
     files = os.listdir(basePath)
     # print(files)
-    files.remove(".DS_Store")
+    # files.remove(".DS_Store")
     files.sort()
     for directory in files:
         path = basePath+'/'+directory
