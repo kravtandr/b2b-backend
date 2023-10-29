@@ -64,6 +64,10 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 	knownConn := false
 	for {
 		_, message, err := ws.ReadMessage()
+		if err != nil {
+			log.Println("ERROR: ws.ReadMessage():", err)
+			break
+		}
 		if !knownConn {
 			if err := json.Unmarshal(message, init_msg); err != nil {
 				log.Println("Unmarshal err:", err)
