@@ -25,6 +25,14 @@ type Msg struct {
 	Time         string `json:"time"`
 }
 
+type WsMsg struct {
+	ChatId     int64  `json:"chat_id"`
+	SenderId   int64  `json:"sender_id"`
+	ReceiverId int64  `json:"receiver_id"`
+	Text       string `json:"text"`
+	Type       string `json:"type"`
+}
+
 type InitMsg struct {
 	SenderId int64 `json:"sender_id"`
 }

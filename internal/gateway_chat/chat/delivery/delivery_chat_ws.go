@@ -84,6 +84,7 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 			} else {
 				ctx := context.Background()
 				newMsg_struct := &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type}
+				wsmsg := &models.WsMsg{Text: newMsg_struct.Text, ChatId: newMsg_struct.ChatId, SenderId: newMsg_struct.SenderId, ReceiverId: newMsg_struct.ReceiverId, Type: newMsg_struct.Type}
 				_, err := u.manager.WriteNewMsg(ctx, newMsg_struct)
 				if err != nil {
 					log.Println("ERROR: WSChatLoop->WriteNewMsg", err)
@@ -92,7 +93,7 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 					log.Println("WARN: Reciever WS client status offline")
 				} else {
 					log.Println("WS_INFO: Reciever WS client status online")
-					WSClients[msg.ReceiverId].WriteJSON(newMsg_struct)
+					WSClients[msg.ReceiverId].WriteJSON(wsmsg)
 				}
 				if err != nil {
 					log.Println("ERROR: WSChatLoop->GetMsgsFromChat", err)
