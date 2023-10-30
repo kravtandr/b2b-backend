@@ -78,13 +78,13 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 		} else {
 			if err != nil {
 				log.Println("WSClients: ", WSClients)
-				//когда приходит сообщение записываю его в бд
 				log.Println("read:", err)
 			} else if err := json.Unmarshal(message, msg); err != nil {
 				log.Println("Unmarshal err:", err)
 			} else {
 				ctx := context.Background()
-				newMsg_id, err := u.manager.WriteNewMsg(ctx, &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type})
+				newMsg_struct := &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type}
+				_, err := u.manager.WriteNewMsg(ctx, newMsg_struct)
 				if err != nil {
 					log.Println("ERROR: WSChatLoop->WriteNewMsg", err)
 				}
@@ -92,13 +92,11 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 					log.Println("WARN: Reciever WS client status offline")
 				} else {
 					log.Println("WS_INFO: Reciever WS client status online")
-					WSClients[msg.ReceiverId].WriteJSON(newMsg_id)
+					WSClients[msg.ReceiverId].WriteJSON(newMsg_struct)
 				}
 				if err != nil {
 					log.Println("ERROR: WSChatLoop->GetMsgsFromChat", err)
 				}
-				// 2 выделить те, которые идут после отправленного
-				// 3 отправить сообщения по ws
 			}
 
 		}
