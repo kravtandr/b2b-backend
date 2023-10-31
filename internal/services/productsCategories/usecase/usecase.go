@@ -13,6 +13,7 @@ type ProductsCategoriesUseCase interface {
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
 	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error)
+	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsList, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error)
 }
 
@@ -69,7 +70,13 @@ func (a *productsCategoriesUseCase) SearchCategories(ctx context.Context, Search
 	}
 	return categories, nil
 }
-
+func (a *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsList, error) {
+	products, err := a.repo.GetProductsListByFilters(ctx, filters)
+	if err != nil {
+		return &models.ProductsList{}, err
+	}
+	return products, nil
+}
 func (a *productsCategoriesUseCase) GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error) {
 	products, err := a.repo.GetProductsList(ctx, SkipLimit)
 	if err != nil {

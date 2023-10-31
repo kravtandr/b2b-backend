@@ -77,6 +77,42 @@ func (a *productsCategoriesDelivery) GetProductsList(ctx context.Context, reques
 	return &res, nil
 }
 
+func (a *productsCategoriesDelivery) GetProductsListByFilters(ctx context.Context, request *productsCategories_service.GetProductsListByFiltersRequest) (*productsCategories_service.GetProductsListResponse, error) {
+	resp, err := a.productsCategoriesUseCase.GetProductsListByFilters(ctx, &models.ProductsFilters{
+		Product_name:       request.ProductName,
+		Category_name:      request.CategoryName,
+		Categories_ids:     request.CategoriesIds,
+		Price_lower_limit:  request.PriceLowerLimit,
+		Price_higher_limit: request.PriceHigherLimit,
+		QueryParam: chttp.QueryParam{
+			Skip:  request.Skip,
+			Limit: request.Limit,
+		},
+	})
+	if err != nil {
+		return &productsCategories_service.GetProductsListResponse{}, a.errorAdapter.AdaptError(err)
+	}
+	var res productsCategories_service.GetProductsListResponse
+	var modelProduct *productsCategories_service.GetProduct
+
+	for _, result := range *resp {
+		description := productsCategories_service.SqlNullString{
+			String_: result.Description.String,
+			Valid:   result.Description.Valid}
+		modelProduct = &productsCategories_service.GetProduct{
+			Id:          result.Id,
+			Name:        result.Name,
+			Description: &description,
+			Price:       result.Price,
+			Photo:       result.Photo,
+			Documents:   result.Docs,
+		}
+		res.Products = append(res.Products, modelProduct)
+
+	}
+	return &res, nil
+}
+
 func (a *productsCategoriesDelivery) SearchProducts(ctx context.Context, request *productsCategories_service.SearchItemNameWithSkipLimitRequest) (*productsCategories_service.GetProductsListResponse, error) {
 	resp, err := a.productsCategoriesUseCase.SearchProducts(ctx, &chttp.SearchItemNameWithSkipLimit{
 		Name:  request.Name,

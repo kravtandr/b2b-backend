@@ -22,6 +22,7 @@ type ProductsCategoriesDelivery interface {
 	SearchCategories(ctx *fasthttp.RequestCtx)
 	SearchProducts(ctx *fasthttp.RequestCtx)
 	GetProductsList(ctx *fasthttp.RequestCtx)
+	GetProductsListByFilters(ctx *fasthttp.RequestCtx)
 }
 
 type productsCategoriesDelivery struct {
@@ -91,10 +92,40 @@ func (u *productsCategoriesDelivery) GetProductById(ctx *fasthttp.RequestCtx) {
 	ctx.SetBody(b)
 }
 
+func (u *productsCategoriesDelivery) GetProductsListByFilters(ctx *fasthttp.RequestCtx) {
+	params, err := chttp.GetQueryParams(ctx)
+	if err != nil {
+		log.Println("ERROR: GetProductsListByFilters", err)
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	var request = &models.GetProductsByFilters{}
+	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
+		log.Println("ERROR: Unmarshal in GetProductsListByFilters", err)
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+
+	response, err := u.manager.GetProductsListByFilters(ctx, params, request)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+
+	b, _ := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+}
+
 func (u *productsCategoriesDelivery) GetProductsList(ctx *fasthttp.RequestCtx) {
 	params, err := chttp.GetQueryParams(ctx)
 	if err != nil {
-		fmt.Println("PIZDEC V GetProductsList", err)
+		fmt.Println("ERROR: GetProductsList", err)
 		httpError := u.errorAdapter.AdaptError(err)
 		ctx.SetStatusCode(httpError.Code)
 		ctx.SetBody([]byte(httpError.MSG))

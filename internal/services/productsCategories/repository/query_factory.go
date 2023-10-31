@@ -4,6 +4,8 @@ import (
 	"b2b/m/internal/services/productsCategories/models"
 	chttp "b2b/m/pkg/customhttp"
 	"b2b/m/pkg/query"
+
+	pq_type "github.com/lib/pq"
 )
 
 type QueryFactory interface {
@@ -12,6 +14,7 @@ type QueryFactory interface {
 	CreateGetAllCategories() *query.Query
 	CreateSearchCategories(SearchBody *chttp.SearchItemNameWithSkipLimit) *query.Query
 	CreateGetProductsList(SkipLimit *chttp.QueryParam) *query.Query
+	CreateGetProductsListByFilters(filters *models.ProductsFilters) *query.Query
 	CreateSearchProducts(SearchBody *chttp.SearchItemNameWithSkipLimit) *query.Query
 	CreateAddProduct(Product *models.Product) *query.Query
 	CreateAddProductsCategoriesLink(productId int64, categoryId int64) *query.Query
@@ -104,6 +107,13 @@ func (q *queryFactory) CreateGetProductsList(SkipLimit *chttp.QueryParam) *query
 	return &query.Query{
 		Request: createGetProductsList,
 		Params:  []interface{}{SkipLimit.Skip, SkipLimit.Limit},
+	}
+}
+
+func (q *queryFactory) CreateGetProductsListByFilters(filters *models.ProductsFilters) *query.Query {
+	return &query.Query{
+		Request: createGetProductsListByFilters,
+		Params:  []interface{}{filters.Product_name, filters.Category_name, pq_type.Array(filters.Categories_ids), filters.Price_lower_limit, filters.Price_higher_limit, filters.QueryParam.Skip, filters.QueryParam.Limit},
 	}
 }
 
