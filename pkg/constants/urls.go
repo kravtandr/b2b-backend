@@ -26,6 +26,7 @@ const SearchCategoryURL = "/search/categories"
 const ProductURL = "/product/{id}"
 const AddProductURL = "/product/add"
 const ProductsListURL = "/products/list"
+const ProductsListByFiltersURL = "/products/list/filter" // {category_name}
 const SearchProductsURL = "/search/products"
 
 // Chat

@@ -28,6 +28,7 @@ type ProductsCategoriesServiceClient interface {
 	SearchCategories(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetCategories, error)
 	SearchProducts(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
 	GetProductsList(ctx context.Context, in *GetProductsListRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
+	GetProductsListByFilters(ctx context.Context, in *GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
 }
 
 type productsCategoriesServiceClient struct {
@@ -92,6 +93,15 @@ func (c *productsCategoriesServiceClient) GetProductsList(ctx context.Context, i
 	return out, nil
 }
 
+func (c *productsCategoriesServiceClient) GetProductsListByFilters(ctx context.Context, in *GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error) {
+	out := new(GetProductsListResponse)
+	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/GetProductsListByFilters", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductsCategoriesServiceServer is the server API for ProductsCategoriesService service.
 // All implementations must embed UnimplementedProductsCategoriesServiceServer
 // for forward compatibility
@@ -102,6 +112,7 @@ type ProductsCategoriesServiceServer interface {
 	SearchCategories(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetCategories, error)
 	SearchProducts(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetProductsListResponse, error)
 	GetProductsList(context.Context, *GetProductsListRequest) (*GetProductsListResponse, error)
+	GetProductsListByFilters(context.Context, *GetProductsListByFiltersRequest) (*GetProductsListResponse, error)
 	mustEmbedUnimplementedProductsCategoriesServiceServer()
 }
 
@@ -126,6 +137,9 @@ func (UnimplementedProductsCategoriesServiceServer) SearchProducts(context.Conte
 }
 func (UnimplementedProductsCategoriesServiceServer) GetProductsList(context.Context, *GetProductsListRequest) (*GetProductsListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProductsList not implemented")
+}
+func (UnimplementedProductsCategoriesServiceServer) GetProductsListByFilters(context.Context, *GetProductsListByFiltersRequest) (*GetProductsListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProductsListByFilters not implemented")
 }
 func (UnimplementedProductsCategoriesServiceServer) mustEmbedUnimplementedProductsCategoriesServiceServer() {
 }
@@ -249,6 +263,24 @@ func _ProductsCategoriesService_GetProductsList_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductsCategoriesService_GetProductsListByFilters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProductsListByFiltersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductsCategoriesServiceServer).GetProductsListByFilters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.productsCategories_service.ProductsCategoriesService/GetProductsListByFilters",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductsCategoriesServiceServer).GetProductsListByFilters(ctx, req.(*GetProductsListByFiltersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductsCategoriesService_ServiceDesc is the grpc.ServiceDesc for ProductsCategoriesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -279,6 +311,10 @@ var ProductsCategoriesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProductsList",
 			Handler:    _ProductsCategoriesService_GetProductsList_Handler,
+		},
+		{
+			MethodName: "GetProductsListByFilters",
+			Handler:    _ProductsCategoriesService_GetProductsListByFilters_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

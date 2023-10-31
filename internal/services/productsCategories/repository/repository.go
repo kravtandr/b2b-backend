@@ -23,6 +23,7 @@ type ProductsCategoriesRepository interface {
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
 	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error)
+	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsList, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error)
 	AddProduct(ctx context.Context, Product *models.Product) (*models.Product, error)
 	AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error
@@ -324,47 +325,6 @@ func (a productsCategoriesRepository) GetProductPhotos(ctx context.Context, Prod
 	return Product, err
 }
 
-// func (a productsCategoriesRepository) GetProductPhotos(ctx context.Context, Product *models.Product) (*models.Product, error) {
-// 	query := a.queryFactory.CreateGetProductPhotos(Product.Id)
-// 	var objName string
-// 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
-// 	if err != nil {
-// 		return &models.Product{}, err
-// 	}
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		func() {
-// 			err = rows.Scan(&objName)
-// 			var BucketName string = "photo"
-// 			reader, err := a.minioClient.GetObject(
-// 				ctx,
-// 				BucketName,
-// 				objName,
-// 				minio.GetObjectOptions{},
-// 			)
-// 			if err != nil {
-// 				log.Println("Error", err)
-// 			}
-// 			defer reader.Close()
-// 			if err != nil {
-// 				log.Println("Error ", err)
-// 			}
-// 			imageBytes, err := io.ReadAll(reader)
-// 			if err != nil && err != io.EOF {
-// 				log.Println("Error", err)
-// 			}
-// 			data := imageBytes
-// 			Product.Photo = append(Product.Photo, helpers.EncodeImgToBase64(ctx, data))
-// 		}()
-
-// 	}
-// 	if rows.Err() != nil {
-// 		return &models.Product{}, err
-// 	}
-// 	return Product, err
-// }
-
 func (a productsCategoriesRepository) GetProductDocuments(ctx context.Context, Product *models.Product) (*models.Product, error) {
 	query := a.queryFactory.CreateGetProductDocuments(Product.Id)
 	var objName string
@@ -419,13 +379,6 @@ func (a productsCategoriesRepository) GetProductsList(ctx context.Context, SkipL
 				log.Println("Error in  GetProductsList->GetProductWithPhotosAndDocuments", err)
 				//return &products, err
 			}
-			// productWithPhotos, err = a.GetProductWithPhotosAndDocuments(ctx, &product)
-			// if err != nil {
-			// 	log.Println("Error in  GetProductsList->GetProductWithPhotosAndDocuments", err)
-			// 	//return &products, err
-			// }
-			//log.Println(productWithPhotos.Photo)
-			//product.Photo = productWithPhotos.Photo
 			products = append(products, product)
 		}()
 	}
@@ -442,6 +395,45 @@ func (a productsCategoriesRepository) GetProductsList(ctx context.Context, SkipL
 
 	if rows.Err() != nil {
 		log.Println("Error in GetProductsList rows scan ", err)
+		return &products, err
+	}
+
+	return &productsWithPhoto, err
+}
+
+func (a productsCategoriesRepository) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsList, error) {
+	query := a.queryFactory.CreateGetProductsListByFilters(filters)
+	var product models.Product
+	var products models.ProductsList
+	var productsWithPhoto models.ProductsList
+	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Println("Error in Query GetProductsListByFilters", err)
+		return &products, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		func() {
+			product = models.Product{}
+			err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price)
+			if err != nil {
+				log.Println("Error in  GetProductsListByFilters->GetProductWithPhotosAndDocuments", err)
+			}
+			products = append(products, product)
+		}()
+	}
+	for _, item := range products {
+		func() {
+			productWithPhotos, err := a.GetProductWithPhotosAndDocuments(ctx, &item)
+			if err != nil {
+				log.Println("Error in  GetProductsListByFilters->GetProductWithPhotosAndDocuments", err)
+			}
+			productsWithPhoto = append(productsWithPhoto, *productWithPhotos)
+		}()
+	}
+
+	if rows.Err() != nil {
+		log.Println("Error in GetProductsListByFilters rows scan ", err)
 		return &products, err
 	}
 

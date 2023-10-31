@@ -2,6 +2,7 @@ package models
 
 import (
 	gateway_models "b2b/m/internal/models"
+	chttp "b2b/m/pkg/customhttp"
 	"database/sql"
 )
 
@@ -30,6 +31,15 @@ type Product struct {
 	Docs        []string
 	CreatedAt   string
 	UpdatedAt   string
+}
+
+type ProductsFilters struct {
+	Product_name       string
+	Category_name      string
+	Categories_ids     []int64
+	Price_lower_limit  int64
+	Price_higher_limit int64
+	QueryParam         chttp.QueryParam
 }
 
 type CompaniesProducts struct {

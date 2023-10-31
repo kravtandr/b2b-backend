@@ -27,24 +27,6 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next ProductsCategoriesRepo
 	}
 }
 
-// func (l *loggingMiddleware) GetProductPhotos(ctx context.Context, Product *models.Product) (c *models.Product, err error) {
-// 	l.logger.Infow(module,
-// 		"Action", "GetProductPhotos",
-// 		"Request", Product,
-// 	)
-// 	defer func() {
-// 		if err != nil {
-// 			l.logger.Infow(module,
-// 				"Action", "GetProductPhotos",
-// 				"Request", Product,
-// 				"Error", err,
-// 			)
-// 		}
-// 	}()
-
-// 	return l.next.GetProductPhotos(ctx, Product)
-// }
-
 func (l *loggingMiddleware) GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (c *models.Category, err error) {
 	l.logger.Infow(module,
 		"Action", "GetCategoryById",
@@ -187,4 +169,22 @@ func (l *loggingMiddleware) GetProductsList(ctx context.Context, SkipLimit *chtt
 	}()
 
 	return l.next.GetProductsList(ctx, SkipLimit)
+}
+
+func (l *loggingMiddleware) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (c *models.ProductsList, err error) {
+	l.logger.Infow(module,
+		"Action", "GetProductsList",
+		"Request", filters,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetProductsList",
+				"Request", filters,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetProductsListByFilters(ctx, filters)
 }

@@ -26,6 +26,16 @@ message SearchItemNameWithSkipLimitRequest {
   int64 limit = 3;
 }
 
+message GetProductsListByFiltersRequest {
+  string product_name = 1;
+  string category_name = 2;
+  repeated int64 categories_ids = 3 ;
+  int64 price_lower_limit = 4;
+  int64 price_higher_limit =  5;
+  int64 skip = 6;
+  int64 limit = 7;
+}
+
 message AddProductRequest {
   string name = 1;
   int64 category_id = 2 ;
@@ -81,4 +91,5 @@ service ProductsCategoriesService {
   rpc SearchCategories(SearchItemNameWithSkipLimitRequest) returns (GetCategories) {}
   rpc SearchProducts(SearchItemNameWithSkipLimitRequest) returns (GetProductsListResponse) {}
   rpc GetProductsList(GetProductsListRequest) returns (GetProductsListResponse) {}
+  rpc GetProductsListByFilters(GetProductsListByFiltersRequest) returns (GetProductsListResponse) {}
 }

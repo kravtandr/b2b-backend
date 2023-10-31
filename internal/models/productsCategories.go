@@ -2,6 +2,14 @@ package models
 
 import "database/sql"
 
+type GetProductsByFilters struct {
+	Product_name       string  `json:"product_name"`
+	Category_name      string  `json:"category_name"`
+	Categories_ids     []int64 `json:"categories_ids"`
+	Price_lower_limit  int64   `json:"price_lower_limit"`
+	Price_higher_limit int64   `json:"price_higher_limit"`
+}
+
 type GetCategoryByIdRequest struct {
 	Id int64 `json:"id"`
 }

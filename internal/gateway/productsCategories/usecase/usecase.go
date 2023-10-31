@@ -16,6 +16,7 @@ type ProductsCategoriesUseCase interface {
 	GetProductById(ctx context.Context, request *models.GetProductByIdRequest) (*models.GetProductByIdResponse, error)
 	SearchCategories(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*[]models.GetCategoryByIdResponse, error)
 	GetProductsList(ctx context.Context, request *chttp.QueryParam) (*models.GetProductsList, error)
+	GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.GetProductsList, error)
 	SearchProducts(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*models.GetProductsList, error)
 	AddProduct(ctx context.Context, request *models.UserInfoAndAddProductByFormRequest) (*models.GetProduct, error)
 }
@@ -171,6 +172,37 @@ func (u *productsCategoriesUseCase) SearchProducts(ctx context.Context, request 
 	var modelProduct models.GetProduct
 	var modelProducts models.GetProductsList
 	for _, result := range SearchResults.Products {
+		description := sql.NullString{
+			String: result.Description.String_,
+			Valid:  result.Description.Valid}
+		modelProduct = models.GetProduct{
+			Id:          result.Id,
+			Name:        result.Name,
+			Description: description,
+			Price:       result.Price,
+			Photo:       result.Photo,
+			Docs:        result.Documents,
+		}
+		modelProducts = append(modelProducts, modelProduct)
+	}
+	return &modelProducts, nil
+}
+func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.GetProductsList, error) {
+	response, err := u.ProductsCategoriesGRPC.GetProductsListByFilters(ctx, &productsCategories_service.GetProductsListByFiltersRequest{
+		ProductName:      request.Product_name,
+		CategoryName:     request.Category_name,
+		CategoriesIds:    request.Categories_ids,
+		PriceLowerLimit:  request.Price_lower_limit,
+		PriceHigherLimit: request.Price_higher_limit,
+		Skip:             params.Skip,
+		Limit:            params.Limit,
+	})
+	if err != nil {
+		return &models.GetProductsList{}, err
+	}
+	var modelProduct models.GetProduct
+	var modelProducts models.GetProductsList
+	for _, result := range response.Products {
 		description := sql.NullString{
 			String: result.Description.String_,
 			Valid:  result.Description.Valid}

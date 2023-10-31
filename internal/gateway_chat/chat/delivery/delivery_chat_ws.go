@@ -78,34 +78,26 @@ func (u *chatDelivery) WSChatLoop(ws *websocket.Conn) {
 		} else {
 			if err != nil {
 				log.Println("WSClients: ", WSClients)
-				//когда приходит сообщение записываю его в бд
 				log.Println("read:", err)
 			} else if err := json.Unmarshal(message, msg); err != nil {
 				log.Println("Unmarshal err:", err)
 			} else {
 				ctx := context.Background()
-				newMsg_id, err := u.manager.WriteNewMsg(ctx, &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type})
+				newMsg_struct := &models.Msg{Text: msg.Text, SenderId: msg.SenderId, ReceiverId: msg.ReceiverId, ChatId: msg.ChatId, Type: msg.Type}
+				wsmsg := &models.WsMsg{Text: newMsg_struct.Text, ChatId: newMsg_struct.ChatId, SenderId: newMsg_struct.SenderId, ReceiverId: newMsg_struct.ReceiverId, Type: newMsg_struct.Type}
+				_, err := u.manager.WriteNewMsg(ctx, newMsg_struct)
 				if err != nil {
 					log.Println("ERROR: WSChatLoop->WriteNewMsg", err)
 				}
-
-				// далее нужно прочичать все сообщения из этого чата, которые идут после только что отправленно и отправить их по ws
-				// 1 получить все сообщения из чата
-				msgs, err := u.rest_chat_manager.GetMsgsFromChat(ctx, msg.ChatId, msg.SenderId)
-				var reducedMsgs models.Msgs
-				for _, item := range *msgs {
-					if item.Id > newMsg_id {
-						reducedMsgs = append(reducedMsgs, item)
-						ws.WriteJSON(item)
-					}
+				if (WSClients[msg.ReceiverId] == &websocket.Conn{}) {
+					log.Println("WARN: Reciever WS client status offline")
+				} else {
+					log.Println("WS_INFO: Reciever WS client status online")
+					WSClients[msg.ReceiverId].WriteJSON(wsmsg)
 				}
-				WSClients[msg.ReceiverId].WriteJSON(newMsg_id)
-				log.Println("reduced msgs: ", reducedMsgs)
 				if err != nil {
 					log.Println("ERROR: WSChatLoop->GetMsgsFromChat", err)
 				}
-				// 2 выделить те, которые идут после отправленного
-				// 3 отправить сообщения по ws
 			}
 
 		}
