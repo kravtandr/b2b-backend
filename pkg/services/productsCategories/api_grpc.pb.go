@@ -28,7 +28,7 @@ type ProductsCategoriesServiceClient interface {
 	SearchCategories(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetCategories, error)
 	SearchProducts(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
 	GetProductsList(ctx context.Context, in *GetProductsListRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
-	GetProductsListByFilters(ctx context.Context, in *GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
+	GetProductsListByFilters(ctx context.Context, in *GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*GetProductsByFiltersResponse, error)
 }
 
 type productsCategoriesServiceClient struct {
@@ -93,8 +93,8 @@ func (c *productsCategoriesServiceClient) GetProductsList(ctx context.Context, i
 	return out, nil
 }
 
-func (c *productsCategoriesServiceClient) GetProductsListByFilters(ctx context.Context, in *GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error) {
-	out := new(GetProductsListResponse)
+func (c *productsCategoriesServiceClient) GetProductsListByFilters(ctx context.Context, in *GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*GetProductsByFiltersResponse, error) {
+	out := new(GetProductsByFiltersResponse)
 	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/GetProductsListByFilters", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ type ProductsCategoriesServiceServer interface {
 	SearchCategories(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetCategories, error)
 	SearchProducts(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetProductsListResponse, error)
 	GetProductsList(context.Context, *GetProductsListRequest) (*GetProductsListResponse, error)
-	GetProductsListByFilters(context.Context, *GetProductsListByFiltersRequest) (*GetProductsListResponse, error)
+	GetProductsListByFilters(context.Context, *GetProductsListByFiltersRequest) (*GetProductsByFiltersResponse, error)
 	mustEmbedUnimplementedProductsCategoriesServiceServer()
 }
 
@@ -138,7 +138,7 @@ func (UnimplementedProductsCategoriesServiceServer) SearchProducts(context.Conte
 func (UnimplementedProductsCategoriesServiceServer) GetProductsList(context.Context, *GetProductsListRequest) (*GetProductsListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProductsList not implemented")
 }
-func (UnimplementedProductsCategoriesServiceServer) GetProductsListByFilters(context.Context, *GetProductsListByFiltersRequest) (*GetProductsListResponse, error) {
+func (UnimplementedProductsCategoriesServiceServer) GetProductsListByFilters(context.Context, *GetProductsListByFiltersRequest) (*GetProductsByFiltersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProductsListByFilters not implemented")
 }
 func (UnimplementedProductsCategoriesServiceServer) mustEmbedUnimplementedProductsCategoriesServiceServer() {

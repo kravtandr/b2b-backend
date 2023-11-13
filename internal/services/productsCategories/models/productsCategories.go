@@ -52,8 +52,14 @@ type CompaniesProducts struct {
 	DeliveryWay string
 	Adress      string
 }
+type Products []Product
 
-type ProductsList []Product
+type ProductWithCategory struct {
+	Product  Product
+	Category Category
+}
+
+type ProductsWithCategory []ProductWithCategory
 
 type AddProductByFormRequest struct {
 	Name        string

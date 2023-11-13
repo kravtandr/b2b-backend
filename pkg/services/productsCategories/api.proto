@@ -75,6 +75,17 @@ message GetProduct {
   repeated string documents = 6;
 }
 
+message ProductWithCategory {
+  int64 id = 1;
+  string name = 2;
+  sqlNullString description = 3;
+  int64 price = 4;
+  int64 category_id = 5;
+  string category_name = 6;
+  repeated string photo = 7;
+  repeated string documents = 8;
+}
+
 message GetProductsListRequest {
   int64 skip = 1;
   int64 limit = 2;
@@ -84,6 +95,10 @@ message GetProductsListResponse {
   repeated GetProduct products = 1;
 }
 
+message GetProductsByFiltersResponse {
+  repeated ProductWithCategory products = 1;
+}
+
 service ProductsCategoriesService {
   rpc AddProduct(AddProductRequest) returns (GetProduct) {}
   rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
@@ -91,5 +106,5 @@ service ProductsCategoriesService {
   rpc SearchCategories(SearchItemNameWithSkipLimitRequest) returns (GetCategories) {}
   rpc SearchProducts(SearchItemNameWithSkipLimitRequest) returns (GetProductsListResponse) {}
   rpc GetProductsList(GetProductsListRequest) returns (GetProductsListResponse) {}
-  rpc GetProductsListByFilters(GetProductsListByFiltersRequest) returns (GetProductsListResponse) {}
+  rpc GetProductsListByFilters(GetProductsListByFiltersRequest) returns (GetProductsByFiltersResponse) {}
 }

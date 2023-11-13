@@ -12,7 +12,7 @@ type ProductsCategoriesGRPC interface {
 	GetProductById(ctx context.Context, in *productsCategories_service.GetProductByID, opts ...grpc.CallOption) (*productsCategories_service.GetProduct, error)
 	SearchCategories(ctx context.Context, in *productsCategories_service.SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*productsCategories_service.GetCategories, error)
 	GetProductsList(ctx context.Context, in *productsCategories_service.GetProductsListRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProductsListResponse, error)
-	GetProductsListByFilters(ctx context.Context, in *productsCategories_service.GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProductsListResponse, error)
+	GetProductsListByFilters(ctx context.Context, in *productsCategories_service.GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProductsByFiltersResponse, error)
 	SearchProducts(ctx context.Context, in *productsCategories_service.SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProductsListResponse, error)
 	AddProduct(ctx context.Context, in *productsCategories_service.AddProductRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProduct, error)
 }

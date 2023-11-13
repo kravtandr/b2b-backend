@@ -77,7 +77,7 @@ func (a *productsCategoriesDelivery) GetProductsList(ctx context.Context, reques
 	return &res, nil
 }
 
-func (a *productsCategoriesDelivery) GetProductsListByFilters(ctx context.Context, request *productsCategories_service.GetProductsListByFiltersRequest) (*productsCategories_service.GetProductsListResponse, error) {
+func (a *productsCategoriesDelivery) GetProductsListByFilters(ctx context.Context, request *productsCategories_service.GetProductsListByFiltersRequest) (*productsCategories_service.GetProductsByFiltersResponse, error) {
 	resp, err := a.productsCategoriesUseCase.GetProductsListByFilters(ctx, &models.ProductsFilters{
 		Product_name:       request.ProductName,
 		Category_name:      request.CategoryName,
@@ -90,22 +90,24 @@ func (a *productsCategoriesDelivery) GetProductsListByFilters(ctx context.Contex
 		},
 	})
 	if err != nil {
-		return &productsCategories_service.GetProductsListResponse{}, a.errorAdapter.AdaptError(err)
+		return &productsCategories_service.GetProductsByFiltersResponse{}, a.errorAdapter.AdaptError(err)
 	}
-	var res productsCategories_service.GetProductsListResponse
-	var modelProduct *productsCategories_service.GetProduct
+	var res productsCategories_service.GetProductsByFiltersResponse
+	var modelProduct *productsCategories_service.ProductWithCategory
 
 	for _, result := range *resp {
 		description := productsCategories_service.SqlNullString{
-			String_: result.Description.String,
-			Valid:   result.Description.Valid}
-		modelProduct = &productsCategories_service.GetProduct{
-			Id:          result.Id,
-			Name:        result.Name,
-			Description: &description,
-			Price:       result.Price,
-			Photo:       result.Photo,
-			Documents:   result.Docs,
+			String_: result.Product.Description.String,
+			Valid:   result.Product.Description.Valid}
+		modelProduct = &productsCategories_service.ProductWithCategory{
+			Id:           result.Product.Id,
+			Name:         result.Product.Name,
+			Description:  &description,
+			Price:        result.Product.Price,
+			Photo:        result.Product.Photo,
+			Documents:    result.Product.Docs,
+			CategoryId:   result.Category.Id,
+			CategoryName: result.Category.Name,
 		}
 		res.Products = append(res.Products, modelProduct)
 
