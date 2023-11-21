@@ -9,6 +9,22 @@ import requests
 from PIL import Image
 import os
 
+def custom_post_request(url, json, cookies):
+    max_retries = 2
+    retry_delay = 1
+
+    for i in range(max_retries):
+        try:
+            response = requests.post(url, json=json, cookies=cookies)
+            response.raise_for_status()
+            return response
+        except requests.exceptions.RequestException:
+            if i == max_retries - 1:
+                raise
+            else:
+                print("Error occurred. Retrying in", retry_delay, "seconds...")
+                time.sleep(retry_delay)
+
 def pillow_image_to_base64_string(img, ext):
     buffered = io.BytesIO()
     img.save(buffered, format="PNG")
@@ -20,14 +36,17 @@ def base64_string_to_pillow_image(base64_str):
 def main():
     url = "https://bi-tu-bi.ru/api"
     local_url = "http://127.0.0.1:8080"
-    url = local_url
+    # url = local_url
+    print("DDOS:", url)
+
+    #auth
     auth = {
-        "email": "test@mail.ru", 
-        "password": "password123"
+        "email": "novo@test.ru", 
+        "password": "Xx2OkpyF"
     }
     auth_req = requests.post(url+'/user/login', json=auth) 
-    print("Auth = ",auth_req.status_code)
     time.sleep(200/1000)
+
     if auth_req.status_code == 200:
         df = pandas.read_excel('data.xlsx', names=['Ид_товара', 'НомерВерсии', 'ПометкаУдаления', 'Штрихкод', 'Артикул', 
                                     'БазоваяЕдиница', 'Ид_категории', "Название_категории","Количество", 'Наименование', 'Описание', "Цена", 
@@ -35,29 +54,26 @@ def main():
         # [7:12]
         lineNumber = 0
         err = 0
-        # stopLine = 100
         stopLine = 10000
         startLine = 1
         for row in df.itertuples():
             if lineNumber>= startLine and lineNumber<=stopLine:
                 product = {}
                 Photo = ""
-                dataurl=""
-                base64img=""
-                resized_image= Image
+                dataurl = ""
+                base64img = ""
+                resized_image = Image
                 addProduct_req = requests
-                # if lineNumber>stopLine:
-                #             lineNumber-=1
-                #             break
-            #   print(row[8:14])
-                print(row[10][0:15]+"... ", end="")
+                # print(row[10][0:15]+"... ", end="")
                 Photo = row[13]
+
                 #compress
+                compressBy = 2
                 ext     = Photo.split('.')[-1]
                 image = Image.open(Photo)
                 image = image.convert('RGB')
                 width, height = image.size
-                new_size = (width//2, height//2)
+                new_size = (width//compressBy, height//compressBy)
                 resized_image = image.resize(new_size)
                 base64img=pillow_image_to_base64_string(resized_image, ext)
                 dataurl = f'data:image/{ext};base64,{base64img}'
@@ -65,64 +81,41 @@ def main():
                     base64_string_to_pillow_image(base64img)
                 except:
                     print("ERROR in photo")
-                # binary_fc       = open(Photo, 'rb').read()  
-                # base64_utf8_str = base64.b64encode(binary_fc).decode('utf-8')
-                # photoPath = Photo
-                # ext     = photoPath.split('.')[-1]
-                # dataurl = f'data:image/{ext};base64,{base64_utf8_str}'
-                # Photo = dataurl
                 try:
                     getCategory_req = requests.post(local_url + '/search/categories?skip=0&limit=1', json={'name': row[8]}) 
-                    time.sleep(100/1000)
-                    json = getCategory_req.json()
-                    # print("Category id = ", json['data'][0]['id'])
-                    product = {
-                    "name": row[10],
-                    "info": row[11],
-                    "price": int(row[12]),
-                    "docs":  [],
-                    "category_id": json['data'][0]['id'],
-                    "amount": int(row[9]),
-                    "payWay": "Default",
-                    "deliveryWay": "Default",
-                    "adress": "Default",
-                    "product_photo": [
-                    dataurl
-                    ]
+                    time.sleep(50/1000)
+                    if getCategory_req.status_code != 200:
+                        print("GetCategory Failed", getCategory_req.status_code)
+                    else:
+                        json = getCategory_req.json()
+                        # print("Category id = ", json['data'][0]['id'])
+                        product = {
+                        "name": row[10],
+                        "info": row[11],
+                        "price": int(row[12]),
+                        "docs":  [],
+                        "category_id": json['data'][0]['id'],
+                        "amount": int(row[9]),
+                        "payWay": "Default",
+                        "deliveryWay": "Default",
+                        "adress": "Default",
+                        "product_photo": [
+                        dataurl
+                        ]
                 }
-
-                    addProduct_req =requests.post(url+'/product/add', json=product, cookies=auth_req.cookies, timeout=5.0)
-                    # print("start sleep")
-                    time.sleep(1200/1000)
-                    # print("stop sleep")
-                    print(lineNumber,"/",stopLine," addProduct = ",addProduct_req.status_code, ext)
-                    
+                    addProduct_req = custom_post_request(url+'/product/add', json=product, cookies=auth_req.cookies)
+                    print(row[10][0:15]+"... ",lineNumber,"/",stopLine," addProduct = ",addProduct_req.status_code, ext)
+                    time.sleep(200/1000)
+        
                 except:
                     err+=1
-                    print(lineNumber,"/",stopLine,"Error addProduct")
+                    print(row[10][0:15]+"... ",lineNumber,"/",stopLine,"Error addProduct")
                 lineNumber+=1
             else:
                 lineNumber+=1
         print("Done. ", "Failed = ",err, "/", lineNumber, " | ", (lineNumber-err)/lineNumber*100, "%")
-
-
-        # print([['Наименование','Описание', "Цена", 'Название_категории', 'Количество','Картинка',]])
-
-        # print(data_df.head())
-        # with open('novo_products.xlsx', 'r', encoding='utf-8') as data:
-        #      lineNumber = 0
-        #      for line in data:
-        #           if lineNumber==10:
-        #                break
-        #           print(line)
-        #           lineNumber+=1
-
-
-        # r = requests.post('https://bi-tu-bi.ru/api/user/login', json=auth) 
-        # print("Auth = ",r)
-        # print("Auth = ",r.status_code)
     else:
-        print("Auth Failed")
+        print("Auth Failed", auth_req.status_code)
         print("Cred: ", auth)
 
 
