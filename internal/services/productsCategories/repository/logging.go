@@ -135,7 +135,7 @@ func (l *loggingMiddleware) SearchCategories(ctx context.Context, SearchBody *ch
 	return l.next.SearchCategories(ctx, SearchBody)
 }
 
-func (l *loggingMiddleware) SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (c *models.ProductsList, err error) {
+func (l *loggingMiddleware) SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (c *models.Products, err error) {
 	l.logger.Infow(module,
 		"Action", "SearchProducts",
 		"Request", SearchBody,
@@ -153,7 +153,7 @@ func (l *loggingMiddleware) SearchProducts(ctx context.Context, SearchBody *chtt
 	return l.next.SearchProducts(ctx, SearchBody)
 }
 
-func (l *loggingMiddleware) GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (c *models.ProductsList, err error) {
+func (l *loggingMiddleware) GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (c *models.Products, err error) {
 	l.logger.Infow(module,
 		"Action", "GetProductsList",
 		"Request", SkipLimit,
@@ -171,7 +171,7 @@ func (l *loggingMiddleware) GetProductsList(ctx context.Context, SkipLimit *chtt
 	return l.next.GetProductsList(ctx, SkipLimit)
 }
 
-func (l *loggingMiddleware) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (c *models.ProductsList, err error) {
+func (l *loggingMiddleware) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (c *models.ProductsWithCategory, err error) {
 	l.logger.Infow(module,
 		"Action", "GetProductsList",
 		"Request", filters,

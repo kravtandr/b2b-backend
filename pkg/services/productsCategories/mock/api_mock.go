@@ -117,14 +117,14 @@ func (mr *MockProductsCategoriesServiceClientMockRecorder) GetProductsList(ctx, 
 }
 
 // GetProductsListByFilters mocks base method.
-func (m *MockProductsCategoriesServiceClient) GetProductsListByFilters(ctx context.Context, in *productsCategories_service.GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProductsListResponse, error) {
+func (m *MockProductsCategoriesServiceClient) GetProductsListByFilters(ctx context.Context, in *productsCategories_service.GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProductsByFiltersResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "GetProductsListByFilters", varargs...)
-	ret0, _ := ret[0].(*productsCategories_service.GetProductsListResponse)
+	ret0, _ := ret[0].(*productsCategories_service.GetProductsByFiltersResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -260,10 +260,10 @@ func (mr *MockProductsCategoriesServiceServerMockRecorder) GetProductsList(arg0,
 }
 
 // GetProductsListByFilters mocks base method.
-func (m *MockProductsCategoriesServiceServer) GetProductsListByFilters(arg0 context.Context, arg1 *productsCategories_service.GetProductsListByFiltersRequest) (*productsCategories_service.GetProductsListResponse, error) {
+func (m *MockProductsCategoriesServiceServer) GetProductsListByFilters(arg0 context.Context, arg1 *productsCategories_service.GetProductsListByFiltersRequest) (*productsCategories_service.GetProductsByFiltersResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProductsListByFilters", arg0, arg1)
-	ret0, _ := ret[0].(*productsCategories_service.GetProductsListResponse)
+	ret0, _ := ret[0].(*productsCategories_service.GetProductsByFiltersResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

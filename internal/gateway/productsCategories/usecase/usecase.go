@@ -16,7 +16,7 @@ type ProductsCategoriesUseCase interface {
 	GetProductById(ctx context.Context, request *models.GetProductByIdRequest) (*models.GetProductByIdResponse, error)
 	SearchCategories(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*[]models.GetCategoryByIdResponse, error)
 	GetProductsList(ctx context.Context, request *chttp.QueryParam) (*models.GetProductsList, error)
-	GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.GetProductsList, error)
+	GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategory, error)
 	SearchProducts(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*models.GetProductsList, error)
 	AddProduct(ctx context.Context, request *models.UserInfoAndAddProductByFormRequest) (*models.GetProduct, error)
 }
@@ -187,7 +187,7 @@ func (u *productsCategoriesUseCase) SearchProducts(ctx context.Context, request 
 	}
 	return &modelProducts, nil
 }
-func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.GetProductsList, error) {
+func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategory, error) {
 	response, err := u.ProductsCategoriesGRPC.GetProductsListByFilters(ctx, &productsCategories_service.GetProductsListByFiltersRequest{
 		ProductName:      request.Product_name,
 		CategoryName:     request.Category_name,
@@ -198,21 +198,23 @@ func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context
 		Limit:            params.Limit,
 	})
 	if err != nil {
-		return &models.GetProductsList{}, err
+		return &models.ProductsWithCategory{}, err
 	}
-	var modelProduct models.GetProduct
-	var modelProducts models.GetProductsList
+	var modelProduct models.ProductWithCategory
+	var modelProducts models.ProductsWithCategory
 	for _, result := range response.Products {
 		description := sql.NullString{
 			String: result.Description.String_,
 			Valid:  result.Description.Valid}
-		modelProduct = models.GetProduct{
-			Id:          result.Id,
-			Name:        result.Name,
-			Description: description,
-			Price:       result.Price,
-			Photo:       result.Photo,
-			Docs:        result.Documents,
+		modelProduct = models.ProductWithCategory{
+			Id:           result.Id,
+			Name:         result.Name,
+			Description:  description,
+			Price:        result.Price,
+			Photo:        result.Photo,
+			Docs:         result.Documents,
+			CategoryId:   result.CategoryId,
+			CategoryName: result.CategoryName,
 		}
 		modelProducts = append(modelProducts, modelProduct)
 	}

@@ -14,5 +14,5 @@ const (
 	createAddProductPhotos          = "INSERT INTO ProductPhotos (product_id, photo_obj_name) VALUES ($1, $2)"
 	createGetProductPhotos          = "SELECT photo_obj_name FROM ProductPhotos WHERE product_id = $1"
 	createGetProductDocuments       = "SELECT document_obj_name FROM ProductDocuments WHERE product_id = $1"
-	createGetProductsListByFilters  = "SELECT pr.id, pr.name, description,price FROM products as pr JOIN (SELECT product_id, category_id FROM productscategories) as prcat ON pr.id = prcat.product_id JOIN (SELECT categories.id, categories.name From categories) as cat ON  prcat.category_id = cat.id WHERE pr.name ~* $1 AND (cat.name  ~* $2 AND cat.id = Any ($3)) AND price BETWEEN $4 AND $5 OFFSET $6 LIMIT $7"
+	createGetProductsListByFilters  = "SELECT pr.id, pr.name, description,price, cat.id, cat.name FROM products as pr JOIN (SELECT product_id, category_id FROM productscategories) as prcat ON pr.id = prcat.product_id JOIN (SELECT categories.id, categories.name From categories) as cat ON  prcat.category_id = cat.id WHERE pr.name ~* $1 AND (cat.name  ~* $2 AND cat.id = Any ($3)) AND price BETWEEN $4 AND $5 OFFSET $6 LIMIT $7"
 )

@@ -12,9 +12,9 @@ type ProductsCategoriesUseCase interface {
 	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
 	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
-	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error)
-	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsList, error)
-	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error)
+	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.Products, error)
+	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error)
+	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error)
 }
 
 type productsCategoriesUseCase struct {
@@ -70,25 +70,25 @@ func (a *productsCategoriesUseCase) SearchCategories(ctx context.Context, Search
 	}
 	return categories, nil
 }
-func (a *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsList, error) {
+func (a *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error) {
 	products, err := a.repo.GetProductsListByFilters(ctx, filters)
 	if err != nil {
-		return &models.ProductsList{}, err
+		return &models.ProductsWithCategory{}, err
 	}
 	return products, nil
 }
-func (a *productsCategoriesUseCase) GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error) {
+func (a *productsCategoriesUseCase) GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.Products, error) {
 	products, err := a.repo.GetProductsList(ctx, SkipLimit)
 	if err != nil {
-		return &models.ProductsList{}, err
+		return &models.Products{}, err
 	}
 	return products, nil
 }
 
-func (a *productsCategoriesUseCase) SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error) {
+func (a *productsCategoriesUseCase) SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error) {
 	products, err := a.repo.SearchProducts(ctx, SearchBody)
 	if err != nil {
-		return &models.ProductsList{}, err
+		return &models.Products{}, err
 	}
 	return products, nil
 }

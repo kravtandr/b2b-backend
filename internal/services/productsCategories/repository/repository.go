@@ -22,9 +22,9 @@ type ProductsCategoriesRepository interface {
 	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
 	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
-	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error)
-	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsList, error)
-	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error)
+	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.Products, error)
+	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error)
+	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error)
 	AddProduct(ctx context.Context, Product *models.Product) (*models.Product, error)
 	AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error
 	AddCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error
@@ -359,11 +359,11 @@ func (a productsCategoriesRepository) GetProductDocuments(ctx context.Context, P
 	return Product, err
 }
 
-func (a productsCategoriesRepository) GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.ProductsList, error) {
+func (a productsCategoriesRepository) GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.Products, error) {
 	query := a.queryFactory.CreateGetProductsList(SkipLimit)
 	var product models.Product
-	var products models.ProductsList
-	var productsWithPhoto models.ProductsList
+	var products models.Products
+	var productsWithPhoto models.Products
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
 	if err != nil {
 		log.Println("Error in Query GetProductsList", err)
@@ -401,49 +401,52 @@ func (a productsCategoriesRepository) GetProductsList(ctx context.Context, SkipL
 	return &productsWithPhoto, err
 }
 
-func (a productsCategoriesRepository) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsList, error) {
+func (a productsCategoriesRepository) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error) {
 	query := a.queryFactory.CreateGetProductsListByFilters(filters)
-	var product models.Product
-	var products models.ProductsList
-	var productsWithPhoto models.ProductsList
+	var product models.ProductWithCategory
+	var productsWithCategory models.ProductsWithCategory
+	var productWithPhotoAndCategory models.ProductWithCategory
+	var productsWithPhotoAndCategory models.ProductsWithCategory
+
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
 	if err != nil {
 		log.Println("Error in Query GetProductsListByFilters", err)
-		return &products, err
+		return &productsWithCategory, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		func() {
-			product = models.Product{}
-			err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price)
+			err = rows.Scan(&product.Product.Id, &product.Product.Name, &product.Product.Description, &product.Product.Price, &product.Category.Id, &product.Category.Name)
 			if err != nil {
 				log.Println("Error in  GetProductsListByFilters->GetProductWithPhotosAndDocuments", err)
 			}
-			products = append(products, product)
+			productsWithCategory = append(productsWithCategory, product)
 		}()
 	}
-	for _, item := range products {
+	for _, item := range productsWithCategory {
 		func() {
-			productWithPhotos, err := a.GetProductWithPhotosAndDocuments(ctx, &item)
+			productWithPhoto, err := a.GetProductWithPhotosAndDocuments(ctx, &item.Product)
+			productWithPhotoAndCategory.Product = *productWithPhoto
+			productWithPhotoAndCategory.Category = item.Category
 			if err != nil {
 				log.Println("Error in  GetProductsListByFilters->GetProductWithPhotosAndDocuments", err)
 			}
-			productsWithPhoto = append(productsWithPhoto, *productWithPhotos)
+			productsWithPhotoAndCategory = append(productsWithPhotoAndCategory, productWithPhotoAndCategory)
 		}()
 	}
 
 	if rows.Err() != nil {
 		log.Println("Error in GetProductsListByFilters rows scan ", err)
-		return &products, err
+		return &productsWithCategory, err
 	}
 
-	return &productsWithPhoto, err
+	return &productsWithPhotoAndCategory, err
 }
 
-func (a productsCategoriesRepository) SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.ProductsList, error) {
+func (a productsCategoriesRepository) SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error) {
 	query := a.queryFactory.CreateSearchProducts(SearchBody)
 	var product models.Product
-	var products models.ProductsList
+	var products models.Products
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
 	if err != nil {
 		return &products, err

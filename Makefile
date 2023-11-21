@@ -42,6 +42,9 @@ prepare-websocket_service-env:
 prepare-gateway-env:
 	export GATEWAY_HTTP_PORT=":8080" && export GATEWAY_AUTH_ENDPOINT="localhost:10123" && export GATEWAY_TRIP_ENDPOINT="localhost:6666"
 
+prepare-export:
+	export PATH="$PATH:$(go env GOPATH)/bin"
+
 run-auth:
 	make prepare-auth_service-env && go run cmd/auth_service/main.go
 run-gateway:
