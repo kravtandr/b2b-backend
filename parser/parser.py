@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 from types import NoneType
 import os
+import re
 
 
 # files[x] - тут менять индексы, если появились лишние файлы в катологе
@@ -74,15 +75,11 @@ def ParseGoods(path, files, categories):
     print("Done import", path)
     return data
 
-
-def main():
+def parseCategories(categoriesFilename):
     # Чтение Категорий из корня
     categories = pd.DataFrame(columns=['Id','CategoryName'])
-    data = pd.DataFrame(columns=['Ид_товара', 'НомерВерсии', 'ПометкаУдаления', 'Штрихкод', 'Артикул', 
-                                 'БазоваяЕдиница', 'Ид_категории', "Название_категории","Количество", 'Наименование', 'Описание', "Цена", 
-                                'Картинка', 'Страна', 'Вес'])
 
-    with open('import___af38b3d8-b665-42d4-b0bc-cc696f728ef7.xml', 'r', encoding='utf-8', newline='') as xml_file:
+    with open(categoriesFilename, 'r', encoding='utf-8', newline='') as xml_file:
         tree = ET.parse(xml_file)
         root = tree.getroot()
         for category in root.iter('{urn:1C.ru:commerceml_3}Группа'):
@@ -93,24 +90,47 @@ def main():
             categories = categories._append({'Id': Id, 'CategoryName': CategoryName}, ignore_index=True)
         categories_df = pd.DataFrame(categories)
         categories_df.to_excel('category.xlsx', index=False)
+        return categories
+
+def main():
+    data = pd.DataFrame(columns=['Ид_товара', 'НомерВерсии', 'ПометкаУдаления', 'Штрихкод', 'Артикул', 
+                                 'БазоваяЕдиница', 'Ид_категории', "Название_категории","Количество", 'Наименование', 'Описание', "Цена", 
+                                'Картинка', 'Страна', 'Вес'])
+
+    # находим имя файла с категориями
+    files = os.listdir()
+    mylist = files 
+    r = re.compile(".*\.xml")
+    newlist = list(filter(r.match, mylist))
+    categories = [] 
+    if newlist!=[]:
+        print(newlist)
+        categoriesFilename = newlist[0]
+        # парсим категории
+        categories = parseCategories(categoriesFilename)
+    else:
+        print("No categories files in root")
+        return
 
 
     # Указываем путь к директории
     basePath = "./goods"
-    
+
     # Получаем список файлов
     files = os.listdir(basePath)
-    # print(files)
-    files.remove(".DS_Store")
+    print(files)
+    try:
+        files.remove(".DS_Store")
+    except:
+        pass
+
     files.sort()
     for directory in files:
         path = basePath+'/'+directory
         files = os.listdir(basePath+'/'+directory)
         files.remove("import_files")
         files.sort()
-        # print(files)
-        data = data._append(ParseGoods(path, files, categories))
-        # print(os.listdir(basePath+'/'+directory))
+        data = data.append(ParseGoods(path, files, categories))
     print("All done. save in ./data.xlsx")
     df = pd.DataFrame(data)
     df.to_excel('data.xlsx', index=False)
