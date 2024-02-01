@@ -99,6 +99,12 @@ message GetProductsByFiltersResponse {
   repeated ProductWithCategory products = 1;
 }
 
+message GetCompanyProductsRequest{
+  int64 company_id = 1;
+  int64 skip = 2;
+  int64 limit = 3;
+}
+
 service ProductsCategoriesService {
   rpc AddProduct(AddProductRequest) returns (GetProduct) {}
   rpc GetCategoryById(GetCategoryByID) returns (GetCategory) {}
@@ -107,4 +113,5 @@ service ProductsCategoriesService {
   rpc SearchProducts(SearchItemNameWithSkipLimitRequest) returns (GetProductsListResponse) {}
   rpc GetProductsList(GetProductsListRequest) returns (GetProductsListResponse) {}
   rpc GetProductsListByFilters(GetProductsListByFiltersRequest) returns (GetProductsByFiltersResponse) {}
+  rpc GetCompanyProducts(GetCompanyProductsRequest) returns (GetProductsListResponse) {}
 }

@@ -18,6 +18,10 @@ type GetProductByIdRequest struct {
 	Id int64 `json:"id"`
 }
 
+type GetCompanyProductsRequest struct {
+	CompanyId int64 `json:"company_id"`
+}
+
 type GetCategoryByIdResponse struct {
 	Id          int64          `json:"id"`
 	Name        string         `json:"name"`

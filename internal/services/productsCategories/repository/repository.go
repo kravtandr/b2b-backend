@@ -28,6 +28,7 @@ type ProductsCategoriesRepository interface {
 	AddProduct(ctx context.Context, Product *models.Product) (*models.Product, error)
 	AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error
 	AddCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error
+	GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error)
 }
 
 type productsCategoriesRepository struct {
@@ -464,6 +465,48 @@ func (a productsCategoriesRepository) SearchProducts(ctx context.Context, Search
 		return &products, err
 	}
 	return &products, err
+}
+
+func (a productsCategoriesRepository) GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error) {
+	query := a.queryFactory.CreateGetCompanyProducts(CompanyId, SkipLimit)
+	var product models.Product
+	var products models.Products
+	var productsWithPhoto models.Products
+	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Println("Error in Query GetCompanyProducts", err)
+		return &products, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		func() {
+			product = models.Product{}
+			//productWithPhotos := &models.Product{}
+			err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price)
+			if err != nil {
+				log.Println("Error in  GetCompanyProducts->GetProductWithPhotosAndDocuments", err)
+				//return &products, err
+			}
+			products = append(products, product)
+		}()
+	}
+	for _, item := range products {
+		func() {
+			productWithPhotos, err := a.GetProductWithPhotosAndDocuments(ctx, &item)
+			if err != nil {
+				log.Println("Error in  GetCompanyProducts->GetProductWithPhotosAndDocuments", err)
+				//return &products, err
+			}
+			productsWithPhoto = append(productsWithPhoto, *productWithPhotos)
+		}()
+	}
+
+	if rows.Err() != nil {
+		log.Println("Error in GetCompanyProducts rows scan ", err)
+		return &products, err
+	}
+
+	return &productsWithPhoto, err
 }
 
 func NewProductsCategoriesRepository(

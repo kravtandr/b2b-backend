@@ -208,6 +208,35 @@ func (a *productsCategoriesDelivery) SearchCategories(ctx context.Context, reque
 	return &res, nil
 }
 
+func (a *productsCategoriesDelivery) GetCompanyProducts(ctx context.Context, request *productsCategories_service.GetCompanyProductsRequest) (*productsCategories_service.GetProductsListResponse, error) {
+	resp, err := a.productsCategoriesUseCase.GetCompanyProducts(ctx, request.CompanyId, &chttp.QueryParam{
+		Skip:  request.Skip,
+		Limit: request.Limit,
+	})
+	if err != nil {
+		return &productsCategories_service.GetProductsListResponse{}, a.errorAdapter.AdaptError(err)
+	}
+	var res productsCategories_service.GetProductsListResponse
+	var modelProduct *productsCategories_service.GetProduct
+
+	for _, result := range *resp {
+		description := productsCategories_service.SqlNullString{
+			String_: result.Description.String,
+			Valid:   result.Description.Valid}
+		modelProduct = &productsCategories_service.GetProduct{
+			Id:          result.Id,
+			Name:        result.Name,
+			Description: &description,
+			Price:       result.Price,
+			Photo:       result.Photo,
+			Documents:   result.Docs,
+		}
+		res.Products = append(res.Products, modelProduct)
+
+	}
+	return &res, nil
+}
+
 func NewProductsCategoriesDelivery(
 	productsCategoriesUseCase usecase.ProductsCategoriesUseCase,
 	errorAdapter error_adapter.ErrorAdapter,

@@ -23,6 +23,7 @@ type QueryFactory interface {
 	CreateAddProductPhotos(productId int64, objName string) *query.Query
 	CreateGetProductPhotos(productId int64) *query.Query
 	CreateGetProductDocuments(productId int64) *query.Query
+	CreateGetCompanyProducts(CompanyId int64, SkipLimit *chttp.QueryParam) *query.Query
 }
 
 type queryFactory struct{}
@@ -121,6 +122,12 @@ func (q *queryFactory) CreateSearchProducts(SearchBody *chttp.SearchItemNameWith
 	return &query.Query{
 		Request: createSearchProducts,
 		Params:  []interface{}{SearchBody.Name, SearchBody.Skip, SearchBody.Limit},
+	}
+}
+func (q *queryFactory) CreateGetCompanyProducts(CompanyId int64, SkipLimit *chttp.QueryParam) *query.Query {
+	return &query.Query{
+		Request: createGetCompanyProducts,
+		Params:  []interface{}{CompanyId, SkipLimit.Skip, SkipLimit.Limit},
 	}
 }
 

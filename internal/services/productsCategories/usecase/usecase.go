@@ -15,6 +15,7 @@ type ProductsCategoriesUseCase interface {
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.Products, error)
 	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error)
+	GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error)
 }
 
 type productsCategoriesUseCase struct {
@@ -87,6 +88,14 @@ func (a *productsCategoriesUseCase) GetProductsList(ctx context.Context, SkipLim
 
 func (a *productsCategoriesUseCase) SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error) {
 	products, err := a.repo.SearchProducts(ctx, SearchBody)
+	if err != nil {
+		return &models.Products{}, err
+	}
+	return products, nil
+}
+
+func (a *productsCategoriesUseCase) GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error) {
+	products, err := a.repo.GetCompanyProducts(ctx, CompanyId, SkipLimit)
 	if err != nil {
 		return &models.Products{}, err
 	}

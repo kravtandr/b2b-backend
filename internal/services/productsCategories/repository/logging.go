@@ -188,3 +188,21 @@ func (l *loggingMiddleware) GetProductsListByFilters(ctx context.Context, filter
 
 	return l.next.GetProductsListByFilters(ctx, filters)
 }
+
+func (l *loggingMiddleware) GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (c *models.Products, err error) {
+	l.logger.Infow(module,
+		"Action", "GetCompanyProducts",
+		"Request", CompanyId, SkipLimit,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetCompanyProducts",
+				"Request", CompanyId, SkipLimit,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetCompanyProducts(ctx, CompanyId, SkipLimit)
+}

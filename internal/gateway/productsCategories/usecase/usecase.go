@@ -19,6 +19,7 @@ type ProductsCategoriesUseCase interface {
 	GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategory, error)
 	SearchProducts(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*models.GetProductsList, error)
 	AddProduct(ctx context.Context, request *models.UserInfoAndAddProductByFormRequest) (*models.GetProduct, error)
+	GetCompanyProducts(ctx context.Context, request *models.GetCompanyProductsRequest, params *chttp.QueryParam) (*models.GetProductsList, error)
 }
 
 type productsCategoriesUseCase struct {
@@ -225,6 +226,34 @@ func (u *productsCategoriesUseCase) GetProductsList(ctx context.Context, request
 	response, err := u.ProductsCategoriesGRPC.GetProductsList(ctx, &productsCategories_service.GetProductsListRequest{
 		Skip:  request.Skip,
 		Limit: request.Limit,
+	})
+	if err != nil {
+		return &models.GetProductsList{}, err
+	}
+	var modelProduct models.GetProduct
+	var modelProducts models.GetProductsList
+	for _, result := range response.Products {
+		description := sql.NullString{
+			String: result.Description.String_,
+			Valid:  result.Description.Valid}
+		modelProduct = models.GetProduct{
+			Id:          result.Id,
+			Name:        result.Name,
+			Description: description,
+			Price:       result.Price,
+			Photo:       result.Photo,
+			Docs:        result.Documents,
+		}
+		modelProducts = append(modelProducts, modelProduct)
+	}
+	return &modelProducts, nil
+}
+
+func (u *productsCategoriesUseCase) GetCompanyProducts(ctx context.Context, request *models.GetCompanyProductsRequest, params *chttp.QueryParam) (*models.GetProductsList, error) {
+	response, err := u.ProductsCategoriesGRPC.GetCompanyProducts(ctx, &productsCategories_service.GetCompanyProductsRequest{
+		CompanyId: request.CompanyId,
+		Skip:      params.Skip,
+		Limit:     params.Limit,
 	})
 	if err != nil {
 		return &models.GetProductsList{}, err

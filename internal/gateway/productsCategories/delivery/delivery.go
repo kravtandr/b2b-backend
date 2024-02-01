@@ -23,6 +23,7 @@ type ProductsCategoriesDelivery interface {
 	SearchProducts(ctx *fasthttp.RequestCtx)
 	GetProductsList(ctx *fasthttp.RequestCtx)
 	GetProductsListByFilters(ctx *fasthttp.RequestCtx)
+	GetCompanyProducts(ctx *fasthttp.RequestCtx)
 }
 
 type productsCategoriesDelivery struct {
@@ -207,25 +208,36 @@ func (u *productsCategoriesDelivery) SearchCategories(ctx *fasthttp.RequestCtx) 
 	b, _ := chttp.ApiResp(response, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
+}
 
-	// var request = &chttp.SearchItemName{}
-	// if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
-	// 	ctx.SetStatusCode(http.StatusBadRequest)
-	// 	ctx.SetBody([]byte(cnst.WrongRequestBody))
-	// 	return
-	// }
+func (u *productsCategoriesDelivery) GetCompanyProducts(ctx *fasthttp.RequestCtx) {
+	params, err := chttp.GetQueryParams(ctx)
+	if err != nil {
+		fmt.Println("ERROR: GetCompanyProducts", err)
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	var request = &models.GetCompanyProductsRequest{}
+	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+	request.CompanyId = int64(request.CompanyId)
 
-	// response, err := u.manager.SearchCategories(ctx, request)
-	// if err != nil {
-	// 	httpError := u.errorAdapter.AdaptError(err)
-	// 	ctx.SetStatusCode(httpError.Code)
-	// 	ctx.SetBody([]byte(httpError.MSG))
-	// 	return
-	// }
+	response, err := u.manager.GetCompanyProducts(ctx, request, params)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
 
-	// b, _ := chttp.ApiResp(response, err)
-	// ctx.SetStatusCode(http.StatusOK)
-	// ctx.SetBody(b)
+	b, _ := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
 }
 
 func NewProductsCategoriesDelivery(

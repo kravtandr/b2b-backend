@@ -17,4 +17,5 @@ type productsCategoriesRepository interface {
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.Products, error)
 	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error)
+	GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error)
 }

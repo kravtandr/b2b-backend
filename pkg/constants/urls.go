@@ -28,6 +28,7 @@ const AddProductURL = "/product/add"
 const ProductsListURL = "/products/list"
 const ProductsListByFiltersURL = "/products/list/filter" // {category_name}
 const SearchProductsURL = "/search/products"
+const CompanyProductsListURL = "/company/products"
 
 // Chat
 const CheckIfUniqChat = "/chat/unique"
