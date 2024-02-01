@@ -5,9 +5,10 @@
 package mocks
 
 import (
+	models "b2b/m/internal/services/auth/models"
+	models0 "b2b/m/internal/services/company/models"
 	context "context"
 	reflect "reflect"
-	models "b2b/m/internal/services/auth/models"
 
 	gomock "github.com/golang/mock/gomock"
 )
@@ -64,6 +65,35 @@ func (mr *MockAuthRepositoryMockRecorder) CreateUserSession(ctx, userID, hash in
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUserSession", reflect.TypeOf((*MockAuthRepository)(nil).CreateUserSession), ctx, userID, hash)
 }
 
+// FastRegistration mocks base method.
+func (m *MockAuthRepository) FastRegistration(ctx context.Context, newCompany *models0.Company, user *models.User, post string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FastRegistration", ctx, newCompany, user, post)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// FastRegistration indicates an expected call of FastRegistration.
+func (mr *MockAuthRepositoryMockRecorder) FastRegistration(ctx, newCompany, user, post interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FastRegistration", reflect.TypeOf((*MockAuthRepository)(nil).FastRegistration), ctx, newCompany, user, post)
+}
+
+// GetCompanyUserLink mocks base method.
+func (m *MockAuthRepository) GetCompanyUserLink(ctx context.Context, userId, companyId int64) (*models0.CompaniesUsersLink, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCompanyUserLink", ctx, userId, companyId)
+	ret0, _ := ret[0].(*models0.CompaniesUsersLink)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCompanyUserLink indicates an expected call of GetCompanyUserLink.
+func (mr *MockAuthRepositoryMockRecorder) GetCompanyUserLink(ctx, userId, companyId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyUserLink", reflect.TypeOf((*MockAuthRepository)(nil).GetCompanyUserLink), ctx, userId, companyId)
+}
+
 // GetUserByEmail mocks base method.
 func (m *MockAuthRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	m.ctrl.T.Helper()
@@ -95,7 +125,7 @@ func (mr *MockAuthRepositoryMockRecorder) GetUserByID(ctx, ID interface{}) *gomo
 }
 
 // GetUserInfo mocks base method.
-func (m *MockAuthRepository) GetUserInfo(ctx context.Context, id int) (*models.User, error) {
+func (m *MockAuthRepository) GetUserInfo(ctx context.Context, id int64) (*models.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserInfo", ctx, id)
 	ret0, _ := ret[0].(*models.User)
@@ -107,6 +137,21 @@ func (m *MockAuthRepository) GetUserInfo(ctx context.Context, id int) (*models.U
 func (mr *MockAuthRepositoryMockRecorder) GetUserInfo(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserInfo", reflect.TypeOf((*MockAuthRepository)(nil).GetUserInfo), ctx, id)
+}
+
+// GetUsersCompany mocks base method.
+func (m *MockAuthRepository) GetUsersCompany(ctx context.Context, userId int64) (*models0.Company, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsersCompany", ctx, userId)
+	ret0, _ := ret[0].(*models0.Company)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsersCompany indicates an expected call of GetUsersCompany.
+func (mr *MockAuthRepositoryMockRecorder) GetUsersCompany(ctx, userId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersCompany", reflect.TypeOf((*MockAuthRepository)(nil).GetUsersCompany), ctx, userId)
 }
 
 // RemoveUserSession mocks base method.
