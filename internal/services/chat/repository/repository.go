@@ -5,6 +5,7 @@ import (
 	"b2b/m/pkg/errors"
 	"context"
 	"log"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 	pgxpool "github.com/jackc/pgx/v4/pgxpool"
@@ -177,23 +178,28 @@ func (a *chatRepository) remove(slice models.ChatsAndLastMsg, s int) *models.Cha
 
 func (a *chatRepository) CombineChatsWithAndWithoutMsgs(ctx context.Context, onlyChats *models.Chats, chatsAndLM *models.ChatsAndLastMsg) *models.ChatsAndLastMsg {
 	var resulting_chats models.ChatsAndLastMsg
-	// fakeLM := models.Msg{
-	// 	Id:         -1,
-	// 	ChatId:     -1,
-	// 	SenderId:   -1,
-	// 	ReceiverId: -1,
-	// 	Checked:    false,
-	// 	Text:       "",
-	// 	Type:       "mock",
-	// 	Time:       time.Now(),
-	// }
+	fakeLM := models.Msg{
+		Id:         -1,
+		ChatId:     -1,
+		SenderId:   -1,
+		ReceiverId: -1,
+		Checked:    false,
+		Text:       "",
+		Type:       "mock",
+		Time:       time.Now(),
+	}
 	for _, chat := range *onlyChats {
 		// have_msgs := false
-		for j, chatLM := range *chatsAndLM {
+		for _, chatLM := range *chatsAndLM {
 			if chat.Id == chatLM.Chat.Id {
 				resulting_chats = append(resulting_chats, chatLM)
 				// have_msgs = true
-				chatsAndLM = a.remove((*chatsAndLM), j)
+				// chatsAndLM = a.remove((*chatsAndLM), j)
+			} else {
+				resulting_chats = append(resulting_chats, models.ChatAndLastMsg{
+					Chat:    chat,
+					LastMsg: fakeLM,
+				})
 			}
 		}
 		// if !have_msgs {
@@ -202,7 +208,7 @@ func (a *chatRepository) CombineChatsWithAndWithoutMsgs(ctx context.Context, onl
 		// 		LastMsg: fakeLM,
 		// 	})
 		// }
-		resulting_chats = append(resulting_chats, *chatsAndLM...)
+		//resulting_chats = append(resulting_chats, *chatsAndLM...)
 
 	}
 	return &resulting_chats
