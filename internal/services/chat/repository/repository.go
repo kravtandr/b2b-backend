@@ -203,7 +203,7 @@ func (a *chatRepository) CombineChatsWithAndWithoutMsgs(ctx context.Context, onl
 				LastMsg: fakeLM,
 			})
 		}
-		resulting_chats = append(resulting_chats, *chatsAndLM...)
+		// resulting_chats = append(resulting_chats, *chatsAndLM...)
 
 	}
 	return &resulting_chats
