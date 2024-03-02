@@ -190,22 +190,21 @@ func (a *chatRepository) CombineChatsWithAndWithoutMsgs(ctx context.Context, onl
 	}
 	for _, chat := range *onlyChats {
 		chat_have_msgs := false
-		for _, chatLM := range *chatsAndLM {
+		for j, chatLM := range *chatsAndLM {
 			if chat.Id == chatLM.Chat.Id {
 				resulting_chats = append(resulting_chats, chatLM)
 				chat_have_msgs = true
-				//chatsAndLM = a.remove((*chatsAndLM), j)
+				chatsAndLM = a.remove((*chatsAndLM), j)
 			}
 		}
-		if chat_have_msgs == false {
+		if !chat_have_msgs {
 			resulting_chats = append(resulting_chats, models.ChatAndLastMsg{
 				Chat:    chat,
 				LastMsg: fakeLM,
 			})
 		}
-		//resulting_chats = append(resulting_chats, *chatsAndLM...)
-
 	}
+	resulting_chats = append(resulting_chats, *chatsAndLM...)
 	return &resulting_chats
 }
 
