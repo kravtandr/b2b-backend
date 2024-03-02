@@ -40,6 +40,11 @@ type DeleteChatRequest struct {
 	Chat_id int64 `json:"chat_id"`
 }
 
+type UpdateChatStatusRequest struct {
+	Chat_id int64  `json:"chat_id"`
+	Status  string `json:"status"`
+}
+
 type Msgs []Msg
 
 type ChatAndLastMsg struct {

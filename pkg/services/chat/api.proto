@@ -95,10 +95,16 @@ message    GetAllChatsAndLastMsgResponse{
   repeated ChatAndLastMsgResponse Chats = 1;
 }
 
+message UpdateChatStatusRequest{
+  int64 ChatId = 1;
+  string Status = 2;
+}
+
 
 service ChatService {
   rpc CheckIfUniqChat(CheckIfUniqChatRequest) returns (CheckIfUniqChatResponse) {}
   rpc NewChat(NewChatRequest) returns (ChatResponse) {}
+  rpc UpdateChatStatus(UpdateChatStatusRequest) returns (ChatResponse) {}
   rpc DeleteChat(IdRequest) returns (Bool) {}
   rpc GetChat(GetChatRequest) returns (ChatResponse) {}
   rpc WriteNewMsg(WriteNewMsgRequest) returns (IdResponse) {}

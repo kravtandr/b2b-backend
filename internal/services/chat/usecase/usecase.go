@@ -11,8 +11,10 @@ import (
 type ChatUseCase interface {
 	CheckIfUniqChat(ctx context.Context, user *models.UniqueCheck) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
+	UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
 	DeleteChat(ctx context.Context, chat_id int64) (deleted bool, err error)
 	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
+	GetChatById(ctx context.Context, chatId int64) (*models.Chat, error)
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
@@ -28,6 +30,14 @@ func (a *chatUseCase) CheckIfUniqChat(ctx context.Context, uniqueCheck *models.U
 	result, err := a.repo.CheckIfUniqChat(ctx, uniqueCheck.ProductId, uniqueCheck.UserId)
 	if err != nil {
 		return false, err
+	}
+	return result, nil
+}
+
+func (a *chatUseCase) UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error) {
+	result, err := a.repo.UpdateChat(ctx, chat)
+	if err != nil {
+		return nil, err
 	}
 	return result, nil
 }
@@ -50,6 +60,14 @@ func (a *chatUseCase) NewChat(ctx context.Context, newChat *models.Chat) (*model
 
 func (a *chatUseCase) GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error) {
 	result, err := a.repo.GetChat(ctx, chat)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (a *chatUseCase) GetChatById(ctx context.Context, chatId int64) (*models.Chat, error) {
+	result, err := a.repo.GetChatById(ctx, chatId)
 	if err != nil {
 		return nil, err
 	}

@@ -72,6 +72,29 @@ func (a *chatDelivery) GetChat(ctx context.Context, request *chat_service.GetCha
 	}, nil
 }
 
+func (a *chatDelivery) UpdateChatStatus(ctx context.Context, request *chat_service.UpdateChatStatusRequest) (*chat_service.ChatResponse, error) {
+	currentChat, err := a.chatUsecase.GetChatById(ctx, request.ChatId)
+
+	response, err := a.chatUsecase.UpdateChat(ctx, &models.Chat{
+		Id:        currentChat.Id,
+		Name:      currentChat.Name,
+		CreatorId: currentChat.CreatorId,
+		ProductId: currentChat.ProductId,
+		Status:    request.Status,
+	})
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+
+	return &chat_service.ChatResponse{
+		Id:        response.Id,
+		Name:      response.Name,
+		CreatorId: response.CreatorId,
+		ProductId: response.ProductId,
+		Status:    response.Status,
+	}, nil
+}
+
 func (a *chatDelivery) DeleteChat(ctx context.Context, request *chat_service.IdRequest) (*chat_service.Bool, error) {
 	response, err := a.chatUsecase.DeleteChat(ctx, request.Id)
 	if err != nil {

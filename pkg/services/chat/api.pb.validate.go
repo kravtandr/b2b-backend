@@ -1738,3 +1738,108 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetAllChatsAndLastMsgResponseValidationError{}
+
+// Validate checks the field values on UpdateChatStatusRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateChatStatusRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateChatStatusRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateChatStatusRequestMultiError, or nil if none found.
+func (m *UpdateChatStatusRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateChatStatusRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ChatId
+
+	// no validation rules for Status
+
+	if len(errors) > 0 {
+		return UpdateChatStatusRequestMultiError(errors)
+	}
+	return nil
+}
+
+// UpdateChatStatusRequestMultiError is an error wrapping multiple validation
+// errors returned by UpdateChatStatusRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateChatStatusRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateChatStatusRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateChatStatusRequestMultiError) AllErrors() []error { return m }
+
+// UpdateChatStatusRequestValidationError is the validation error returned by
+// UpdateChatStatusRequest.Validate if the designated constraints aren't met.
+type UpdateChatStatusRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateChatStatusRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateChatStatusRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateChatStatusRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateChatStatusRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateChatStatusRequestValidationError) ErrorName() string {
+	return "UpdateChatStatusRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateChatStatusRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateChatStatusRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateChatStatusRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateChatStatusRequestValidationError{}

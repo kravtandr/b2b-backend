@@ -18,6 +18,7 @@ import (
 type ChatDelivery interface {
 	CheckIfUniqChat(ctx *fasthttp.RequestCtx)
 	InitChat(ctx *fasthttp.RequestCtx)
+	UpdateChatStatus(ctx *fasthttp.RequestCtx)
 	DeleteChat(ctx *fasthttp.RequestCtx)
 	GetAllChatsAndLastMsg(ctx *fasthttp.RequestCtx)
 	GetMsgsFromChat(ctx *fasthttp.RequestCtx)
@@ -93,6 +94,26 @@ func (u *chatDelivery) InitChat(ctx *fasthttp.RequestCtx) {
 	b, err := chttp.ApiResp(models.InitChatResponce{ChatId: chat_id, CreateNewChat: newChat}, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
+}
+
+func (u *chatDelivery) UpdateChatStatus(ctx *fasthttp.RequestCtx) {
+	var request = &models.UpdateChatStatusRequest{}
+	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+	response, err := u.manager.UpdateChatStatus(ctx, request.Chat_id, request.Status)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, err := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+
 }
 
 func (u *chatDelivery) DeleteChat(ctx *fasthttp.RequestCtx) {

@@ -197,6 +197,26 @@ func (mr *MockChatServiceClientMockRecorder) NewChat(ctx, in interface{}, opts .
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewChat", reflect.TypeOf((*MockChatServiceClient)(nil).NewChat), varargs...)
 }
 
+// UpdateChatStatus mocks base method.
+func (m *MockChatServiceClient) UpdateChatStatus(ctx context.Context, in *chat_service.UpdateChatStatusRequest, opts ...grpc.CallOption) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UpdateChatStatus", varargs...)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateChatStatus indicates an expected call of UpdateChatStatus.
+func (mr *MockChatServiceClientMockRecorder) UpdateChatStatus(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChatStatus", reflect.TypeOf((*MockChatServiceClient)(nil).UpdateChatStatus), varargs...)
+}
+
 // WriteNewMsg mocks base method.
 func (m *MockChatServiceClient) WriteNewMsg(ctx context.Context, in *chat_service.WriteNewMsgRequest, opts ...grpc.CallOption) (*chat_service.IdResponse, error) {
 	m.ctrl.T.Helper()
@@ -358,6 +378,21 @@ func (m *MockChatServiceServer) NewChat(arg0 context.Context, arg1 *chat_service
 func (mr *MockChatServiceServerMockRecorder) NewChat(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewChat", reflect.TypeOf((*MockChatServiceServer)(nil).NewChat), arg0, arg1)
+}
+
+// UpdateChatStatus mocks base method.
+func (m *MockChatServiceServer) UpdateChatStatus(arg0 context.Context, arg1 *chat_service.UpdateChatStatusRequest) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateChatStatus", arg0, arg1)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateChatStatus indicates an expected call of UpdateChatStatus.
+func (mr *MockChatServiceServerMockRecorder) UpdateChatStatus(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChatStatus", reflect.TypeOf((*MockChatServiceServer)(nil).UpdateChatStatus), arg0, arg1)
 }
 
 // WriteNewMsg mocks base method.

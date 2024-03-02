@@ -72,7 +72,8 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	// Chat
 	p.GET(cnst.CheckIfUniqChat, lgrMw(authMw(cfg.ChatDelivery.CheckIfUniqChat)))
 	p.POST(cnst.InitChat, lgrMw(authMw(cfg.ChatDelivery.InitChat)))
-	p.POST(cnst.DeleteChat, lgrMw(authMw(cfg.ChatDelivery.DeleteChat)))
+	p.PATCH(cnst.ChatChangeStatus, lgrMw(authMw(cfg.ChatDelivery.UpdateChatStatus)))
+	p.DELETE(cnst.DeleteChat, lgrMw(authMw(cfg.ChatDelivery.DeleteChat)))
 	p.GET(cnst.AllChats, lgrMw(authMw(cfg.ChatDelivery.GetAllChatsAndLastMsg)))
 	p.GET(cnst.AllMsgsFromChat, lgrMw(authMw(cfg.ChatDelivery.GetMsgsFromChat)))
 	p.GET("/testgw", lgrMw(cfg.ChatDelivery.TestGw))

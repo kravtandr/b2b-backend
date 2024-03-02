@@ -14,8 +14,10 @@ import (
 type ChatRepository interface {
 	CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
+	UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
 	DeleteChat(ctx context.Context, chat_id int64) (bool, error)
 	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
+	GetChatById(ctx context.Context, id int64) (*models.Chat, error)
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
@@ -63,6 +65,16 @@ func (a *chatRepository) NewChat(ctx context.Context, newChat *models.Chat) (*mo
 	return chat, nil
 }
 
+func (a *chatRepository) UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error) {
+	query := a.queryFactory.CreateUpdateChat(chat)
+	tag, err := a.conn.Exec(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Println(tag)
+		return nil, err
+	}
+	return chat, nil
+}
+
 func (a *chatRepository) DeleteChat(ctx context.Context, chat_id int64) (bool, error) {
 	query := a.queryFactory.CreateDeleteChat(chat_id)
 	tag, err := a.conn.Exec(ctx, query.Request, query.Params...)
@@ -85,6 +97,20 @@ func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*model
 		return nil, err
 	}
 
+	return getChat, nil
+}
+
+func (a *chatRepository) GetChatById(ctx context.Context, id int64) (*models.Chat, error) {
+	query := a.queryFactory.CreateGetChatById(id)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	getChat := &models.Chat{}
+	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &getChat.Status); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.ChatDoesNotExist
+		}
+
+		return nil, err
+	}
 	return getChat, nil
 }
 
