@@ -77,6 +77,12 @@ message ChatAndLastMsgResponse {
   MsgResponse Msg = 6;
 }
 
+message Bool {
+  string Status = 1;
+}
+
+
+
 message MsgsResponse {
   repeated MsgResponse Msgs = 1;
 }
@@ -93,6 +99,7 @@ message    GetAllChatsAndLastMsgResponse{
 service ChatService {
   rpc CheckIfUniqChat(CheckIfUniqChatRequest) returns (CheckIfUniqChatResponse) {}
   rpc NewChat(NewChatRequest) returns (ChatResponse) {}
+  rpc DeleteChat(IdRequest) returns (Bool) {}
   rpc GetChat(GetChatRequest) returns (ChatResponse) {}
   rpc WriteNewMsg(WriteNewMsgRequest) returns (IdResponse) {}
   rpc GetMsgsFromChat(ChatAndUserIdRequest) returns (MsgsResponse) {}

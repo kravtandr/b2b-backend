@@ -16,6 +16,7 @@ import (
 
 type ChatUsecase interface {
 	InitChat(ctx context.Context, userId int64, productId int64) (bool, int64, error)
+	DeleteChat(ctx context.Context, request *models.DeleteChatRequest) (bool, error)
 	CheckIfUniqChat(ctx context.Context, userId int64, productId int64) (bool, error)
 	NewChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
 	GetChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
@@ -63,8 +64,6 @@ func (u *chatUsecase) GetAllUserChats(ctx context.Context, userId int64, cookie 
 }
 
 func (u *chatUsecase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error) {
-	//userId, err := u.AuthGRPC.GetUserIdByCookie(ctx)
-	//userId := ctx.UserValue(cnst.UserIDContextKey).(int)
 	log.Println("start GetAllChatsAndLastMsg")
 	response, err := u.chatGRPC.GetAllChatsAndLastMsg(ctx, &chat_service.IdRequest{
 		Id: userId,
@@ -72,20 +71,6 @@ func (u *chatUsecase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (
 	if err != nil {
 		return nil, err
 	}
-	// log.Println("got GetAllChatsAndLastMsg", response)
-	// sender, err := u.AuthUsecase.Profile(ctx, response.Chats[0].Msg.SenderId)
-	// if err != nil {
-	// 	log.Println("ERROR: GetAllChatsAndLastMsg -> GetUserInfo for sender ", err)
-	// 	return nil, err
-	// }
-	// log.Println("------")
-	// reciever, err := u.AuthUsecase.Profile(ctx, response.Chats[0].Msg.ReceiverId)
-	// if err != nil {
-	// 	log.Println("ERROR: GetAllChatsAndLastMsg -> GetUserInfo for reciever ", err)
-	// 	return nil, err
-	// }
-	// log.Println("got sender and reciever", sender)
-
 	var chat models.Chat
 	var msg models.Msg
 	var chatAndLastMsg models.ChatAndLastMsg
@@ -125,19 +110,17 @@ func (u *chatUsecase) GetMsgsFromChat(ctx context.Context, chatId int64, userId 
 	if err != nil {
 		return nil, err
 	}
-	//log.Println("---Get names---")
-	// log.Println(response.Msgs[0].SenderId)
-	// log.Println(response.Msgs[0].ReceiverId)
+
 	var msg models.Msg
 	var msgs models.Msgs
-	log.Println("---names---")
+	// log.Println("---names---")
 	if len(response.Msgs) > 0 {
 		sender, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: response.Msgs[0].SenderId})
 		if err != nil {
 			log.Println("ERROR: GetMsgsFromChat -> GetUserInfo for sender ", err)
 			return nil, err
 		}
-		log.Println("------")
+		// log.Println("------")
 		reciever, err := u.authGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: response.Msgs[0].ReceiverId})
 		if err != nil {
 			log.Println("ERROR: GetMsgsFromChat -> GetUserInfo for reciever ", err)
@@ -240,6 +223,15 @@ func (u *chatUsecase) GetChat(ctx context.Context, userId int64, productId int64
 		ProductId: response.ProductId,
 		Status:    response.Status,
 	}, nil
+}
+func (u *chatUsecase) DeleteChat(ctx context.Context, request *models.DeleteChatRequest) (bool, error) {
+	_, err := u.chatGRPC.DeleteChat(ctx, &chat_service.IdRequest{
+		Id: request.Chat_id,
+	})
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func NewChatUsecase(chatGRPC chatGRPC, companyGRPC company_usecase.CompanyGRPC, productGRPC product_usecase.ProductsCategoriesGRPC, authGRPC auth_usecase.AuthGRPC) ChatUsecase {

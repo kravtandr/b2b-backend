@@ -25,6 +25,23 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next ChatRepository) ChatRe
 	}
 }
 
+func (l *loggingMiddleware) DeleteChat(ctx context.Context, chat_id int64) (deleted bool, err error) {
+	l.logger.Infow(module,
+		"Action", "DeleteChat",
+		"Request", chat_id,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "DeleteChat",
+				"Request", chat_id,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.DeleteChat(ctx, chat_id)
+}
+
 func (l *loggingMiddleware) CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (unique bool, err error) {
 	l.logger.Infow(module,
 		"Action", "CheckIfUniqChat",

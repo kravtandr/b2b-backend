@@ -72,6 +72,16 @@ func (a *chatDelivery) GetChat(ctx context.Context, request *chat_service.GetCha
 	}, nil
 }
 
+func (a *chatDelivery) DeleteChat(ctx context.Context, request *chat_service.IdRequest) (*chat_service.Bool, error) {
+	response, err := a.chatUsecase.DeleteChat(ctx, request.Id)
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+	return &chat_service.Bool{
+		Status: fmt.Sprintf("%v", response),
+	}, nil
+}
+
 func (a *chatDelivery) WriteNewMsg(ctx context.Context, request *chat_service.WriteNewMsgRequest) (*chat_service.IdResponse, error) {
 	id, err := a.chatUsecase.WriteNewMsg(ctx, &models.Msg{
 		ChatId:     request.ChatId,

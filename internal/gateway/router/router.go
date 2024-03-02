@@ -39,36 +39,40 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 		error_adapter.NewGrpcToHttpAdapter(grpc_errors.PreparedAuthErrors, grpc_errors.CommonAuthError),
 	)
 
+	// Auth
 	p.POST(cnst.LoginURL, lgrMw(cfg.UserDelivery.Login))
 	p.DELETE(cnst.LogoutURL, lgrMw(authMw(cfg.UserDelivery.Logout)))
 	p.GET(cnst.ProfileURL, lgrMw(authMw(cfg.UserDelivery.GetProfile)))
 	p.PATCH(cnst.ProfileURL, lgrMw(authMw(cfg.UserDelivery.UpdateProfile)))
 	p.POST(cnst.RegisterURL, lgrMw(cfg.UserDelivery.Register))
-	//p.GET(cnst.UserInfoURL, lgrMw(cfg.UserDelivery.GetUserInfo))
 	p.POST(cnst.UserCheckEmailURL, lgrMw(cfg.UserDelivery.CheckEmail))
 	p.GET(cnst.UserInfoByCookieURL, lgrMw(authMw(cfg.UserDelivery.GetUserByCookie)))
-
 	p.POST(cnst.FastRegisterURL, lgrMw(cfg.UserDelivery.FastRegister))
 
+	// Unlinked Froms
 	p.POST(cnst.FastOrderURL, lgrMw(cfg.FastOrderDelivery.FastOrder))
 	p.POST(cnst.LandingOrderURL, lgrMw(cfg.FastOrderDelivery.LandingOrder))
 
+	// Company
 	p.GET(cnst.CompanyURL, lgrMw(cfg.CompanyDelivery.GetCompanyById))
 	p.POST(cnst.CompanyByInnFromDaDataURL, lgrMw(cfg.CompanyDelivery.GetCompanyByItnFromDaData))
 
+	// Categories
 	p.GET(cnst.CategoryByIdURL, lgrMw(cfg.ProductsCategoriesDelivery.GetCategoryById))
 	p.POST(cnst.SearchCategoryURL, lgrMw(cfg.ProductsCategoriesDelivery.SearchCategories))
 
+	// Products
 	p.GET(cnst.ProductURL, lgrMw(cfg.ProductsCategoriesDelivery.GetProductById))
 	p.GET(cnst.ProductsListURL, lgrMw(cfg.ProductsCategoriesDelivery.GetProductsList))
 	p.POST(cnst.ProductsListByFiltersURL, lgrMw(cfg.ProductsCategoriesDelivery.GetProductsListByFilters))
 	p.POST(cnst.SearchProductsURL, lgrMw(cfg.ProductsCategoriesDelivery.SearchProducts))
-	//p.GET(cnst.ProductChatURL, lgrMw(cfg.ChatDelivery.WSUpgradeRequest))
 	p.POST(cnst.AddProductURL, lgrMw(authMw(cfg.ProductsCategoriesDelivery.AddProduct)))
 	p.GET(cnst.CompanyProductsListURL, lgrMw(cfg.ProductsCategoriesDelivery.GetCompanyProducts))
 
+	// Chat
 	p.GET(cnst.CheckIfUniqChat, lgrMw(authMw(cfg.ChatDelivery.CheckIfUniqChat)))
 	p.POST(cnst.InitChat, lgrMw(authMw(cfg.ChatDelivery.InitChat)))
+	p.POST(cnst.DeleteChat, lgrMw(authMw(cfg.ChatDelivery.DeleteChat)))
 	p.GET(cnst.AllChats, lgrMw(authMw(cfg.ChatDelivery.GetAllChatsAndLastMsg)))
 	p.GET(cnst.AllMsgsFromChat, lgrMw(authMw(cfg.ChatDelivery.GetMsgsFromChat)))
 	p.GET("/testgw", lgrMw(cfg.ChatDelivery.TestGw))

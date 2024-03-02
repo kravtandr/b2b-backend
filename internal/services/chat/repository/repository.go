@@ -14,6 +14,7 @@ import (
 type ChatRepository interface {
 	CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
+	DeleteChat(ctx context.Context, chat_id int64) (bool, error)
 	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
@@ -60,6 +61,16 @@ func (a *chatRepository) NewChat(ctx context.Context, newChat *models.Chat) (*mo
 	}
 
 	return chat, nil
+}
+
+func (a *chatRepository) DeleteChat(ctx context.Context, chat_id int64) (bool, error) {
+	query := a.queryFactory.CreateDeleteChat(chat_id)
+	tag, err := a.conn.Exec(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Println(tag)
+		return false, errors.ChatDoesNotExist
+	}
+	return true, nil
 }
 
 func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error) {

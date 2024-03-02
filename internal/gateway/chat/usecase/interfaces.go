@@ -11,6 +11,7 @@ import (
 type chatGRPC interface {
 	CheckIfUniqChat(ctx context.Context, in *chat_service.CheckIfUniqChatRequest, opts ...grpc.CallOption) (*chat_service.CheckIfUniqChatResponse, error)
 	NewChat(ctx context.Context, in *chat_service.NewChatRequest, opts ...grpc.CallOption) (*chat_service.ChatResponse, error)
+	DeleteChat(ctx context.Context, in *chat_service.IdRequest, opts ...grpc.CallOption) (*chat_service.Bool, error)
 	GetChat(ctx context.Context, in *chat_service.GetChatRequest, opts ...grpc.CallOption) (*chat_service.ChatResponse, error)
 	GetMsgsFromChat(ctx context.Context, in *chat_service.ChatAndUserIdRequest, opts ...grpc.CallOption) (*chat_service.MsgsResponse, error)
 	GetAllUserChats(ctx context.Context, in *chat_service.IdRequest, opts ...grpc.CallOption) (*chat_service.GetAllUserChatsResponse, error)

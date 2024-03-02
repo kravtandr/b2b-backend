@@ -8,6 +8,7 @@ import (
 type QueryFactory interface {
 	CreateCheckIfUniqChat(productId int64, userId int64) *query.Query
 	CreateNewChat(newChat *models.Chat) *query.Query
+	CreateDeleteChat(chat_id int64) *query.Query
 	CreateGetChat(newChat *models.Chat) *query.Query
 	CreateWriteNewMsg(newMsg *models.Msg) *query.Query
 	CreateGetMsgsFromChat(chatId int64, userId int64) *query.Query
@@ -19,6 +20,12 @@ type QueryFactory interface {
 
 type queryFactory struct{}
 
+func (q *queryFactory) CreateDeleteChat(chat_id int64) *query.Query {
+	return &query.Query{
+		Request: createDeleteChat,
+		Params:  []interface{}{chat_id},
+	}
+}
 func (q *queryFactory) CreateCheckIfUniqChat(productId int64, userId int64) *query.Query {
 	return &query.Query{
 		Request: createCheckIfUniqChat,

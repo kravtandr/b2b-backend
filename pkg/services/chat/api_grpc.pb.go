@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ChatServiceClient interface {
 	CheckIfUniqChat(ctx context.Context, in *CheckIfUniqChatRequest, opts ...grpc.CallOption) (*CheckIfUniqChatResponse, error)
 	NewChat(ctx context.Context, in *NewChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
+	DeleteChat(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Bool, error)
 	GetChat(ctx context.Context, in *GetChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
 	WriteNewMsg(ctx context.Context, in *WriteNewMsgRequest, opts ...grpc.CallOption) (*IdResponse, error)
 	GetMsgsFromChat(ctx context.Context, in *ChatAndUserIdRequest, opts ...grpc.CallOption) (*MsgsResponse, error)
@@ -53,6 +54,15 @@ func (c *chatServiceClient) CheckIfUniqChat(ctx context.Context, in *CheckIfUniq
 func (c *chatServiceClient) NewChat(ctx context.Context, in *NewChatRequest, opts ...grpc.CallOption) (*ChatResponse, error) {
 	out := new(ChatResponse)
 	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/NewChat", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) DeleteChat(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Bool, error) {
+	out := new(Bool)
+	err := c.cc.Invoke(ctx, "/services.chat_service.ChatService/DeleteChat", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +129,7 @@ func (c *chatServiceClient) ChatHealthCheck(ctx context.Context, in *emptypb.Emp
 type ChatServiceServer interface {
 	CheckIfUniqChat(context.Context, *CheckIfUniqChatRequest) (*CheckIfUniqChatResponse, error)
 	NewChat(context.Context, *NewChatRequest) (*ChatResponse, error)
+	DeleteChat(context.Context, *IdRequest) (*Bool, error)
 	GetChat(context.Context, *GetChatRequest) (*ChatResponse, error)
 	WriteNewMsg(context.Context, *WriteNewMsgRequest) (*IdResponse, error)
 	GetMsgsFromChat(context.Context, *ChatAndUserIdRequest) (*MsgsResponse, error)
@@ -137,6 +148,9 @@ func (UnimplementedChatServiceServer) CheckIfUniqChat(context.Context, *CheckIfU
 }
 func (UnimplementedChatServiceServer) NewChat(context.Context, *NewChatRequest) (*ChatResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewChat not implemented")
+}
+func (UnimplementedChatServiceServer) DeleteChat(context.Context, *IdRequest) (*Bool, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteChat not implemented")
 }
 func (UnimplementedChatServiceServer) GetChat(context.Context, *GetChatRequest) (*ChatResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChat not implemented")
@@ -201,6 +215,24 @@ func _ChatService_NewChat_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChatServiceServer).NewChat(ctx, req.(*NewChatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_DeleteChat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).DeleteChat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.chat_service.ChatService/DeleteChat",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).DeleteChat(ctx, req.(*IdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -327,6 +359,10 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NewChat",
 			Handler:    _ChatService_NewChat_Handler,
+		},
+		{
+			MethodName: "DeleteChat",
+			Handler:    _ChatService_DeleteChat_Handler,
 		},
 		{
 			MethodName: "GetChat",

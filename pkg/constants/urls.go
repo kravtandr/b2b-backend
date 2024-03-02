@@ -33,6 +33,8 @@ const CompanyProductsListURL = "/company/products"
 // Chat
 const CheckIfUniqChat = "/chat/unique"
 const InitChat = "/chat/init"
+const DeleteChat = "/chat/delete"
+const ChatChangeStatus = "/chat/status"
 const ProductChatURL = "/ws"
 const AllChats = "/allchats"
 const AllMsgsFromChat = "/chat/{id}"

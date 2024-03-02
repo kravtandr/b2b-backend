@@ -8,6 +8,7 @@ import (
 type chatRepository interface {
 	CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
+	DeleteChat(ctx context.Context, chat_id int64) (bool, error)
 	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)

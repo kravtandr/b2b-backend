@@ -36,6 +36,9 @@ type WsMsg struct {
 type InitMsg struct {
 	SenderId int64 `json:"sender_id"`
 }
+type DeleteChatRequest struct {
+	Chat_id int64 `json:"chat_id"`
+}
 
 type Msgs []Msg
 

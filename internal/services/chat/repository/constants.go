@@ -11,4 +11,5 @@ const (
 	createGetLastMsgsFromAllUserChats = "SELECT msg2.chat_id, chats.name, chats.creator_id, product_id, chats.status, msg2.id, msg2.sender_id, msg2.receiver_id, msg2.checked, msg2.text, msg2.type, msg2.created_at FROM Msgs as msg2 JOIN (SELECT max(msg1.id), min(msg1.created_at) as time, msg1.chat_id FROM Msgs as msg1 WHERE msg1.sender_id = $1 OR msg1.receiver_id = $1 GROUP BY msg1.chat_id) as msg3 on msg3.max = msg2.id JOIN Chats as chats on msg2.chat_id = chats.id"
 	createGetAmountOfUserChats        = "SELECT Count(*) FROM Msgs as msg2 JOIN (SELECT max(msg1.id), min(msg1.created_at) as time, msg1.chat_id FROM Msgs as msg1 WHERE msg1.sender_id = $1 OR msg1.receiver_id = $1 GROUP BY msg1.chat_id) as msg3 on msg3.max = msg2.id JOIN Chats as chats on msg2.chat_id = chats.id"
 	createUserCreatedChats            = "SELECT  chat.id, chat.name, chat.creator_id, chat.product_id, chat.status FROM Chats as chat WHERE chat.creator_id = $1"
+	createDeleteChat                  = "DELETE FROM Chats WHERE id = $1"
 )

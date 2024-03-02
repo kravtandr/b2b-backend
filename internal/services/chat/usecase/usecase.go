@@ -11,6 +11,7 @@ import (
 type ChatUseCase interface {
 	CheckIfUniqChat(ctx context.Context, user *models.UniqueCheck) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
+	DeleteChat(ctx context.Context, chat_id int64) (deleted bool, err error)
 	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
@@ -25,6 +26,14 @@ type chatUseCase struct {
 
 func (a *chatUseCase) CheckIfUniqChat(ctx context.Context, uniqueCheck *models.UniqueCheck) (bool, error) {
 	result, err := a.repo.CheckIfUniqChat(ctx, uniqueCheck.ProductId, uniqueCheck.UserId)
+	if err != nil {
+		return false, err
+	}
+	return result, nil
+}
+
+func (a *chatUseCase) DeleteChat(ctx context.Context, chat_id int64) (bool, error) {
+	result, err := a.repo.DeleteChat(ctx, chat_id)
 	if err != nil {
 		return false, err
 	}
