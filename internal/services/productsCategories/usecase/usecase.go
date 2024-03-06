@@ -72,6 +72,9 @@ func (a *productsCategoriesUseCase) SearchCategories(ctx context.Context, Search
 	return categories, nil
 }
 func (a *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error) {
+	if filters.Categories_ids == nil {
+		filters.Categories_ids = pyrange(1, 1000, 1)
+	}
 	products, err := a.repo.GetProductsListByFilters(ctx, filters)
 	if err != nil {
 		return &models.ProductsWithCategory{}, err
@@ -100,6 +103,17 @@ func (a *productsCategoriesUseCase) GetCompanyProducts(ctx context.Context, Comp
 		return &models.Products{}, err
 	}
 	return products, nil
+}
+
+func pyrange(start, end, step int64) []int64 {
+	// TODO: Error checking to make sure parameters are all valid,
+	// else you could get divide by zero in make and other errors.
+
+	rtn := make([]int64, 0, (end-start)/step)
+	for i := start; i < end; i += step {
+		rtn = append(rtn, i)
+	}
+	return rtn
 }
 
 func NewProductsCategoriesUseCase(
