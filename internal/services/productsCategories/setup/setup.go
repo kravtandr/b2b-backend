@@ -3,6 +3,7 @@ package setup
 import (
 	"context"
 	"log"
+	"math"
 
 	zap_middleware "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -69,6 +70,8 @@ func SetupServer(cfg config.Config) (server *grpc.Server, cancel func(), err err
 			grpc_prometheus.UnaryServerInterceptor,
 		),
 		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
+		grpc.MaxSendMsgSize(math.MaxInt64),
+		grpc.MaxRecvMsgSize(math.MaxInt64),
 	)
 	productsCategories_service.RegisterProductsCategoriesServiceServer(server, productsCategoriesDelivery)
 	grpc_prometheus.Register(server)

@@ -112,6 +112,7 @@ func (u *productsCategoriesDelivery) GetProductsListByFilters(ctx *fasthttp.Requ
 
 	response, err := u.manager.GetProductsListByFilters(ctx, params, request)
 	if err != nil {
+		log.Println("ERROR: u.manager.GetProductsListByFilters", err)
 		httpError := u.errorAdapter.AdaptError(err)
 		ctx.SetStatusCode(httpError.Code)
 		ctx.SetBody([]byte(httpError.MSG))

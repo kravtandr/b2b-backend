@@ -22,6 +22,7 @@ import (
 	company_service "b2b/m/pkg/services/company"
 	fastOrder_service "b2b/m/pkg/services/fastOrder"
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
+	"math"
 	"time"
 
 	"gopkg.in/webdeskltd/dadata.v2"
@@ -75,7 +76,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		fastOrderUseCase,
 	)
 
-	productsCategoriesConn, err := grpc.Dial(cfg.ProductsCategoriesServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
+	productsCategoriesConn, err := grpc.Dial(cfg.ProductsCategoriesServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithMaxMsgSize(math.MaxInt64))
 	if err != nil {
 		return p, stopFunc, err
 	}
