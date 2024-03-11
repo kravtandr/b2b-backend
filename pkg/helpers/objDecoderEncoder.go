@@ -6,7 +6,6 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"image"
-	"image/jpeg"
 	"image/png"
 	"log"
 	"net/http"
@@ -38,8 +37,13 @@ func DecodeImgFromBase64(ctx context.Context, imgBase64 string) (decoded []byte,
 		}
 
 	case "jpeg", "jpg":
-		contentType = "image/jpeg"
-		err = jpeg.Encode(buff, m, &jpeg.Options{})
+		// contentType = "image/jpeg"
+		// err = jpeg.Encode(buff, m, &jpeg.Options{Quality: 100})
+		// if err != nil {
+		// 	log.Println("failed to create buffer", err)
+		// }
+		contentType = "image/png"
+		err = png.Encode(buff, m)
 		if err != nil {
 			log.Println("failed to create buffer", err)
 		}
