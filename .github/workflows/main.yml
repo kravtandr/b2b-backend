@@ -19,7 +19,7 @@ jobs:
           port: 22
           script: |
             su - postgres -c "cd /var/lib/postgresql/backend/b2b-backend && docker-compose down";
-            cd /var/lib/postgresql/backend && sudo chown -R postgres b2b-backend/
+            cd /var/lib/postgresql/backend && sudo chown -R postgres b2b-backend/ && docker image prune -a
             
   deploy:
     needs: stop
