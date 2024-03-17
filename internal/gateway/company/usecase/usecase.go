@@ -117,6 +117,7 @@ func (u *companyUseCase) GetCompanyByProductId(ctx context.Context, id int64) (*
 	}
 
 	return &models.Company{
+		Id:           responce.Id,
 		Name:         responce.Name,
 		Description:  responce.Description,
 		LegalName:    responce.LegalName,
