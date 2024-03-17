@@ -14,13 +14,14 @@ type companyDelivery struct {
 	company_service.UnimplementedCompanyServiceServer
 }
 
-func (a *companyDelivery) GetCompanyById(ctx context.Context, request *company_service.GetCompanyRequestById) (*company_service.GetCompanyResponse, error) {
+func (a *companyDelivery) GetCompanyById(ctx context.Context, request *company_service.GetCompanyRequestById) (*company_service.GetPrivateCompanyResponse, error) {
 	company, err := a.companyUseCase.GetCompanyById(ctx, request.Id)
 	if err != nil {
 		return nil, a.errorAdapter.AdaptError(err)
 	}
 
-	return &company_service.GetCompanyResponse{
+	return &company_service.GetPrivateCompanyResponse{
+		Id:           company.Id,
 		Name:         company.Name,
 		Description:  company.Description,
 		LegalName:    company.LegalName,

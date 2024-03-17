@@ -90,7 +90,7 @@ message UpdateCompanyRequest{
 
 
 service CompanyService {
-  rpc GetCompanyById(GetCompanyRequestById) returns (GetCompanyResponse) {}
+  rpc GetCompanyById(GetCompanyRequestById) returns (GetPrivateCompanyResponse) {}
   rpc GetCompanyByProductId(IdRequest) returns (GetPrivateCompanyResponse) {}
   rpc UpdateCompanyByOwnerId(UpdateCompanyRequest) returns (GetCompanyAndPostResponse) {}
 }

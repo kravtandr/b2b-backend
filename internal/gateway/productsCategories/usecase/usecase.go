@@ -116,6 +116,7 @@ func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request 
 		Photo:       response.Photo,
 		Docs:        response.Documents,
 		Company: models.Company{
+			Id:           productCompany.Id,
 			Name:         productCompany.Name,
 			Description:  productCompany.Description,
 			LegalName:    productCompany.LegalName,
