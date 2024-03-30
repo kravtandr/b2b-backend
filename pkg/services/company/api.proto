@@ -36,6 +36,7 @@ message GetPrivateCompanyResponse {
   int64 owner_id = 13;
   int64 rating = 14;
   int64 verified = 15;
+  string photo = 16;
 }
 
 message GetCompanyResponse {
@@ -53,6 +54,7 @@ message GetCompanyResponse {
   int64 owner_id = 12;
   int64 rating = 13;
   int64 verified = 14;
+  string photo = 15;
 }
 
 message GetCompanyAndPostResponse {
@@ -71,6 +73,7 @@ message GetCompanyAndPostResponse {
   int64 rating = 13;
   int64 verified = 14;
   string post = 15;
+  string photo = 16;
 }
 
 
@@ -86,6 +89,7 @@ message UpdateCompanyRequest{
   string activity = 8;
   int64 owner_id = 9;
   string post = 10;
+  string photo = 11;
 }
 
 

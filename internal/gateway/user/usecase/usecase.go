@@ -158,6 +158,7 @@ func (u *userUsecase) Profile(ctx context.Context, userID int64) (*models.Profil
 			OwnerId:      usersCompany.OwnerId,
 			Rating:       usersCompany.Rating,
 			Verified:     usersCompany.Verified,
+			Photo:        usersCompany.Photo,
 		},
 		CompanyUser: models.CompanyUser{
 			Post:      companyUserLink.Post,

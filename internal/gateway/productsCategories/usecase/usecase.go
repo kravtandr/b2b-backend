@@ -131,6 +131,7 @@ func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request 
 			OwnerId:      productCompany.OwnerId,
 			Rating:       productCompany.Rating,
 			Verified:     productCompany.Verified,
+			Photo:        productCompany.Photo,
 		},
 	}, nil
 }

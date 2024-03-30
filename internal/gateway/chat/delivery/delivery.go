@@ -91,7 +91,7 @@ func (u *chatDelivery) InitChat(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte(fmt.Sprint(err)))
 		return
 	}
-	b, err := chttp.ApiResp(models.InitChatResponce{ChatId: chat_id, CreateNewChat: newChat}, err)
+	b, err := chttp.ApiResp(models.InitChatresponse{ChatId: chat_id, CreateNewChat: newChat}, err)
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 }

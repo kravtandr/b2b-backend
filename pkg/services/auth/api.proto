@@ -186,6 +186,7 @@ message GetPrivateCompanyResponse {
   int64 owner_id = 13;
   int64 rating = 14;
   int64 verified = 15;
+  string photo = 16;
 }
 
 message GetCompanyUserLinkResponse {

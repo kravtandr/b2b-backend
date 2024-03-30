@@ -177,21 +177,21 @@ func (a *authDelivery) GetUserInfo(ctx context.Context, request *auth_service.Ge
 }
 
 func (a *authDelivery) GetUserByEmail(ctx context.Context, request *auth_service.UserEmailRequest) (*auth_service.UserId, error) {
-	responce, err := a.authUsecase.GetUserByEmail(ctx, request.Email)
+	response, err := a.authUsecase.GetUserByEmail(ctx, request.Email)
 	if err != nil {
 		return &auth_service.UserId{}, a.errorAdapter.AdaptError(err)
 	}
 
-	return &auth_service.UserId{Id: responce.Id}, nil
+	return &auth_service.UserId{Id: response.Id}, nil
 }
 
 func (a *authDelivery) GetUserIdByCookie(ctx context.Context, request *auth_service.GetUserIdByCookieRequest) (*auth_service.UserId, error) {
-	responce, err := a.authUsecase.ValidateSession(ctx, request.Hash)
+	response, err := a.authUsecase.ValidateSession(ctx, request.Hash)
 	if err != nil {
 		return &auth_service.UserId{}, a.errorAdapter.AdaptError(err)
 	}
 
-	return &auth_service.UserId{Id: responce}, nil
+	return &auth_service.UserId{Id: response}, nil
 }
 
 func (a *authDelivery) GetUsersCompany(ctx context.Context, request *auth_service.UserIdRequest) (*auth_service.GetPrivateCompanyResponse, error) {

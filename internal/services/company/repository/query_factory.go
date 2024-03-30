@@ -12,6 +12,7 @@ type QueryFactory interface {
 	CreateUpdateCompanyUsersLink(companyId int64, userId int64, post string) *query.Query
 	CreateGetCompanyUserLinkByOwnerIdAndItn(userId int64, itn string) *query.Query
 	CreateGetProductsCompaniesLink(ProductId int64) *query.Query
+	CreateGetCompanyPhotos(companyId int64) *query.Query
 }
 
 type queryFactory struct{}
@@ -45,13 +46,20 @@ func (q *queryFactory) GetCompanyByOwnerIdAndItn(ownerId int64, itn string) *que
 func (q *queryFactory) CreateUpdateCompanyById(newCompany models.Company) *query.Query {
 	return &query.Query{
 		Request: createUpdateCompanyById,
-		Params:  []interface{}{newCompany.Id, newCompany.Name, newCompany.Description, newCompany.Address, newCompany.LegalAddress, newCompany.Phone, newCompany.Link, newCompany.Activity},
+		Params:  []interface{}{newCompany.Id, newCompany.Name, newCompany.Description, newCompany.Address, newCompany.LegalAddress, newCompany.Phone, newCompany.Link, newCompany.Activity, newCompany.Photo},
 	}
 }
 func (q *queryFactory) CreateUpdateCompanyUsersLink(companyId int64, userId int64, post string) *query.Query {
 	return &query.Query{
 		Request: createUpdateCompanyUsersLink,
 		Params:  []interface{}{companyId, userId, post},
+	}
+}
+
+func (q *queryFactory) CreateGetCompanyPhotos(companyId int64) *query.Query {
+	return &query.Query{
+		Request: createGetCompanyPhotos,
+		Params:  []interface{}{companyId},
 	}
 }
 

@@ -121,6 +121,7 @@ CREATE TABLE Companies
     owner_id        INT         NOT NULL,
     rating          INT         DEFAULT 0,
     verified        INT         DEFAULT 0,
+    photo_obj_name  Text        DEFAULT 'no photo',
     docs            TEXT[]      ,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),

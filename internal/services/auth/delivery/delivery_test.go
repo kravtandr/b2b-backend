@@ -25,7 +25,7 @@ func TestHandler_ValidateSession(t *testing.T) {
 		Token:  "??",
 		Cookie: hash,
 	}
-	expectedResponce := &auth_service.ValidateSessionResponse{
+	expectedresponse := &auth_service.ValidateSessionResponse{
 		UserId: int64(userID),
 	}
 
@@ -42,10 +42,10 @@ func TestHandler_ValidateSession(t *testing.T) {
 	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(5), userRepo)
 	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 
-	responce, err := userDelivery.ValidateSession(ctx, request)
+	response, err := userDelivery.ValidateSession(ctx, request)
 
 	assert.Nil(t, err)
-	assert.Equal(t, expectedResponce, responce)
+	assert.Equal(t, expectedresponse, response)
 }
 
 func TestHandler_Logout(t *testing.T) {
@@ -87,7 +87,7 @@ func TestHandler_Login(t *testing.T) {
 		Email:    "email@mail.ru",
 		Password: "pass",
 	}
-	expectedResponce := &auth_service.LoginResponse{
+	expectedresponse := &auth_service.LoginResponse{
 		Cookie: "",
 		Token:  "",
 	}
@@ -109,9 +109,9 @@ func TestHandler_Login(t *testing.T) {
 	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(1), userRepo)
 	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 
-	responce, _ := userDelivery.LoginUser(ctx, request)
+	response, _ := userDelivery.LoginUser(ctx, request)
 
-	assert.Equal(t, expectedResponce, responce)
+	assert.Equal(t, expectedresponse, response)
 }
 
 func TestHandler_GetUser(t *testing.T) {
@@ -124,7 +124,7 @@ func TestHandler_GetUser(t *testing.T) {
 	request := &auth_service.GetUserRequest{
 		Id: 1,
 	}
-	expectedResponce := &auth_service.GetUserResponse{
+	expectedresponse := &auth_service.GetUserResponse{
 		Email: "email@mail.ru",
 	}
 
@@ -141,9 +141,9 @@ func TestHandler_GetUser(t *testing.T) {
 	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(1), userRepo)
 	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 
-	responce, _ := userDelivery.GetUser(ctx, request)
+	response, _ := userDelivery.GetUser(ctx, request)
 
-	assert.Equal(t, expectedResponce, responce)
+	assert.Equal(t, expectedresponse, response)
 }
 
 func TestHandler_GetUserByEmail(t *testing.T) {
@@ -156,7 +156,7 @@ func TestHandler_GetUserByEmail(t *testing.T) {
 	request := &auth_service.UserEmailRequest{
 		Email: user.Email,
 	}
-	expectedResponce := &auth_service.UserId{
+	expectedresponse := &auth_service.UserId{
 		Id: user.Id,
 	}
 
@@ -173,9 +173,9 @@ func TestHandler_GetUserByEmail(t *testing.T) {
 	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(1), userRepo)
 	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 
-	responce, _ := userDelivery.GetUserByEmail(ctx, request)
+	response, _ := userDelivery.GetUserByEmail(ctx, request)
 
-	assert.Equal(t, expectedResponce, responce)
+	assert.Equal(t, expectedresponse, response)
 }
 
 func TestHandler_Register(t *testing.T) {

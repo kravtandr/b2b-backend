@@ -2470,6 +2470,8 @@ func (m *GetPrivateCompanyResponse) validate(all bool) error {
 
 	// no validation rules for Verified
 
+	// no validation rules for Photo
+
 	if len(errors) > 0 {
 		return GetPrivateCompanyResponseMultiError(errors)
 	}

@@ -10,8 +10,12 @@ import (
 )
 
 type Config struct {
-	DBUrl    string `envconfig:"DB_URL" required:"true"`
-	GRPCPort string `envconfig:"GRPC_PORT" required:"true"`
+	DBUrl     string `envconfig:"DB_URL" required:"true"`
+	GRPCPort  string `envconfig:"GRPC_PORT" required:"true"`
+	MinioUrl  string `envconfig:"MINIO_URL" required:"true"`
+	MinioUser string `envconfig:"MINIO_USER" required:"true"`
+	MinioPass string `envconfig:"MINIO_PASS" required:"true"`
+	MinioSSL  bool   `envconfig:"MINIO_SSL" required:"true"`
 
 	Ctx    context.Context
 	Cancel func()

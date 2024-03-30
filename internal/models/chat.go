@@ -59,7 +59,7 @@ type CheckUnique struct {
 	ProducId int64 `json:"product_id"`
 }
 
-type InitChatResponce struct {
+type InitChatresponse struct {
 	ChatId        int64 `json:"chat_id"`
 	CreateNewChat bool  `json:"create_new_chat"`
 }
