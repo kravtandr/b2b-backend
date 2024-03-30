@@ -246,20 +246,19 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-    pgadmin:
-      image: dpage/pgadmin4:6.12
-      environment:
-        PGADMIN_DEFAULT_EMAIL: b2b@b2b.com
-        PGADMIN_DEFAULT_PASSWORD: b2b
-      ports:
-        - 15432:80
-      volumes:
-        - .:/var/lib/postgresql/data
-      depends_on:
-        - postgres
-      networks:
-          - net
-
+  pgadmin:
+    image: dpage/pgadmin4:6.12
+    environment:
+      PGADMIN_DEFAULT_EMAIL: b2b@b2b.com
+      PGADMIN_DEFAULT_PASSWORD: b2b
+    ports:
+      - 15432:80
+    volumes:
+      - .:/var/lib/postgresql/data
+    depends_on:
+      - postgres
+    networks:
+        - net
 
   gateway_chat:
     depends_on:
