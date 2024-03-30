@@ -165,11 +165,31 @@ func (a *authUseCase) GetUser(ctx context.Context, ID int64) (*models.User, erro
 
 func (a *authUseCase) UpdateUser(ctx context.Context, user *models.User) (*models.PublicUser, error) {
 	currentUser, err := a.repo.GetUserByID(ctx, user.Id)
+	if err != nil {
+		return &models.PublicUser{}, errors.UserDoesNotExist
+	}
 	if user.Password != "" {
 		user.Password = a.hashGenerator.EncodeString(user.Password)
 	} else {
 		user.Password = currentUser.Password
 	}
+
+	if user.Name == "" {
+		user.Name = currentUser.Name
+	}
+
+	if user.Surname == "" {
+		user.Surname = currentUser.Surname
+	}
+
+	if user.Patronymic == "" {
+		user.Patronymic = currentUser.Patronymic
+	}
+
+	if user.Email == "" {
+		user.Email = currentUser.Email
+	}
+
 	user.GroupId = currentUser.GroupId
 	updatedUser, err := a.repo.UpdateUser(ctx, user)
 	if err != nil {
