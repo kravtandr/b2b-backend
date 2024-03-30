@@ -80,6 +80,7 @@ func (u *chatUsecase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (
 			Name:      result.Name,
 			CreatorId: result.CreatorId,
 			ProductId: result.ProductId,
+			Status:    result.Status,
 		}
 		msg = models.Msg{
 			Id:           result.Msg.Id,
