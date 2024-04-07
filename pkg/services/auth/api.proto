@@ -102,7 +102,8 @@ message FastRegisterRequest {
 message GetUserResponse {
   string name = 1;
   string surname = 2;
-  string email = 3;
+  string patronymic = 3;
+  string email = 4;
 }
 
 message UpdateUserRequest {

@@ -139,6 +139,7 @@ func (u *userUsecase) Profile(ctx context.Context, userID int64) (*models.Profil
 		Id:          userID,
 		Name:        userInfo.Name,
 		Surname:     userInfo.Surname,
+		Patronymic:  userInfo.Patronymic,
 		Avatar:      "????",
 		Email:       userInfo.Email,
 		Description: "????",

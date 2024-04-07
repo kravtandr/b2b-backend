@@ -1179,6 +1179,8 @@ func (m *GetUserResponse) validate(all bool) error {
 
 	// no validation rules for Surname
 
+	// no validation rules for Patronymic
+
 	// no validation rules for Email
 
 	if len(errors) > 0 {
