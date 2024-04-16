@@ -48,8 +48,9 @@ type UpdateChatStatusRequest struct {
 type Msgs []Msg
 
 type ChatAndLastMsg struct {
-	Chat    Chat `json:"chat"`
-	LastMsg Msg  `json:"last_msg"`
+	Chat    Chat    `json:"chat"`
+	LastMsg Msg     `json:"last_msg"`
+	Company Company `json:"company"`
 }
 
 type ChatsAndLastMsg []ChatAndLastMsg

@@ -10,6 +10,7 @@ import (
 
 	auth_service "b2b/m/pkg/services/auth"
 	chat_service "b2b/m/pkg/services/chat"
+	company_service "b2b/m/pkg/services/company"
 	product_service "b2b/m/pkg/services/productsCategories"
 	"context"
 )
@@ -94,8 +95,33 @@ func (u *chatUsecase) GetAllChatsAndLastMsg(ctx context.Context, userId int64) (
 			Type:         result.Msg.Type,
 			Time:         result.Msg.Time,
 		}
+		company_response, err := u.companyGRPC.GetCompanyByProductId(ctx, &company_service.IdRequest{
+			Id: result.ProductId,
+		})
+		if err != nil {
+			return nil, err
+		}
+		company := models.Company{
+			Id:           company_response.Id,
+			Name:         company_response.Name,
+			Description:  company_response.Description,
+			LegalName:    company_response.LegalName,
+			Itn:          company_response.Itn,
+			Psrn:         company_response.Psrn,
+			Address:      company_response.Address,
+			LegalAddress: company_response.LegalAddress,
+			Email:        company_response.Email,
+			Phone:        company_response.Phone,
+			Link:         company_response.Link,
+			Activity:     company_response.Activity,
+			OwnerId:      company_response.OwnerId,
+			Rating:       company_response.Rating,
+			Verified:     company_response.Verified,
+			Photo:        company_response.Photo,
+		}
 		chatAndLastMsg.Chat = chat
 		chatAndLastMsg.LastMsg = msg
+		chatAndLastMsg.Company = company
 		chatsAndLastMsg = append(chatsAndLastMsg, chatAndLastMsg)
 	}
 	return &chatsAndLastMsg, nil
