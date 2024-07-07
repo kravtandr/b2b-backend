@@ -16,7 +16,7 @@ type ProductsCategoriesUseCase interface {
 	GetProductById(ctx context.Context, request *models.GetProductByIdRequest) (*models.GetProductByIdResponse, error)
 	SearchCategories(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*[]models.GetCategoryByIdResponse, error)
 	GetProductsList(ctx context.Context, request *chttp.QueryParam) (*models.GetProductsList, error)
-	GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategory, error)
+	GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategoryAndCompany, error)
 	SearchProducts(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*models.GetProductsList, error)
 	AddProduct(ctx context.Context, request *models.UserInfoAndAddProductByFormRequest) (*models.GetProduct, error)
 	GetCompanyProducts(ctx context.Context, request *models.GetCompanyProductsRequest, params *chttp.QueryParam) (*models.GetProductsList, error)
@@ -190,7 +190,7 @@ func (u *productsCategoriesUseCase) SearchProducts(ctx context.Context, request 
 	}
 	return &modelProducts, nil
 }
-func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategory, error) {
+func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategoryAndCompany, error) {
 	response, err := u.ProductsCategoriesGRPC.GetProductsListByFilters(ctx, &productsCategories_service.GetProductsListByFiltersRequest{
 		ProductName:      request.Product_name,
 		CategoryName:     request.Category_name,
@@ -201,23 +201,50 @@ func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context
 		Limit:            params.Limit,
 	})
 	if err != nil {
-		return &models.ProductsWithCategory{}, err
+		return &models.ProductsWithCategoryAndCompany{}, err
 	}
-	var modelProduct models.ProductWithCategory
-	var modelProducts models.ProductsWithCategory
-	for _, result := range response.Products {
+	var modelProduct models.ProductWithCategoryAndCompany
+	var modelProducts models.ProductsWithCategoryAndCompany
+	var company models.Company
+
+	for _, product := range response.Products {
+
 		description := sql.NullString{
-			String: result.Description.String_,
-			Valid:  result.Description.Valid}
-		modelProduct = models.ProductWithCategory{
-			Id:           result.Id,
-			Name:         result.Name,
+			String: product.Description.String_,
+			Valid:  product.Description.Valid}
+		company_response, err := u.CompanyUsecase.GetCompanyByProductId(ctx, product.Id)
+
+		if err != nil {
+			return nil, err
+		}
+		company = models.Company{
+			Id:           company_response.Id,
+			Name:         company_response.Name,
+			Description:  company_response.Description,
+			LegalName:    company_response.LegalName,
+			Itn:          company_response.Itn,
+			Psrn:         company_response.Psrn,
+			Address:      company_response.Address,
+			LegalAddress: company_response.LegalAddress,
+			Email:        company_response.Email,
+			Phone:        company_response.Phone,
+			Link:         company_response.Link,
+			Activity:     company_response.Activity,
+			OwnerId:      company_response.OwnerId,
+			Rating:       company_response.Rating,
+			Verified:     company_response.Verified,
+			Photo:        company_response.Photo,
+		}
+		modelProduct = models.ProductWithCategoryAndCompany{
+			Id:           product.Id,
+			Name:         product.Name,
 			Description:  description,
-			Price:        result.Price,
-			Photo:        result.Photo,
-			Docs:         result.Documents,
-			CategoryId:   result.CategoryId,
-			CategoryName: result.CategoryName,
+			Price:        product.Price,
+			Photo:        product.Photo,
+			Docs:         product.Documents,
+			CategoryId:   product.CategoryId,
+			CategoryName: product.CategoryName,
+			Company:      company,
 		}
 		modelProducts = append(modelProducts, modelProduct)
 	}

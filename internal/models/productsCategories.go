@@ -76,7 +76,20 @@ type ProductWithCategory struct {
 	CategoryName string         `json:"category_name"`
 }
 
+type ProductWithCategoryAndCompany struct {
+	Id           int64          `json:"id"`
+	Name         string         `json:"name"`
+	Description  sql.NullString `json:"description"`
+	Price        int64          `json:"price"`
+	Photo        []string       `json:"photo"`
+	Docs         []string       `json:"docs"`
+	CategoryId   int64          `json:"category_id"`
+	CategoryName string         `json:"category_name"`
+	Company      Company        `json:"company"`
+}
+
 type ProductsWithCategory []ProductWithCategory
+type ProductsWithCategoryAndCompany []ProductWithCategoryAndCompany
 
 type GetProductsList []GetProduct
 
