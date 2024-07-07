@@ -103,7 +103,9 @@ message GetUserResponse {
   string name = 1;
   string surname = 2;
   string patronymic = 3;
-  string email = 4;
+  string country = 4;
+  string email = 5;
+  int64 balance = 6;
 }
 
 message UpdateUserRequest {

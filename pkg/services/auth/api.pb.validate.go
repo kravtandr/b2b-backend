@@ -1181,7 +1181,11 @@ func (m *GetUserResponse) validate(all bool) error {
 
 	// no validation rules for Patronymic
 
+	// no validation rules for Country
+
 	// no validation rules for Email
+
+	// no validation rules for Balance
 
 	if len(errors) > 0 {
 		return GetUserResponseMultiError(errors)

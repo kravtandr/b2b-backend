@@ -5,10 +5,11 @@ type User struct {
 	Name       string `json:"name"`
 	Surname    string `json:"surname"`
 	Patronymic string `json:"patronymic"`
+	Country    string `json:"country"`
 	Email      string `json:"email"`
 	Password   string `json:"password"`
-	Country    string `json:"country"`
 	GroupId    int    `json:"group_id"`
+	Balance    int64  `json:"balance"`
 }
 
 type Users []User

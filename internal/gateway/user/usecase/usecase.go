@@ -140,9 +140,11 @@ func (u *userUsecase) Profile(ctx context.Context, userID int64) (*models.Profil
 		Name:        userInfo.Name,
 		Surname:     userInfo.Surname,
 		Patronymic:  userInfo.Patronymic,
-		Avatar:      "????",
+		Country:     userInfo.Country,
+		Balance:     userInfo.Balance,
 		Email:       userInfo.Email,
-		Description: "????",
+		Avatar:      "TODO",
+		Description: "TODO",
 		Company: models.Company{
 			Id:           usersCompany.Id,
 			Name:         usersCompany.Name,

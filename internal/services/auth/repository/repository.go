@@ -54,7 +54,7 @@ func (a *authRepository) GetUserByID(ctx context.Context, ID int64) (*models.Use
 
 	user := &models.User{}
 	if err := row.Scan(
-		&user.Id, &user.Name, &user.Surname, &user.Patronymic, &user.Email, &user.Password, &user.GroupId,
+		&user.Id, &user.Name, &user.Surname, &user.Patronymic, &user.Country, &user.Email, &user.Password, &user.GroupId, &user.Balance,
 	); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.UserDoesNotExist

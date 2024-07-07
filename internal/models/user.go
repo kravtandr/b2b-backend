@@ -5,8 +5,10 @@ type Profile struct {
 	Name        string      `json:"name" valid:"required"`
 	Surname     string      `json:"surname" valid:"required"`
 	Patronymic  string      `json:"patronymic"`
-	Avatar      string      `json:"avatar"`
+	Country     string      `json:"country"`
 	Email       string      `json:"email"`
+	Balance     int64       `json:"balance"`
+	Avatar      string      `json:"avatar"`
 	Description string      `json:"description"`
 	Company     Company     `json:"company"`
 	CompanyUser CompanyUser `json:"companyUser"`

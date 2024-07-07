@@ -137,7 +137,9 @@ func (a *authDelivery) GetUser(ctx context.Context, request *auth_service.GetUse
 		Name:       response.Name,
 		Surname:    response.Surname,
 		Patronymic: response.Patronymic,
+		Country:    response.Country,
 		Email:      response.Email,
+		Balance:    response.Balance,
 	}, nil
 }
 
