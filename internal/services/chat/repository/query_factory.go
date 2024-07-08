@@ -25,7 +25,7 @@ type queryFactory struct{}
 func (q *queryFactory) CreateUpdateChat(chat *models.Chat) *query.Query {
 	return &query.Query{
 		Request: createUpdateChat,
-		Params:  []interface{}{chat.Name, chat.Status, chat.Id},
+		Params:  []interface{}{chat.Name, chat.Status, chat.Blured, chat.Id},
 	}
 }
 

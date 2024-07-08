@@ -236,6 +236,20 @@ func (a *authDelivery) GetCompanyUserLink(ctx context.Context, request *auth_ser
 	}, nil
 }
 
+func (a *authDelivery) UpdateUserBalance(ctx context.Context, request *auth_service.UpdateUserBalanceRequest) (*auth_service.GetPublicUserResponse, error) {
+	response, err := a.authUsecase.UpdateUserBalance(ctx, request.UserId, request.Balance)
+	if err != nil {
+		return &auth_service.GetPublicUserResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.GetPublicUserResponse{
+		Name:       response.Name,
+		Surname:    response.Surname,
+		Patronymic: response.Patronymic,
+		Email:      response.Email,
+	}, nil
+}
+
 func NewAuthDelivery(
 	authUsecase usecase.AuthUseCase,
 	errorAdapter error_adapter.ErrorAdapter,

@@ -22,4 +22,5 @@ const (
 	validateUserSession         = "SELECT user_id FROM Cookies WHERE hash = $1"
 	removeUserSession           = "DELETE FROM Cookies WHERE hash = $1"
 	GetUserInfoQuery            = "SELECT id, name, surname FROM Users WHERE id = $1"
+	createUpdateUserBalance     = "UPDATE Users SET balance = $2 WHERE id = $1 RETURNING id, name, surname, patronymic, email, password"
 )

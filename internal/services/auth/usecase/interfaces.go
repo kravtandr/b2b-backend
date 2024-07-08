@@ -19,6 +19,7 @@ type authRepository interface {
 	GetUserInfo(ctx context.Context, id int64) (*models.User, error)
 	GetUsersCompany(ctx context.Context, userId int64) (*company_models.Company, error)
 	GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error)
+	UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.User, error)
 }
 
 type hasher interface {

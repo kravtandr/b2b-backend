@@ -21,4 +21,5 @@ type AuthGRPC interface {
 	CheckEmail(ctx context.Context, in *auth_service.CheckEmailRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error)
 	GetUsersCompany(ctx context.Context, in *auth_service.UserIdRequest, opts ...grpc.CallOption) (*auth_service.GetPrivateCompanyResponse, error)
 	GetCompanyUserLink(ctx context.Context, in *auth_service.UserAndCompanyIdsRequest, opts ...grpc.CallOption) (*auth_service.GetCompanyUserLinkResponse, error)
+	UpdateUserBalance(ctx context.Context, in *auth_service.UpdateUserBalanceRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error)
 }

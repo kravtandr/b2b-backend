@@ -40,6 +40,7 @@ func (a *chatDelivery) NewChat(ctx context.Context, request *chat_service.NewCha
 		Name:      request.Name,
 		CreatorId: request.CreatorId,
 		ProductId: request.ProductId,
+		Blured:    request.Blured,
 	})
 	if err != nil {
 		return nil, a.errorAdapter.AdaptError(err)
@@ -51,6 +52,7 @@ func (a *chatDelivery) NewChat(ctx context.Context, request *chat_service.NewCha
 		CreatorId: response.CreatorId,
 		ProductId: response.ProductId,
 		Status:    response.Status,
+		Blured:    response.Blured,
 	}, nil
 }
 
@@ -69,11 +71,32 @@ func (a *chatDelivery) GetChat(ctx context.Context, request *chat_service.GetCha
 		CreatorId: response.CreatorId,
 		ProductId: response.ProductId,
 		Status:    response.Status,
+		Blured:    response.Blured,
 	}, nil
+}
+
+func (a *chatDelivery) GetChatById(ctx context.Context, request *chat_service.IdRequest) (*chat_service.ChatResponse, error) {
+	response, err := a.chatUsecase.GetChatById(ctx, request.Id)
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+
+	return &chat_service.ChatResponse{
+		Id:        response.Id,
+		Name:      response.Name,
+		CreatorId: response.CreatorId,
+		ProductId: response.ProductId,
+		Status:    response.Status,
+		Blured:    response.Blured,
+	}, nil
+
 }
 
 func (a *chatDelivery) UpdateChatStatus(ctx context.Context, request *chat_service.UpdateChatStatusRequest) (*chat_service.ChatResponse, error) {
 	currentChat, err := a.chatUsecase.GetChatById(ctx, request.ChatId)
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
 
 	response, err := a.chatUsecase.UpdateChat(ctx, &models.Chat{
 		Id:        currentChat.Id,
@@ -81,6 +104,7 @@ func (a *chatDelivery) UpdateChatStatus(ctx context.Context, request *chat_servi
 		CreatorId: currentChat.CreatorId,
 		ProductId: currentChat.ProductId,
 		Status:    request.Status,
+		Blured:    request.Blured,
 	})
 	if err != nil {
 		return nil, a.errorAdapter.AdaptError(err)
@@ -92,6 +116,7 @@ func (a *chatDelivery) UpdateChatStatus(ctx context.Context, request *chat_servi
 		CreatorId: response.CreatorId,
 		ProductId: response.ProductId,
 		Status:    response.Status,
+		Blured:    response.Blured,
 	}, nil
 }
 
@@ -162,6 +187,7 @@ func (a *chatDelivery) GetAllChatsAndLastMsg(ctx context.Context, request *chat_
 			CreatorId: item.Chat.CreatorId,
 			ProductId: item.Chat.ProductId,
 			Status:    item.Chat.Status,
+			Blured:    item.Chat.Blured,
 			Msg: &chat_service.MsgResponse{
 				Id:           item.LastMsg.Id,
 				ChatId:       item.LastMsg.ChatId,
@@ -176,6 +202,30 @@ func (a *chatDelivery) GetAllChatsAndLastMsg(ctx context.Context, request *chat_
 			},
 		}
 		res.Chats = append(res.Chats, chatAndLatsMsg)
+
+	}
+	return &res, nil
+}
+
+func (a *chatDelivery) GetAllUserChats(ctx context.Context, request *chat_service.IdRequest) (*chat_service.GetAllUserChatsResponse, error) {
+	chatsAndLastMsg, err := a.chatUsecase.GetAllChatsAndLastMsg(ctx, request.Id)
+	if err != nil {
+		return nil, a.errorAdapter.AdaptError(err)
+	}
+	//var msg chat_service.MsgResponse
+	var res chat_service.GetAllUserChatsResponse
+	var chat *chat_service.ChatResponse
+
+	for _, item := range *chatsAndLastMsg {
+		chat = &chat_service.ChatResponse{
+			Id:        item.Chat.Id,
+			Name:      item.Chat.Name,
+			CreatorId: item.Chat.CreatorId,
+			ProductId: item.Chat.ProductId,
+			Status:    item.Chat.Status,
+			Blured:    item.Chat.Blured,
+		}
+		res.Chats = append(res.Chats, chat)
 
 	}
 	return &res, nil

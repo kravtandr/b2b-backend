@@ -36,6 +36,7 @@ type AuthServiceClient interface {
 	CheckEmail(ctx context.Context, in *CheckEmailRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error)
 	GetUsersCompany(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*GetPrivateCompanyResponse, error)
 	GetCompanyUserLink(ctx context.Context, in *UserAndCompanyIdsRequest, opts ...grpc.CallOption) (*GetCompanyUserLinkResponse, error)
+	UpdateUserBalance(ctx context.Context, in *UpdateUserBalanceRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error)
 }
 
 type authServiceClient struct {
@@ -163,6 +164,15 @@ func (c *authServiceClient) GetCompanyUserLink(ctx context.Context, in *UserAndC
 	return out, nil
 }
 
+func (c *authServiceClient) UpdateUserBalance(ctx context.Context, in *UpdateUserBalanceRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error) {
+	out := new(GetPublicUserResponse)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/UpdateUserBalance", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -180,6 +190,7 @@ type AuthServiceServer interface {
 	CheckEmail(context.Context, *CheckEmailRequest) (*GetPublicUserResponse, error)
 	GetUsersCompany(context.Context, *UserIdRequest) (*GetPrivateCompanyResponse, error)
 	GetCompanyUserLink(context.Context, *UserAndCompanyIdsRequest) (*GetCompanyUserLinkResponse, error)
+	UpdateUserBalance(context.Context, *UpdateUserBalanceRequest) (*GetPublicUserResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -225,6 +236,9 @@ func (UnimplementedAuthServiceServer) GetUsersCompany(context.Context, *UserIdRe
 }
 func (UnimplementedAuthServiceServer) GetCompanyUserLink(context.Context, *UserAndCompanyIdsRequest) (*GetCompanyUserLinkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCompanyUserLink not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateUserBalance(context.Context, *UpdateUserBalanceRequest) (*GetPublicUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserBalance not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -473,6 +487,24 @@ func _AuthService_GetCompanyUserLink_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_UpdateUserBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateUserBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/UpdateUserBalance",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateUserBalance(ctx, req.(*UpdateUserBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -531,6 +563,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCompanyUserLink",
 			Handler:    _AuthService_GetCompanyUserLink_Handler,
+		},
+		{
+			MethodName: "UpdateUserBalance",
+			Handler:    _AuthService_UpdateUserBalance_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

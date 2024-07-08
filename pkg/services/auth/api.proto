@@ -204,6 +204,11 @@ message GetCompanyUserLinkResponse {
   string itn = 5;
 }
 
+message UpdateUserBalanceRequest {
+  int64 user_id = 1;
+  int64 balance = 2;
+}
+
 
 
 service AuthService {
@@ -220,4 +225,5 @@ service AuthService {
   rpc CheckEmail(CheckEmailRequest) returns (GetPublicUserResponse) {}
   rpc GetUsersCompany (UserIdRequest) returns (GetPrivateCompanyResponse) {}
   rpc GetCompanyUserLink (UserAndCompanyIdsRequest) returns (GetCompanyUserLinkResponse) {}
+  rpc UpdateUserBalance(UpdateUserBalanceRequest) returns (GetPublicUserResponse) {}
 }

@@ -277,6 +277,26 @@ func (mr *MockAuthServiceClientMockRecorder) UpdateUser(ctx, in interface{}, opt
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockAuthServiceClient)(nil).UpdateUser), varargs...)
 }
 
+// UpdateUserBalance mocks base method.
+func (m *MockAuthServiceClient) UpdateUserBalance(ctx context.Context, in *auth_service.UpdateUserBalanceRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UpdateUserBalance", varargs...)
+	ret0, _ := ret[0].(*auth_service.GetPublicUserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUserBalance indicates an expected call of UpdateUserBalance.
+func (mr *MockAuthServiceClientMockRecorder) UpdateUserBalance(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserBalance", reflect.TypeOf((*MockAuthServiceClient)(nil).UpdateUserBalance), varargs...)
+}
+
 // ValidateSession mocks base method.
 func (m *MockAuthServiceClient) ValidateSession(ctx context.Context, in *auth_service.Session, opts ...grpc.CallOption) (*auth_service.ValidateSessionResponse, error) {
 	m.ctrl.T.Helper()
@@ -498,6 +518,21 @@ func (m *MockAuthServiceServer) UpdateUser(arg0 context.Context, arg1 *auth_serv
 func (mr *MockAuthServiceServerMockRecorder) UpdateUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockAuthServiceServer)(nil).UpdateUser), arg0, arg1)
+}
+
+// UpdateUserBalance mocks base method.
+func (m *MockAuthServiceServer) UpdateUserBalance(arg0 context.Context, arg1 *auth_service.UpdateUserBalanceRequest) (*auth_service.GetPublicUserResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserBalance", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.GetPublicUserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUserBalance indicates an expected call of UpdateUserBalance.
+func (mr *MockAuthServiceServerMockRecorder) UpdateUserBalance(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserBalance", reflect.TypeOf((*MockAuthServiceServer)(nil).UpdateUserBalance), arg0, arg1)
 }
 
 // ValidateSession mocks base method.

@@ -20,6 +20,8 @@ type UserUsecase interface {
 	UpdateProfile(ctx context.Context, userID int64, request *models.PublicCompanyAndOwnerRequest) (*models.PublicCompanyAndOwnerResponse, error)
 	GetUserIdByCookie(ctx context.Context, hash string) (int64, error)
 	CheckEmail(ctx context.Context, request *models.Email) (*models.PublicUser, error)
+	UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.UpdateUserResponse, error)
+	AddUserBalance(ctx context.Context, userID int64, add int64) (*models.UpdateUserResponse, error)
 }
 
 type userUsecase struct {
@@ -242,6 +244,43 @@ func (u *userUsecase) GetUserInfo(ctx context.Context, id int64) (*models.Profil
 		Id:      response.UserId,
 		Name:    response.Name,
 		Surname: response.Surname,
+	}, nil
+}
+
+func (u *userUsecase) UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.UpdateUserResponse, error) {
+	updatedUser, err := u.AuthGRPC.UpdateUserBalance(ctx, &auth_service.UpdateUserBalanceRequest{
+		UserId:  userID,
+		Balance: newBalance,
+	})
+	if err != nil {
+		return &models.UpdateUserResponse{}, err
+	}
+	return &models.UpdateUserResponse{
+		Name:       updatedUser.Name,
+		Surname:    updatedUser.Surname,
+		Patronymic: updatedUser.Patronymic,
+		Email:      updatedUser.Email,
+	}, nil
+}
+
+func (u *userUsecase) AddUserBalance(ctx context.Context, userID int64, add int64) (*models.UpdateUserResponse, error) {
+
+	user, err := u.AuthGRPC.GetUser(ctx, &auth_service.GetUserRequest{Id: int64(userID)})
+	if err != nil {
+		return &models.UpdateUserResponse{}, err
+	}
+	updatedUser, err := u.AuthGRPC.UpdateUserBalance(ctx, &auth_service.UpdateUserBalanceRequest{
+		UserId:  userID,
+		Balance: user.Balance + add,
+	})
+	if err != nil {
+		return &models.UpdateUserResponse{}, err
+	}
+	return &models.UpdateUserResponse{
+		Name:       updatedUser.Name,
+		Surname:    updatedUser.Surname,
+		Patronymic: updatedUser.Patronymic,
+		Email:      updatedUser.Email,
 	}, nil
 }
 

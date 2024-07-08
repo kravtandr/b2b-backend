@@ -157,6 +157,26 @@ func (mr *MockChatServiceClientMockRecorder) GetChat(ctx, in interface{}, opts .
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChat", reflect.TypeOf((*MockChatServiceClient)(nil).GetChat), varargs...)
 }
 
+// GetChatById mocks base method.
+func (m *MockChatServiceClient) GetChatById(ctx context.Context, in *chat_service.IdRequest, opts ...grpc.CallOption) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetChatById", varargs...)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetChatById indicates an expected call of GetChatById.
+func (mr *MockChatServiceClientMockRecorder) GetChatById(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChatById", reflect.TypeOf((*MockChatServiceClient)(nil).GetChatById), varargs...)
+}
+
 // GetMsgsFromChat mocks base method.
 func (m *MockChatServiceClient) GetMsgsFromChat(ctx context.Context, in *chat_service.ChatAndUserIdRequest, opts ...grpc.CallOption) (*chat_service.MsgsResponse, error) {
 	m.ctrl.T.Helper()
@@ -348,6 +368,21 @@ func (m *MockChatServiceServer) GetChat(arg0 context.Context, arg1 *chat_service
 func (mr *MockChatServiceServerMockRecorder) GetChat(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChat", reflect.TypeOf((*MockChatServiceServer)(nil).GetChat), arg0, arg1)
+}
+
+// GetChatById mocks base method.
+func (m *MockChatServiceServer) GetChatById(arg0 context.Context, arg1 *chat_service.IdRequest) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetChatById", arg0, arg1)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetChatById indicates an expected call of GetChatById.
+func (mr *MockChatServiceServerMockRecorder) GetChatById(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChatById", reflect.TypeOf((*MockChatServiceServer)(nil).GetChatById), arg0, arg1)
 }
 
 // GetMsgsFromChat mocks base method.

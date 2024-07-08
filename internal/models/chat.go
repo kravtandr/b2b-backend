@@ -8,6 +8,7 @@ type Chat struct {
 	CreatorId int64  `json:"creator_id"`
 	ProductId int64  `json:"product_id"`
 	Status    string `json:"status"`
+	Blured    bool   `json:"blured"`
 }
 
 type Chats []Chat
@@ -43,6 +44,7 @@ type DeleteChatRequest struct {
 type UpdateChatStatusRequest struct {
 	Chat_id int64  `json:"chat_id"`
 	Status  string `json:"status"`
+	Blured  bool   `json:"blured"`
 }
 
 type Msgs []Msg

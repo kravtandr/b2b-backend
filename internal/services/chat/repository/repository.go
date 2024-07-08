@@ -54,7 +54,7 @@ func (a *chatRepository) NewChat(ctx context.Context, newChat *models.Chat) (*mo
 	query := a.queryFactory.CreateNewChat(newChat)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	chat := &models.Chat{}
-	if err := row.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status); err != nil {
+	if err := row.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status, &chat.Blured); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.ChatDoesNotExist
 		}
@@ -89,7 +89,7 @@ func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*model
 	query := a.queryFactory.CreateGetChat(chat)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	getChat := &models.Chat{}
-	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &chat.Status); err != nil {
+	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &chat.Status, &chat.Blured); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.ChatDoesNotExist
 		}
@@ -104,7 +104,7 @@ func (a *chatRepository) GetChatById(ctx context.Context, id int64) (*models.Cha
 	query := a.queryFactory.CreateGetChatById(id)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	getChat := &models.Chat{}
-	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &getChat.Status); err != nil {
+	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &getChat.Status, &getChat.Blured); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.ChatDoesNotExist
 		}
@@ -194,7 +194,7 @@ func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64
 	defer rows.Close()
 	rows_count := 0
 	for rows.Next() {
-		err = rows.Scan(&onlyChatsLM[rows_count].Chat.Id, &onlyChatsLM[rows_count].Chat.Name, &onlyChatsLM[rows_count].Chat.CreatorId, &onlyChatsLM[rows_count].Chat.ProductId, &onlyChatsLM[rows_count].Chat.Status, &onlyChatsLM[rows_count].LastMsg.Id, &onlyChatsLM[rows_count].LastMsg.SenderId, &onlyChatsLM[rows_count].LastMsg.ReceiverId, &onlyChatsLM[rows_count].LastMsg.Checked, &onlyChatsLM[rows_count].LastMsg.Text, &onlyChatsLM[rows_count].LastMsg.Type, &onlyChatsLM[rows_count].LastMsg.Time)
+		err = rows.Scan(&onlyChatsLM[rows_count].Chat.Id, &onlyChatsLM[rows_count].Chat.Name, &onlyChatsLM[rows_count].Chat.CreatorId, &onlyChatsLM[rows_count].Chat.ProductId, &onlyChatsLM[rows_count].Chat.Status, &onlyChatsLM[rows_count].Chat.Blured, &onlyChatsLM[rows_count].LastMsg.Id, &onlyChatsLM[rows_count].LastMsg.SenderId, &onlyChatsLM[rows_count].LastMsg.ReceiverId, &onlyChatsLM[rows_count].LastMsg.Checked, &onlyChatsLM[rows_count].LastMsg.Text, &onlyChatsLM[rows_count].LastMsg.Type, &onlyChatsLM[rows_count].LastMsg.Time)
 		//chat.LastMsg.ChatId = chat.Chat.Id
 		//chats = append(chats, chat)
 		rows_count += 1
@@ -255,7 +255,7 @@ func (a *chatRepository) GetUserCreatedChats(ctx context.Context, userId int64) 
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status)
+		err = rows.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status, &chat.Blured)
 		chats = append(chats, chat)
 	}
 	if rows.Err() != nil {

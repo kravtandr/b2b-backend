@@ -16,6 +16,7 @@ type QueryFactory interface {
 	CreateValidateUserSession(hash string) *query.Query
 	CreateRemoveUserSession(hash string) *query.Query
 	CreateUpdateUser(user *models.User) *query.Query
+	CreateUpdateUserBalance(userID int64, newBalance int64) *query.Query
 }
 
 type queryFactory struct{}
@@ -32,6 +33,15 @@ func (q *queryFactory) CreateUpdateUser(user *models.User) *query.Query {
 		Request: createCreateUpdateUser,
 		Params: []interface{}{
 			user.Id, user.Name, user.Surname, user.Patronymic, user.Email, user.Password,
+		},
+	}
+}
+
+func (q *queryFactory) CreateUpdateUserBalance(userID int64, newBalance int64) *query.Query {
+	return &query.Query{
+		Request: createUpdateUserBalance,
+		Params: []interface{}{
+			userID, newBalance,
 		},
 	}
 }

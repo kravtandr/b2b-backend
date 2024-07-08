@@ -24,6 +24,7 @@ type AuthRepository interface {
 	RemoveUserSession(ctx context.Context, hash string) error
 	GetUserInfo(ctx context.Context, id int64) (*models.User, error)
 	GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error)
+	UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.User, error)
 }
 
 type authRepository struct {
@@ -182,6 +183,24 @@ func (a *authRepository) RemoveUserSession(ctx context.Context, hash string) err
 
 func (a *authRepository) UpdateUser(ctx context.Context, user *models.User) (*models.User, error) {
 	query := a.queryFactory.CreateUpdateUser(user)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+
+	updatedUser := &models.User{}
+	if err := row.Scan(
+		&updatedUser.Id, &updatedUser.Name, &updatedUser.Surname, &updatedUser.Patronymic, &updatedUser.Email, &updatedUser.Password,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			fmt.Println("Error", err)
+			return &models.User{}, errors.UserDoesNotExist
+		}
+
+		return &models.User{}, err
+	}
+	return updatedUser, nil
+}
+
+func (a *authRepository) UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.User, error) {
+	query := a.queryFactory.CreateUpdateUserBalance(userID, newBalance)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 
 	updatedUser := &models.User{}

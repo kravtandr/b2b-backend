@@ -94,7 +94,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		return p, stopFunc, err
 	}
 	RestchatGRPC := chat_service.NewChatServiceClient(RestChatConn)
-	RestchatUsecase := restchatu.NewChatUsecase(RestchatGRPC, CompanyGRPC, ProductsCategoriesGRPC, userGRPC)
+	RestchatUsecase := restchatu.NewChatUsecase(RestchatGRPC, CompanyGRPC, ProductsCategoriesGRPC, userGRPC, userUsecase)
 	RestchatDelivery := restchatd.NewChatDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,

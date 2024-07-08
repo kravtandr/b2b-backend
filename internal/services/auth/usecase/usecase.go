@@ -23,6 +23,7 @@ type AuthUseCase interface {
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	GetUsersCompany(ctx context.Context, userId int64) (*company_models.Company, error)
 	GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error)
+	UpdateUserBalance(ctx context.Context, userId int64, newBalance int64) (*models.PublicUser, error)
 }
 
 type authUseCase struct {
@@ -196,6 +197,19 @@ func (a *authUseCase) UpdateUser(ctx context.Context, user *models.User) (*model
 		return &models.PublicUser{}, err
 	}
 
+	return &models.PublicUser{
+		Name:       updatedUser.Name,
+		Surname:    updatedUser.Surname,
+		Patronymic: updatedUser.Patronymic,
+		Email:      updatedUser.Email,
+	}, nil
+}
+
+func (a *authUseCase) UpdateUserBalance(ctx context.Context, userId int64, newBalance int64) (*models.PublicUser, error) {
+	updatedUser, err := a.repo.UpdateUserBalance(ctx, userId, newBalance)
+	if err != nil {
+		return &models.PublicUser{}, err
+	}
 	return &models.PublicUser{
 		Name:       updatedUser.Name,
 		Surname:    updatedUser.Surname,

@@ -26,6 +26,23 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next AuthRepository) AuthRe
 	}
 }
 
+func (l *loggingMiddleware) UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (u *models.User, err error) {
+	l.logger.Infow(module,
+		"Action", "UpdateUserBalance",
+		"Request", userID,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "UpdateUserBalance",
+				"Request", userID,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.UpdateUserBalance(ctx, userID, newBalance)
+}
+
 func (l *loggingMiddleware) GetUserByEmail(ctx context.Context, email string) (u *models.User, err error) {
 	l.logger.Infow(module,
 		"Action", "GetUserByEmail",
