@@ -249,8 +249,8 @@ services:
   pgadmin:
     image: dpage/pgadmin4:6.12
     environment:
-      PGADMIN_DEFAULT_EMAIL: b2b@b2b.com
-      PGADMIN_DEFAULT_PASSWORD: b2b
+      PGADMIN_DEFAULT_EMAIL: sirWinner@icloud.com
+      PGADMIN_DEFAULT_PASSWORD: uQ9Z3a_EqV
     ports:
       - 15432:80
     volumes:
