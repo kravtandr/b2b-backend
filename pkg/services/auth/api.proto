@@ -209,6 +209,46 @@ message UpdateUserBalanceRequest {
   int64 balance = 2;
 }
 
+message AddPaymentRequest {
+  int64 user_id = 1;
+  string payment_id = 2;
+  string amount = 3;
+}
+
+message PaymentResponse {
+  int64 user_id = 1;
+  string payment_id = 2;
+  string amount = 3;
+  string status = 4;
+  bool paid = 5;
+  string type = 6;
+  string Time = 7;
+}
+
+message PaymentsResponse {
+  repeated PaymentResponse payments = 1;
+}
+
+message UpdatePaymentRequest {
+  int64 user_id = 1;
+  string payment_id = 2;
+  string amount = 3;
+  string status = 4;
+  bool paid = 5;
+  string type = 6;
+}
+
+message GetPaymentRequest {
+  string payment_id = 1;
+}
+
+message HandlePaidPaymentsRequest {
+  int64 user_id = 1;
+}
+
+message HandlePaidPaymentsResponse {
+  bool credited = 1;
+}
 
 
 service AuthService {
@@ -226,4 +266,9 @@ service AuthService {
   rpc GetUsersCompany (UserIdRequest) returns (GetPrivateCompanyResponse) {}
   rpc GetCompanyUserLink (UserAndCompanyIdsRequest) returns (GetCompanyUserLinkResponse) {}
   rpc UpdateUserBalance(UpdateUserBalanceRequest) returns (GetPublicUserResponse) {}
+  rpc AddPayment(AddPaymentRequest) returns (PaymentResponse) {}
+  rpc UpdatePayment(UpdatePaymentRequest) returns (PaymentResponse) {}
+  rpc GetUsersPayments(UserIdRequest) returns (PaymentsResponse) {}
+  rpc GetPayment(GetPaymentRequest) returns (PaymentResponse) {}
+  rpc HandlePaidPayments(HandlePaidPaymentsRequest) returns (HandlePaidPaymentsResponse) {}
 }

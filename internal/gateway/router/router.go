@@ -48,6 +48,11 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.POST(cnst.UserCheckEmailURL, lgrMw(cfg.UserDelivery.CheckEmail))
 	p.GET(cnst.UserInfoByCookieURL, lgrMw(authMw(cfg.UserDelivery.GetUserByCookie)))
 	p.POST(cnst.FastRegisterURL, lgrMw(cfg.UserDelivery.FastRegister))
+	//yookassa
+	p.POST(cnst.CreatePaymentAddBalanceURL, lgrMw(authMw(cfg.UserDelivery.CreatePayemntAddBalance)))
+	p.GET(cnst.CheckPaymentURL, lgrMw(authMw(cfg.UserDelivery.CheckPayment)))
+	p.POST(cnst.HandlePaidPaymentsURL, lgrMw(authMw(cfg.UserDelivery.HandlePaidPayments)))
+	p.GET(cnst.GetUsersPaymentsURL, lgrMw(authMw(cfg.UserDelivery.GetUsersPayments)))
 
 	// Unlinked Froms
 	p.POST(cnst.FastOrderURL, lgrMw(cfg.FastOrderDelivery.FastOrder))

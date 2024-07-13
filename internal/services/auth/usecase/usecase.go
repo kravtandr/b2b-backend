@@ -7,6 +7,7 @@ import (
 	"b2b/m/pkg/generator"
 	"context"
 	"log"
+	"strconv"
 
 	"github.com/gofrs/uuid"
 )
@@ -24,12 +25,92 @@ type AuthUseCase interface {
 	GetUsersCompany(ctx context.Context, userId int64) (*company_models.Company, error)
 	GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error)
 	UpdateUserBalance(ctx context.Context, userId int64, newBalance int64) (*models.PublicUser, error)
+	AddUserBalance(ctx context.Context, userId int64, amount int64) (*models.PublicUser, error)
+	AddPayment(ctx context.Context, payment *models.Payment) (*models.Payment, error)
+	UpdatePayment(ctx context.Context, payment *models.Payment) (*models.Payment, error)
+	GetPayment(ctx context.Context, paymentID string) (*models.Payment, error)
+	GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error)
+	HandlePaidPayments(ctx context.Context, userID int64) (bool, error)
 }
 
 type authUseCase struct {
 	hashGenerator hasher
 	repo          authRepository
 	uuidGen       generator.UUIDGenerator
+}
+
+func (a *authUseCase) AddUserBalance(ctx context.Context, userId int64, amount int64) (*models.PublicUser, error) {
+	user, err := a.repo.GetUserByID(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	updatedUser, err := a.repo.UpdateUserBalance(ctx, userId, user.Balance+amount)
+	if err != nil {
+		return nil, err
+	}
+	return &models.PublicUser{
+		Name:       updatedUser.Name,
+		Surname:    updatedUser.Surname,
+		Patronymic: updatedUser.Patronymic,
+		Email:      updatedUser.Email,
+	}, nil
+}
+
+func (a *authUseCase) AddPayment(ctx context.Context, payment *models.Payment) (*models.Payment, error) {
+	return a.repo.AddPayment(ctx, payment)
+}
+
+func (a *authUseCase) UpdatePayment(ctx context.Context, payment *models.Payment) (*models.Payment, error) {
+	return a.repo.UpdatePayment(ctx, payment)
+}
+
+func (a *authUseCase) GetPayment(ctx context.Context, paymentID string) (*models.Payment, error) {
+	return a.repo.GetPayment(ctx, paymentID)
+}
+
+func (a *authUseCase) GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error) {
+	return a.repo.GetUsersPayments(ctx, userID)
+}
+
+func (a *authUseCase) HandlePaidPayments(ctx context.Context, userID int64) (bool, error) {
+	credited := false
+	payments, err := a.repo.GetUsersPayments(ctx, userID)
+	if err != nil {
+		return false, err
+	}
+	for _, payment := range *payments {
+		if payment.Status == "succeeded" && payment.Paid && !payment.Credited {
+			// "1000.00" to int64 1000
+			// Step 1: Parse the string to a float64
+			floatValue, err := strconv.ParseFloat(payment.Amount, 64)
+			if err != nil {
+				return false, err
+			}
+			// Step 2: Convert the float64 to int64
+			amount := int64(floatValue)
+
+			_, err = a.AddUserBalance(ctx, userID, amount)
+			if err != nil {
+				return false, err
+			}
+			_, err = a.repo.UpdatePayment(ctx, &models.Payment{
+				Id:        payment.Id,
+				UserId:    payment.UserId,
+				PaymentId: payment.PaymentId,
+				Amount:    payment.Amount,
+				Status:    payment.Status,
+				Paid:      payment.Paid,
+				Credited:  true, // add balance
+				Time:      payment.Time,
+			})
+			if err != nil {
+				return false, err
+			}
+			credited = true
+
+		}
+	}
+	return credited, nil
 }
 
 func (a *authUseCase) LoginUser(ctx context.Context, user *models.User) (models.CompanyWithCookie, error) {

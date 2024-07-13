@@ -22,4 +22,9 @@ type AuthGRPC interface {
 	GetUsersCompany(ctx context.Context, in *auth_service.UserIdRequest, opts ...grpc.CallOption) (*auth_service.GetPrivateCompanyResponse, error)
 	GetCompanyUserLink(ctx context.Context, in *auth_service.UserAndCompanyIdsRequest, opts ...grpc.CallOption) (*auth_service.GetCompanyUserLinkResponse, error)
 	UpdateUserBalance(ctx context.Context, in *auth_service.UpdateUserBalanceRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error)
+	AddPayment(ctx context.Context, in *auth_service.AddPaymentRequest, opts ...grpc.CallOption) (*auth_service.PaymentResponse, error)
+	UpdatePayment(ctx context.Context, in *auth_service.UpdatePaymentRequest, opts ...grpc.CallOption) (*auth_service.PaymentResponse, error)
+	GetPayment(ctx context.Context, in *auth_service.GetPaymentRequest, opts ...grpc.CallOption) (*auth_service.PaymentResponse, error)
+	GetUsersPayments(ctx context.Context, in *auth_service.UserIdRequest, opts ...grpc.CallOption) (*auth_service.PaymentsResponse, error)
+	HandlePaidPayments(ctx context.Context, in *auth_service.HandlePaidPaymentsRequest, opts ...grpc.CallOption) (*auth_service.HandlePaidPaymentsResponse, error)
 }

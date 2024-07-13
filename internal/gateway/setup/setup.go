@@ -27,6 +27,7 @@ import (
 
 	"gopkg.in/webdeskltd/dadata.v2"
 
+	yookassa "github.com/rvinnie/yookassa-sdk-go/yookassa"
 	"google.golang.org/grpc"
 )
 
@@ -54,8 +55,15 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 	if err != nil {
 		return p, stopFunc, err
 	}
+
+	var UKASSA_SECRET_KEY = "test_on5XfensBJfl8nY63uzUp3CBTW5YE0w6SVhr4VxAdH4"
+	var ACCIUNT_ID = "415910"
+	yooclient := yookassa.NewClient(ACCIUNT_ID, UKASSA_SECRET_KEY)
+	// Создаем обработчик платежей
+	paymentHandler := yookassa.NewPaymentHandler(yooclient)
+
 	UserGRPC := auth_service.NewAuthServiceClient(conn)
-	userUsecase := uu.NewUserUsecase(UserGRPC, CompanyGRPC)
+	userUsecase := uu.NewUserUsecase(UserGRPC, CompanyGRPC, paymentHandler)
 	userDelivery := ud.NewUserDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,

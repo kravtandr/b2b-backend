@@ -23,4 +23,9 @@ const (
 	removeUserSession           = "DELETE FROM Cookies WHERE hash = $1"
 	GetUserInfoQuery            = "SELECT id, name, surname FROM Users WHERE id = $1"
 	createUpdateUserBalance     = "UPDATE Users SET balance = $2 WHERE id = $1 RETURNING id, name, surname, patronymic, email, password"
+	createAddPayment            = "INSERT INTO Payments (user_id, payment_id, amount, type) VALUES ($1, $2, $3, $4) RETURNING id, user_id, payment_id, amount, status, paid, type, credited, created_at"
+	createUpdatePayment         = "UPDATE Payments SET user_id = $1, payment_id = $2, amount = $3, status = $4, paid = $5, type = $6, credited = $7 WHERE payment_id = $2 RETURNING id, user_id, payment_id, amount, status, paid, type, credited, created_at"
+	createGetPayment            = "SELECT id, user_id, payment_id, amount, status, paid, type, credited, created_at FROM Payments WHERE payment_id = $1"
+	createGetUserPayments       = "SELECT id, user_id, payment_id, amount, status, paid, type, credited, created_at FROM Payments WHERE user_id = $1"
+	createCountUserPayments     = "SELECT COUNT(id) FROM Payments WHERE user_id = $1"
 )

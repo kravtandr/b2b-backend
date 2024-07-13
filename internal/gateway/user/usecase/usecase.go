@@ -8,6 +8,10 @@ import (
 	"b2b/m/internal/models"
 	auth_service "b2b/m/pkg/services/auth"
 	company_service "b2b/m/pkg/services/company"
+
+	yookassa "github.com/rvinnie/yookassa-sdk-go/yookassa"
+	yoopcommon "github.com/rvinnie/yookassa-sdk-go/yookassa/common"
+	yoopayment "github.com/rvinnie/yookassa-sdk-go/yookassa/payment"
 )
 
 type UserUsecase interface {
@@ -22,11 +26,156 @@ type UserUsecase interface {
 	CheckEmail(ctx context.Context, request *models.Email) (*models.PublicUser, error)
 	UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.UpdateUserResponse, error)
 	AddUserBalance(ctx context.Context, userID int64, add int64) (*models.UpdateUserResponse, error)
+	CreatePayment(ctx context.Context, request *models.CreatePaymentRequest) (*yoopayment.Payment, error)
+	ConfirmPayment(ctx context.Context, paymentID string) (*yoopayment.Payment, error)
+	CancelPayment(ctx context.Context, paymentID string) (bool, error)
+	GetPaymentInfo(ctx context.Context, paymentID string) (*yoopayment.Payment, error)
+	GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error)
+	HandlePaidPayments(ctx context.Context, userID int64) (bool, error)
 }
 
 type userUsecase struct {
-	AuthGRPC    AuthGRPC
-	companyGRPC company_usecase.CompanyGRPC
+	AuthGRPC       AuthGRPC
+	companyGRPC    company_usecase.CompanyGRPC
+	paymentHandler *yookassa.PaymentHandler
+}
+
+func (u *userUsecase) HandlePaidPayments(ctx context.Context, userID int64) (bool, error) {
+	payments, err := u.GetUsersPayments(ctx, userID)
+	if err != nil {
+		return false, err
+	}
+	for _, payment := range *payments {
+		_, err := u.ConfirmPayment(ctx, payment.ID)
+		if err != nil {
+			return false, err
+		}
+
+	}
+	credited, err := u.AuthGRPC.HandlePaidPayments(ctx, &auth_service.HandlePaidPaymentsRequest{
+		UserId: userID,
+	})
+	if err != nil {
+		return false, err
+	}
+	return credited.Credited, nil
+}
+
+func (u *userUsecase) CreatePayment(ctx context.Context, request *models.CreatePaymentRequest) (*yoopayment.Payment, error) {
+	// Создаем платеж
+	payment, err := u.paymentHandler.CreatePayment(&yoopayment.Payment{
+		Amount: &yoopcommon.Amount{
+			Value:    request.Amount,
+			Currency: "RUB",
+		},
+		PaymentMethod: yoopayment.PaymentMethodType("bank_card"),
+		Confirmation: yoopayment.Redirect{
+			Type:      "redirect",
+			ReturnURL: "https://bi-tu-bi.ru/profile",
+		},
+		Description: "Пополннение баланса: " + request.Amount + " руб.",
+	})
+	if err != nil {
+		return payment, err
+	}
+
+	_, err = u.AuthGRPC.AddPayment(ctx, &auth_service.AddPaymentRequest{
+		PaymentId: payment.ID,
+		UserId:    request.User_id,
+		Amount:    payment.Amount.Value,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return payment, nil
+}
+
+func (u *userUsecase) ConfirmPayment(ctx context.Context, paymentID string) (*yoopayment.Payment, error) {
+	getPayment, err := u.GetPaymentInfo(ctx, paymentID)
+	if err != nil {
+		return nil, err
+	}
+	if getPayment.Status == "waiting_for_capture" && getPayment.Paid {
+		log.Println("confirm: ", getPayment.ID)
+		// status = "waiting_for_capture"
+		getPayment, _ = u.paymentHandler.CapturePayment(getPayment)
+		getRepoPayment, err := u.AuthGRPC.GetPayment(ctx, &auth_service.GetPaymentRequest{
+			PaymentId: paymentID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		// status = "succeeded"
+		_, err = u.AuthGRPC.UpdatePayment(ctx, &auth_service.UpdatePaymentRequest{
+			UserId:    getRepoPayment.UserId,
+			PaymentId: paymentID,
+			Amount:    getPayment.Amount.Value,
+			Status:    "succeeded",
+			Paid:      getPayment.Paid,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+	}
+	return getPayment, nil
+}
+
+func (u *userUsecase) CancelPayment(ctx context.Context, paymentID string) (bool, error) {
+	getPayment, err := u.paymentHandler.CancelPayment(paymentID)
+	if err != nil {
+		return false, err
+	}
+
+	getRepoPayment, err := u.AuthGRPC.GetPayment(ctx, &auth_service.GetPaymentRequest{
+		PaymentId: paymentID,
+	})
+	if err != nil {
+		return err == nil, err
+	}
+
+	_, err = u.AuthGRPC.UpdatePayment(ctx, &auth_service.UpdatePaymentRequest{
+		UserId:    getRepoPayment.UserId,
+		PaymentId: paymentID,
+		Amount:    getPayment.Amount.Value,
+		Status:    "cancelled",
+		Paid:      getPayment.Paid,
+	})
+	if err != nil {
+		return err == nil, err
+	}
+
+	return err == nil, err
+}
+
+func (u *userUsecase) GetPaymentInfo(ctx context.Context, paymentID string) (*yoopayment.Payment, error) {
+	// get payment info
+	getPayment, err := u.paymentHandler.FindPayment(paymentID)
+	if err != nil {
+		return nil, err
+	}
+
+	return getPayment, nil
+}
+
+func (u *userUsecase) GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error) {
+	response, err := u.AuthGRPC.GetUsersPayments(ctx, &auth_service.UserIdRequest{Id: userID})
+	if err != nil {
+		return nil, err
+	}
+	var payment models.Payment
+	var payments models.Payments
+	for _, result := range response.Payments {
+		payment = models.Payment{
+			ID:     result.PaymentId,
+			Status: yoopayment.Status(result.Status),
+			Amount: &yoopcommon.Amount{Value: result.Amount, Currency: "RUB"},
+			Paid:   result.Paid,
+		}
+		payments = append(payments, payment)
+	}
+	return &payments, nil
 }
 
 func (u *userUsecase) Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error) {
@@ -284,6 +433,6 @@ func (u *userUsecase) AddUserBalance(ctx context.Context, userID int64, add int6
 	}, nil
 }
 
-func NewUserUsecase(AuthGRPC AuthGRPC, companyGRPC company_usecase.CompanyGRPC) UserUsecase {
-	return &userUsecase{AuthGRPC: AuthGRPC, companyGRPC: companyGRPC}
+func NewUserUsecase(AuthGRPC AuthGRPC, companyGRPC company_usecase.CompanyGRPC, paymentHandler *yookassa.PaymentHandler) UserUsecase {
+	return &userUsecase{AuthGRPC: AuthGRPC, companyGRPC: companyGRPC, paymentHandler: paymentHandler}
 }

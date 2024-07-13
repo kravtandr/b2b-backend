@@ -264,6 +264,21 @@ CREATE TABLE Cookies (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE Payments
+(
+    id                      SERIAL                  NOT NULL PRIMARY KEY,
+    user_id                 INT                     NOT NULL,
+    payment_id              TEXT                    NOT NULL,
+    amount                  TEXT                    NOT NULL,
+    status                  TEXT                    NOT NULL DEFAULT 'pending',
+    paid                    BOOLEAN                 NOT NULL DEFAULT FALSE,
+    type                    TEXT                    NOT NULL DEFAULT 'default',
+    credited                BOOLEAN                 NOT NULL DEFAULT FALSE,
+    created_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    updated_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (user_id)   REFERENCES Users (id)   ON DELETE CASCADE
+);
+
 
 -- INSERT INTO products(name, description, price) VALUES('1_product', 'test_desc1', 1001);
 -- INSERT INTO products(name, description, price) VALUES('2_product', 'test_desc2', 1002);

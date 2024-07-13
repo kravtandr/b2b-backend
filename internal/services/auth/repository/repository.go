@@ -25,11 +25,110 @@ type AuthRepository interface {
 	GetUserInfo(ctx context.Context, id int64) (*models.User, error)
 	GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error)
 	UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.User, error)
+	AddPayment(ctx context.Context, payment *models.Payment) (*models.Payment, error)
+	UpdatePayment(ctx context.Context, payment *models.Payment) (*models.Payment, error)
+	GetPayment(ctx context.Context, paymentID string) (*models.Payment, error)
+	GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error)
+	CountUsersPayments(ctx context.Context, userID int64) (int, error)
 }
 
 type authRepository struct {
 	queryFactory QueryFactory
 	conn         *pgxpool.Pool
+}
+
+func (a *authRepository) AddPayment(ctx context.Context, payment *models.Payment) (*models.Payment, error) {
+
+	query := a.queryFactory.CreateAddPayment(payment)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	if err := row.Scan(
+		&payment.Id, &payment.UserId, &payment.PaymentId, &payment.Amount, &payment.Status, &payment.Paid, &payment.Type, &payment.Credited, &payment.Time,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.UserDoesNotExist
+		}
+
+		return nil, err
+	}
+
+	return payment, nil
+}
+
+func (a *authRepository) UpdatePayment(ctx context.Context, payment *models.Payment) (*models.Payment, error) {
+	query := a.queryFactory.CreateUpdatePayment(payment)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	if err := row.Scan(
+		&payment.Id, &payment.UserId, &payment.PaymentId, &payment.Amount, &payment.Status, &payment.Paid, &payment.Type, &payment.Credited, &payment.Time,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.UserDoesNotExist
+		}
+
+		return nil, err
+	}
+
+	return payment, nil
+}
+
+func (a *authRepository) GetPayment(ctx context.Context, paymentID string) (*models.Payment, error) {
+	query := a.queryFactory.CreateGetPayment(paymentID)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	payment := &models.Payment{}
+	if err := row.Scan(
+		&payment.Id, &payment.UserId, &payment.PaymentId, &payment.Amount, &payment.Status, &payment.Paid, &payment.Type, &payment.Credited, &payment.Time,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.UserDoesNotExist
+		}
+
+		return nil, err
+	}
+
+	return payment, nil
+}
+
+func (a *authRepository) CountUsersPayments(ctx context.Context, userID int64) (int, error) {
+	query := a.queryFactory.CreateCountUsersPayments(userID)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	var count int
+	if err := row.Scan(&count); err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (a *authRepository) GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error) {
+	query := a.queryFactory.CreateGetUsersPayments(userID)
+	payment := &models.Payment{}
+	var payments models.Payments
+	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Println("ERROR ", err)
+		return &payments, err
+	}
+	payments_amount, err := a.CountUsersPayments(ctx, userID)
+	if err != nil {
+		log.Println("ERROR ", err)
+		return &payments, err
+	}
+	if payments_amount == 0 {
+		return &payments, nil
+	}
+	log.Println("payments_amount: ", payments_amount, " userID: ", userID)
+
+	// payments = make(models.Payments, payments_amount)
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&payment.Id, &payment.UserId, &payment.PaymentId, &payment.Amount, &payment.Status, &payment.Paid, &payment.Type, &payment.Credited, &payment.Time)
+		payments = append(payments, *payment)
+	}
+	if rows.Err() != nil {
+		log.Println("ERROR ", err)
+		return &payments, err
+	}
+	log.Println("status: ", rows.Err())
+	log.Println("Repo result OK Result: ", payments)
+	return &payments, err
 }
 
 func (a *authRepository) FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) error {

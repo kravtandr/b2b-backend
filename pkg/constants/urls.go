@@ -9,6 +9,12 @@ const LogoutURL = "/logout"
 const UserInfoURL = "/user/{id}"
 const UserInfoByCookieURL = "/user/me"
 
+// yookassa
+const CreatePaymentAddBalanceURL = "/payment/addbalance"
+const CheckPaymentURL = "/payment/check"
+const HandlePaidPaymentsURL = "/user/payment/handle/all"
+const GetUsersPaymentsURL = "/user/payments/list"
+
 // FastOrder
 const FastOrderURL = "/fastOrder"
 const LandingOrderURL = "/landingOrder"

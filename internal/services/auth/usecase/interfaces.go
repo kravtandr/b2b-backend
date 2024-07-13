@@ -20,6 +20,10 @@ type authRepository interface {
 	GetUsersCompany(ctx context.Context, userId int64) (*company_models.Company, error)
 	GetCompanyUserLink(ctx context.Context, userId int64, companyId int64) (*company_models.CompaniesUsersLink, error)
 	UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.User, error)
+	AddPayment(ctx context.Context, payment *models.Payment) (*models.Payment, error)
+	UpdatePayment(ctx context.Context, payment *models.Payment) (*models.Payment, error)
+	GetPayment(ctx context.Context, paymentID string) (*models.Payment, error)
+	GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error)
 }
 
 type hasher interface {
