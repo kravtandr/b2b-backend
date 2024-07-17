@@ -50,7 +50,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.POST(cnst.FastRegisterURL, lgrMw(cfg.UserDelivery.FastRegister))
 	//yookassa
 	p.POST(cnst.CreatePaymentAddBalanceURL, lgrMw(authMw(cfg.UserDelivery.CreatePayemntAddBalance)))
-	p.GET(cnst.CheckPaymentURL, lgrMw(authMw(cfg.UserDelivery.CheckPayment)))
+	p.POST(cnst.CheckPaymentURL, lgrMw(authMw(cfg.UserDelivery.CheckPayment)))
 	p.POST(cnst.HandlePaidPaymentsURL, lgrMw(authMw(cfg.UserDelivery.HandlePaidPayments)))
 	p.GET(cnst.GetUsersPaymentsURL, lgrMw(authMw(cfg.UserDelivery.GetUsersPayments)))
 
@@ -72,7 +72,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.POST(cnst.ProductsListByFiltersURL, lgrMw(cfg.ProductsCategoriesDelivery.GetProductsListByFilters))
 	p.POST(cnst.SearchProductsURL, lgrMw(cfg.ProductsCategoriesDelivery.SearchProducts))
 	p.POST(cnst.AddProductURL, lgrMw(authMw(cfg.ProductsCategoriesDelivery.AddProduct)))
-	p.GET(cnst.CompanyProductsListURL, lgrMw(cfg.ProductsCategoriesDelivery.GetCompanyProducts))
+	p.POST(cnst.CompanyProductsListURL, lgrMw(cfg.ProductsCategoriesDelivery.GetCompanyProducts))
 
 	// Chat
 	p.GET(cnst.CheckIfUniqChat, lgrMw(authMw(cfg.ChatDelivery.CheckIfUniqChat)))
