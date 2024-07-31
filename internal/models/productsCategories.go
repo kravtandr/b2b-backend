@@ -41,10 +41,14 @@ type AddProductByFormRequest struct {
 	Adress      string   `json:"adress"`
 }
 
+type UpdateProductByFormRequest = AddProductByFormRequest
+
 type UserInfoAndAddProductByFormRequest struct {
 	Product     AddProductByFormRequest
 	UserProfile Profile
 }
+
+type UserInfoAndUpdateProductByFormRequest = UserInfoAndAddProductByFormRequest
 
 type GetProductByIdResponse struct {
 	Id          int64          `json:"id"`

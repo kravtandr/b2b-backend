@@ -17,18 +17,46 @@ import (
 
 type ProductsCategoriesDelivery interface {
 	AddProduct(ctx *fasthttp.RequestCtx)
-	GetCategoryById(ctx *fasthttp.RequestCtx)
 	GetProductById(ctx *fasthttp.RequestCtx)
-	SearchCategories(ctx *fasthttp.RequestCtx)
+	UpdateProduct(ctx *fasthttp.RequestCtx)
+
 	SearchProducts(ctx *fasthttp.RequestCtx)
 	GetProductsList(ctx *fasthttp.RequestCtx)
 	GetProductsListByFilters(ctx *fasthttp.RequestCtx)
 	GetCompanyProducts(ctx *fasthttp.RequestCtx)
+
+	GetCategoryById(ctx *fasthttp.RequestCtx)
+	SearchCategories(ctx *fasthttp.RequestCtx)
 }
 
 type productsCategoriesDelivery struct {
 	errorAdapter error_adapter.HttpAdapter
 	manager      usecase.ProductsCategoriesUseCase
+}
+
+func (u *productsCategoriesDelivery) UpdateProduct(ctx *fasthttp.RequestCtx) {
+	var product = &models.UpdateProductByFormRequest{}
+	if err := json.Unmarshal(ctx.Request.Body(), product); err != nil {
+		log.Println("Gateway UpdateProduct Unmarshal ERROR", err)
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+	var request = &models.UserInfoAndAddProductByFormRequest{}
+	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
+	request.UserProfile.Id = userId
+	request.Product = *product
+	response, err := u.manager.UpdateProduct(ctx, request)
+	if err != nil {
+		log.Println("Gateway UpdateProduct u.manager.UpdateProduct ERROR", err)
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, _ := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
 }
 
 func (u *productsCategoriesDelivery) AddProduct(ctx *fasthttp.RequestCtx) {

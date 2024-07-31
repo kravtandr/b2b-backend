@@ -19,22 +19,51 @@ import (
 )
 
 type ProductsCategoriesRepository interface {
-	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
+	AddProduct(ctx context.Context, Product *models.Product) (*models.Product, error)
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
-	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
+	UpdateProduct(ctx context.Context, Product *models.Product) (*models.Product, error)
+
+	GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error)
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.Products, error)
 	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error)
-	AddProduct(ctx context.Context, Product *models.Product) (*models.Product, error)
-	AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error
+
+	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
+	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
+
 	AddCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error
-	GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error)
+	GetCompanyProductsLink(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.CompaniesProducts, error)
+	UpdateCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error
+
+	AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error
+	GetProductsCategoriesLinks(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.ProductWithCategory, error)
+	UpdateProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error
 }
 
 type productsCategoriesRepository struct {
 	queryFactory QueryFactory
 	conn         *pgxpool.Pool
 	minioClient  *minio.Client
+}
+
+func (a productsCategoriesRepository) GetProductsCategoriesLinks(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.ProductWithCategory, error) {
+	// query := a.queryFactory.CreateGetProductsCategoriesLinks(CompanyId, SkipLimit.Skip, SkipLimit.Limit)
+	// rows, err := a.conn.Query(ctx, query.Request, query.Params...)
+	// if err!= nil {
+	//     return &models.ProductWithCategory{}, err
+	// }
+	// defer rows.Close()
+
+	// products := &models.ProductWithCategory{}
+	// for rows.Next() {
+	//     productCategory := &models.ProductWithCategory{}
+	//     if err := rows.Scan(
+	//         &productCategory.Id, &productCategory.Name, &productCategory.Description, &productCategory.Price,
+	//         &productCategory.CategoryId, &productCategory.CategoryName, &productCategory.CategoryDescription,
+	//     ); err!= nil {
+	//         return &models.ProductWithCategory{}, err
+	//     }
+	//     products.Items = append(products.Items, productCategory
 }
 
 func (a productsCategoriesRepository) GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error) {
@@ -240,6 +269,95 @@ func (a productsCategoriesRepository) AddProduct(ctx context.Context, Product *m
 
 }
 
+func (a productsCategoriesRepository) UpdateProduct(ctx context.Context, Product *models.Product) (*models.Product, error) {
+	// TODO can duplicate photos and docs
+
+	// store base64 undecoded or decode and store image?????????
+	// Very roughly, the final size of Base64-encoded binary data is equal to 1.37 times the original data size
+	// if decode and store as image had to convert to right image type png/jpeg and encode to response
+	// how to store decoded image??? can it be stored in var???
+	// decoding base64 easier way to store in minio and have previev
+	// if store base64 how to put base64 to minio??? what size? on the other side no decoding
+	// decode to img -> minio store -> encode to base64
+	log.Println("Start UpdateProduct")
+	log.Println("PutPhotos...")
+	Product, err := a.PutPhotos(ctx, Product)
+	if err != nil {
+		log.Println("Error in PutPhotos ", err)
+		return &models.Product{}, err
+	}
+	log.Println("PutPhotos - OK")
+	log.Println("CreateUpdateProduct...")
+	log.Println("a.queryFactory.CreateUpdateProduct...")
+	query := a.queryFactory.CreateUpdateProduct(Product)
+	log.Println("a.queryFactory.CreateUpdateProduct - OK")
+	log.Println("a.conn.QueryRow...")
+	//timeout 15 sek
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	log.Println("_______________________________")
+	err = a.conn.Ping(ctx)
+	if err != nil {
+		log.Println("PING ERR", err)
+	} else {
+		log.Println("PING OK")
+	}
+	log.Println(ctx, query.Request, query.Params)
+	log.Println("_______________________________")
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	log.Println("a.conn.QueryRow - OK")
+	if err := row.Scan(
+		&Product.Id, &Product.Name, &Product.Description, &Product.Price,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			return &models.Product{}, errors.ProductDoesNotExist
+		}
+		return &models.Product{}, err
+	}
+	log.Println("CreateUpdateProduct - OK")
+	log.Println("UpdateProductPhotos...")
+	err = a.AddProductPhotos(ctx, Product)
+	if err != nil {
+		log.Println("Error in AddProductPhotos ", err)
+		return &models.Product{}, err
+	}
+	log.Println("AddProductPhotos - OK")
+	log.Println("AddProductDocuments...")
+	err = a.AddProductDocuments(ctx, Product)
+	if err != nil {
+		log.Println("Error in AddProductDocuments ", err)
+		return &models.Product{}, err
+	}
+	log.Println("AddProductDocuments - OK")
+	//base64 in response
+	log.Println("GetProductById...")
+	result, err := a.GetProductById(ctx, &models.ProductId{Id: Product.Id})
+	if err != nil {
+		log.Println("Error in GetProductById ", err)
+		return &models.Product{}, err
+	}
+	log.Println("GetProductById - OK")
+	log.Println("END UpdateProduct")
+	return result, nil
+	//return &models.Product{}, nil
+}
+
+func (a productsCategoriesRepository) UpdateProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error {
+	product, err := a.GetProductsCategoriesLinks(ctx, &models.ProductId{Id: productId})
+	if err != nil {
+		log.Println("ERROR GetProductById", err)
+		return err
+	}
+
+	if product.Id != categoryId {
+		query := a.queryFactory.CreateUpdateProductsCategoriesLink(productId, categoryId)
+		if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+			log.Println("ERROR UpdateProductsCategoriesLink", err)
+			return err
+		}
+	}
+	return nil
+}
 func (a productsCategoriesRepository) AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error {
 	query := a.queryFactory.CreateAddProductsCategoriesLink(productId, categoryId)
 	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {

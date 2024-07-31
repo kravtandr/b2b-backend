@@ -16,13 +16,14 @@ import (
 )
 
 type ChatDelivery interface {
-	CheckIfUniqChat(ctx *fasthttp.RequestCtx)
 	InitChat(ctx *fasthttp.RequestCtx)
-	UpdateChatStatus(ctx *fasthttp.RequestCtx)
-	DeleteChat(ctx *fasthttp.RequestCtx)
+	GetAllChats(ctx *fasthttp.RequestCtx)
 	GetAllChatsAndLastMsg(ctx *fasthttp.RequestCtx)
 	GetMsgsFromChat(ctx *fasthttp.RequestCtx)
-	GetAllChats(ctx *fasthttp.RequestCtx)
+	UpdateChatStatus(ctx *fasthttp.RequestCtx)
+	DeleteChat(ctx *fasthttp.RequestCtx)
+
+	CheckIfUniqChat(ctx *fasthttp.RequestCtx)
 	TestGw(ctx *fasthttp.RequestCtx)
 }
 type Msg struct {

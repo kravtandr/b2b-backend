@@ -9,13 +9,16 @@ import (
 
 type ProductsCategoriesUseCase interface {
 	AddProduct(ctx context.Context, Product *models.Product, CompaniesProducts *models.CompaniesProducts, userId int64, companyId int64, categoryId int64) (*models.Product, error)
-	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
-	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
+	UpdateProduct(ctx context.Context, Product *models.Product, CompaniesProducts *models.CompaniesProducts, userId int64, companyId int64, categoryId int64) (*models.Product, error)
+
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.Products, error)
 	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error)
 	GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error)
+
+	GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error)
+	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
 }
 
 type productsCategoriesUseCase struct {
@@ -60,6 +63,32 @@ func (a *productsCategoriesUseCase) AddProduct(ctx context.Context, Product *mod
 		return &models.Product{}, err
 	}
 	log.Println("OK ||| productsCategoriesUseCase -> AddProduct -> all done. New product")
+	// log.Println(Product)
+	return Product, nil
+}
+
+func (a *productsCategoriesUseCase) UpdateProduct(ctx context.Context, Product *models.Product, CompaniesProducts *models.CompaniesProducts, userId int64, companyId int64, categoryId int64) (*models.Product, error) {
+	log.Println("productsCategoriesUseCase -> UpdateProduct")
+	Product, err := a.repo.UpdateProduct(ctx, Product)
+	if err != nil {
+		return &models.Product{}, err
+	}
+	CompaniesProducts.ProductId = Product.Id
+	log.Println("productsCategoriesUseCase -> UpdateProductsCategoriesLink")
+	err = a.repo.UpdateProductsCategoriesLink(ctx, Product.Id, categoryId)
+	if err != nil {
+		log.Println("productsCategoriesUseCase -> UpdateProductsCategoriesLink", err)
+		return &models.Product{}, err
+	}
+
+	log.Println("productsCategoriesUseCase: GET product id from db = ", CompaniesProducts.ProductId)
+	log.Println("productsCategoriesUseCase -> UpdateCompaniesProductsLink")
+	err = a.repo.UpdateCompaniesProductsLink(ctx, CompaniesProducts)
+	if err != nil {
+		log.Println("productsCategoriesUseCase -> UpdateCompaniesProductsLink", err)
+		return &models.Product{}, err
+	}
+	log.Println("OK ||| productsCategoriesUseCase -> UpdateProduct -> all done. updated product")
 	// log.Println(Product)
 	return Product, nil
 }

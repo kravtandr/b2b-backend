@@ -196,6 +196,26 @@ func (mr *MockProductsCategoriesServiceClientMockRecorder) SearchProducts(ctx, i
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchProducts", reflect.TypeOf((*MockProductsCategoriesServiceClient)(nil).SearchProducts), varargs...)
 }
 
+// UpdateProduct mocks base method.
+func (m *MockProductsCategoriesServiceClient) UpdateProduct(ctx context.Context, in *productsCategories_service.UpdateProductRequest, opts ...grpc.CallOption) (*productsCategories_service.GetProduct, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UpdateProduct", varargs...)
+	ret0, _ := ret[0].(*productsCategories_service.GetProduct)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateProduct indicates an expected call of UpdateProduct.
+func (mr *MockProductsCategoriesServiceClientMockRecorder) UpdateProduct(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProduct", reflect.TypeOf((*MockProductsCategoriesServiceClient)(nil).UpdateProduct), varargs...)
+}
+
 // MockProductsCategoriesServiceServer is a mock of ProductsCategoriesServiceServer interface.
 type MockProductsCategoriesServiceServer struct {
 	ctrl     *gomock.Controller
@@ -337,6 +357,21 @@ func (m *MockProductsCategoriesServiceServer) SearchProducts(arg0 context.Contex
 func (mr *MockProductsCategoriesServiceServerMockRecorder) SearchProducts(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchProducts", reflect.TypeOf((*MockProductsCategoriesServiceServer)(nil).SearchProducts), arg0, arg1)
+}
+
+// UpdateProduct mocks base method.
+func (m *MockProductsCategoriesServiceServer) UpdateProduct(arg0 context.Context, arg1 *productsCategories_service.UpdateProductRequest) (*productsCategories_service.GetProduct, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateProduct", arg0, arg1)
+	ret0, _ := ret[0].(*productsCategories_service.GetProduct)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateProduct indicates an expected call of UpdateProduct.
+func (mr *MockProductsCategoriesServiceServerMockRecorder) UpdateProduct(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProduct", reflect.TypeOf((*MockProductsCategoriesServiceServer)(nil).UpdateProduct), arg0, arg1)
 }
 
 // mustEmbedUnimplementedProductsCategoriesServiceServer mocks base method.

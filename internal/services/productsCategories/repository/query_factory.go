@@ -9,21 +9,26 @@ import (
 )
 
 type QueryFactory interface {
-	CreateGetCategoryById(id int64) *query.Query
+	CreateAddProduct(Product *models.Product) *query.Query
+	CreateAddProductDocuments(productId int64, objName string) *query.Query
+	CreateAddProductPhotos(productId int64, objName string) *query.Query
 	CreateGetProductById(id int64) *query.Query
-	CreateGetAllCategories() *query.Query
-	CreateSearchCategories(SearchBody *chttp.SearchItemNameWithSkipLimit) *query.Query
+	CreateGetProductPhotos(productId int64) *query.Query
+	CreateGetProductDocuments(productId int64) *query.Query
+
 	CreateGetProductsList(SkipLimit *chttp.QueryParam) *query.Query
 	CreateGetProductsListByFilters(filters *models.ProductsFilters) *query.Query
 	CreateSearchProducts(SearchBody *chttp.SearchItemNameWithSkipLimit) *query.Query
-	CreateAddProduct(Product *models.Product) *query.Query
-	CreateAddProductsCategoriesLink(productId int64, categoryId int64) *query.Query
-	CreateAddCompaniesProductsLink(CompaniesProducts *models.CompaniesProducts) *query.Query
-	CreateAddProductDocuments(productId int64, objName string) *query.Query
-	CreateAddProductPhotos(productId int64, objName string) *query.Query
-	CreateGetProductPhotos(productId int64) *query.Query
-	CreateGetProductDocuments(productId int64) *query.Query
 	CreateGetCompanyProducts(CompanyId int64, SkipLimit *chttp.QueryParam) *query.Query
+
+	CreateGetCategoryById(id int64) *query.Query
+	CreateGetAllCategories() *query.Query
+
+	CreateSearchCategories(SearchBody *chttp.SearchItemNameWithSkipLimit) *query.Query
+
+	CreateAddProductsCategoriesLink(productId int64, categoryId int64) *query.Query
+
+	CreateAddCompaniesProductsLink(CompaniesProducts *models.CompaniesProducts) *query.Query
 }
 
 type queryFactory struct{}

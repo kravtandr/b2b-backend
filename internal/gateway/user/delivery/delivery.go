@@ -16,19 +16,23 @@ import (
 )
 
 type UserDelivery interface {
+	Register(ctx *fasthttp.RequestCtx)
+	FastRegister(ctx *fasthttp.RequestCtx)
 	Login(ctx *fasthttp.RequestCtx)
 	Logout(ctx *fasthttp.RequestCtx)
-	Register(ctx *fasthttp.RequestCtx)
+
 	GetUserInfoById(ctx *fasthttp.RequestCtx)
 	GetUserByCookie(ctx *fasthttp.RequestCtx)
-	FastRegister(ctx *fasthttp.RequestCtx)
+
 	GetProfile(ctx *fasthttp.RequestCtx)
 	UpdateProfile(ctx *fasthttp.RequestCtx)
+
 	CheckEmail(ctx *fasthttp.RequestCtx)
+
 	CreatePayemntAddBalance(ctx *fasthttp.RequestCtx)
+	GetUsersPayments(ctx *fasthttp.RequestCtx)
 	CheckPayment(ctx *fasthttp.RequestCtx)
 	HandlePaidPayments(ctx *fasthttp.RequestCtx)
-	GetUsersPayments(ctx *fasthttp.RequestCtx)
 }
 
 type userDelivery struct {

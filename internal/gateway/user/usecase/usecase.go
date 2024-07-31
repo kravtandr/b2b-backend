@@ -15,21 +15,25 @@ import (
 )
 
 type UserUsecase interface {
-	Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error)
 	Register(ctx context.Context, request *models.RegisterUserRequest) (*models.Session, error)
-	Logout(ctx context.Context, cookie string) error
-	GetUserInfo(ctx context.Context, id int64) (*models.Profile, error)
 	FastRegister(ctx context.Context, request *models.FastRegistrationForm) (*models.CompanyWithCookie, error)
+	Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error)
+	Logout(ctx context.Context, cookie string) error
+
+	GetUserInfo(ctx context.Context, id int64) (*models.Profile, error)
 	Profile(ctx context.Context, userID int64) (*models.Profile, error)
-	UpdateProfile(ctx context.Context, userID int64, request *models.PublicCompanyAndOwnerRequest) (*models.PublicCompanyAndOwnerResponse, error)
 	GetUserIdByCookie(ctx context.Context, hash string) (int64, error)
-	CheckEmail(ctx context.Context, request *models.Email) (*models.PublicUser, error)
 	UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.UpdateUserResponse, error)
+	UpdateProfile(ctx context.Context, userID int64, request *models.PublicCompanyAndOwnerRequest) (*models.PublicCompanyAndOwnerResponse, error)
 	AddUserBalance(ctx context.Context, userID int64, add int64) (*models.UpdateUserResponse, error)
+
+	CheckEmail(ctx context.Context, request *models.Email) (*models.PublicUser, error)
+
 	CreatePayment(ctx context.Context, request *models.CreatePaymentRequest) (*yoopayment.Payment, error)
+	GetPaymentInfo(ctx context.Context, paymentID string) (*yoopayment.Payment, error)
 	ConfirmPayment(ctx context.Context, paymentID string) (*yoopayment.Payment, error)
 	CancelPayment(ctx context.Context, paymentID string) (bool, error)
-	GetPaymentInfo(ctx context.Context, paymentID string) (*yoopayment.Payment, error)
+
 	GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error)
 	HandlePaidPayments(ctx context.Context, userID int64) (bool, error)
 }

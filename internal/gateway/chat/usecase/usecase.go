@@ -18,17 +18,20 @@ import (
 var NEW_CHAT_PRICE int64 = 100
 
 type ChatUsecase interface {
+	NewChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
 	InitChat(ctx context.Context, userId int64, productId int64) (bool, int64, error)
+	GetChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
 	UpdateChatStatus(ctx context.Context, chatId int64, status string, blured bool) (*models.Chat, error)
 	DeleteChat(ctx context.Context, request *models.DeleteChatRequest) (bool, error)
-	CheckIfUniqChat(ctx context.Context, userId int64, productId int64) (bool, error)
-	NewChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
-	GetChat(ctx context.Context, userId int64, productId int64) (*models.Chat, error)
+
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllUserChats(ctx context.Context, userId int64, cookie string) (*models.Chats, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
+
+	CheckIfUniqChat(ctx context.Context, userId int64, productId int64) (bool, error)
 	CheckAndUnblurChats(ctx context.Context, userId int64) error
 	CheckOwnerBalanceAndReduce(ctx context.Context, productId int64) (bool, error)
+
 	BlurChatLastMsg(ctx context.Context, chat models.ChatAndLastMsg) models.ChatAndLastMsg
 	BlurChatMsg(ctx context.Context, msg models.Msg) models.Msg
 }

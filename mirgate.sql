@@ -99,6 +99,7 @@ CREATE TABLE Users
     email           TEXT        NOT NULL UNIQUE,
     password        TEXT        NOT NULL,
     group_id        INT         DEFAULT 1,
+    balance         INT         DEFAULT 1000,
     FOREIGN KEY (group_id) REFERENCES Groups (id) ON DELETE CASCADE
 );
 
