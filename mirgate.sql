@@ -99,6 +99,7 @@ CREATE TABLE Users
     email           TEXT        NOT NULL UNIQUE,
     password        TEXT        NOT NULL,
     group_id        INT         DEFAULT 1,
+    balance         INT         DEFAULT 1000,
     FOREIGN KEY (group_id) REFERENCES Groups (id) ON DELETE CASCADE
 );
 
@@ -121,6 +122,7 @@ CREATE TABLE Companies
     owner_id        INT         NOT NULL,
     rating          INT         DEFAULT 0,
     verified        INT         DEFAULT 0,
+    photo_obj_name  Text        DEFAULT 'no photo',
     docs            TEXT[]      ,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -261,6 +263,21 @@ CREATE TABLE Cookies (
   user_id INT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Payments
+(
+    id                      SERIAL                  NOT NULL PRIMARY KEY,
+    user_id                 INT                     NOT NULL,
+    payment_id              TEXT                    NOT NULL,
+    amount                  TEXT                    NOT NULL,
+    status                  TEXT                    NOT NULL DEFAULT 'pending',
+    paid                    BOOLEAN                 NOT NULL DEFAULT FALSE,
+    type                    TEXT                    NOT NULL DEFAULT 'default',
+    credited                BOOLEAN                 NOT NULL DEFAULT FALSE,
+    created_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    updated_at              TIMESTAMPTZ             NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (user_id)   REFERENCES Users (id)   ON DELETE CASCADE
 );
 
 

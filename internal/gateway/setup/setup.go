@@ -22,10 +22,12 @@ import (
 	company_service "b2b/m/pkg/services/company"
 	fastOrder_service "b2b/m/pkg/services/fastOrder"
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
+	"math"
 	"time"
 
 	"gopkg.in/webdeskltd/dadata.v2"
 
+	yookassa "github.com/rvinnie/yookassa-sdk-go/yookassa"
 	"google.golang.org/grpc"
 )
 
@@ -53,8 +55,15 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 	if err != nil {
 		return p, stopFunc, err
 	}
+
+	var UKASSA_SECRET_KEY = "test_on5XfensBJfl8nY63uzUp3CBTW5YE0w6SVhr4VxAdH4"
+	var ACCIUNT_ID = "415910"
+	yooclient := yookassa.NewClient(ACCIUNT_ID, UKASSA_SECRET_KEY)
+	// Создаем обработчик платежей
+	paymentHandler := yookassa.NewPaymentHandler(yooclient)
+
 	UserGRPC := auth_service.NewAuthServiceClient(conn)
-	userUsecase := uu.NewUserUsecase(UserGRPC, CompanyGRPC)
+	userUsecase := uu.NewUserUsecase(UserGRPC, CompanyGRPC, paymentHandler)
 	userDelivery := ud.NewUserDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
@@ -75,7 +84,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		fastOrderUseCase,
 	)
 
-	productsCategoriesConn, err := grpc.Dial(cfg.ProductsCategoriesServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
+	productsCategoriesConn, err := grpc.Dial(cfg.ProductsCategoriesServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithMaxMsgSize(math.MaxInt64))
 	if err != nil {
 		return p, stopFunc, err
 	}
@@ -93,7 +102,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		return p, stopFunc, err
 	}
 	chatGRPC := chat_service.NewChatServiceClient(ChatConn)
-	chatUsecase := chatu.NewChatUsecase(chatGRPC, CompanyGRPC, ProductsCategoriesGRPC, UserGRPC)
+	chatUsecase := chatu.NewChatUsecase(chatGRPC, CompanyGRPC, ProductsCategoriesGRPC, UserGRPC, userUsecase)
 	chatDelivery := chatd.NewChatDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,

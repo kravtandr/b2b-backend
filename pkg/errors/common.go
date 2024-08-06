@@ -18,6 +18,9 @@ var (
 	CantCreateTmpFile        = errors.New("Error while create tmp file")
 	CantDecodeImgFromBase64  = errors.New("Error while DecodeImgFromBase64")
 	ErrorMinioFPutObject     = errors.New("Error in FPutObject")
+	UnableToDecodeJpeg       = errors.New("UnableToDecodeJpeg")
+	UnableToEncodePng        = errors.New("UnableToEncodePng")
+	UnknownImgFormat         = errors.New("UnknownImgFormat")
 )
 
 var DeniedAccess = errors.New("user doesn't have permission for this action")

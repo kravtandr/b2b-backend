@@ -13,6 +13,7 @@ type Chat struct {
 	CreatorId int64
 	ProductId int64
 	Status    string
+	Blured    bool
 }
 
 type Chats []Chat

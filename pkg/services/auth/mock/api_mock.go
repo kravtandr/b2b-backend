@@ -37,6 +37,26 @@ func (m *MockAuthServiceClient) EXPECT() *MockAuthServiceClientMockRecorder {
 	return m.recorder
 }
 
+// AddPayment mocks base method.
+func (m *MockAuthServiceClient) AddPayment(ctx context.Context, in *auth_service.AddPaymentRequest, opts ...grpc.CallOption) (*auth_service.PaymentResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "AddPayment", varargs...)
+	ret0, _ := ret[0].(*auth_service.PaymentResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AddPayment indicates an expected call of AddPayment.
+func (mr *MockAuthServiceClientMockRecorder) AddPayment(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPayment", reflect.TypeOf((*MockAuthServiceClient)(nil).AddPayment), varargs...)
+}
+
 // CheckEmail mocks base method.
 func (m *MockAuthServiceClient) CheckEmail(ctx context.Context, in *auth_service.CheckEmailRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error) {
 	m.ctrl.T.Helper()
@@ -95,6 +115,26 @@ func (mr *MockAuthServiceClientMockRecorder) GetCompanyUserLink(ctx, in interfac
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyUserLink", reflect.TypeOf((*MockAuthServiceClient)(nil).GetCompanyUserLink), varargs...)
+}
+
+// GetPayment mocks base method.
+func (m *MockAuthServiceClient) GetPayment(ctx context.Context, in *auth_service.GetPaymentRequest, opts ...grpc.CallOption) (*auth_service.PaymentResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetPayment", varargs...)
+	ret0, _ := ret[0].(*auth_service.PaymentResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPayment indicates an expected call of GetPayment.
+func (mr *MockAuthServiceClientMockRecorder) GetPayment(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPayment", reflect.TypeOf((*MockAuthServiceClient)(nil).GetPayment), varargs...)
 }
 
 // GetUser mocks base method.
@@ -197,6 +237,46 @@ func (mr *MockAuthServiceClientMockRecorder) GetUsersCompany(ctx, in interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersCompany", reflect.TypeOf((*MockAuthServiceClient)(nil).GetUsersCompany), varargs...)
 }
 
+// GetUsersPayments mocks base method.
+func (m *MockAuthServiceClient) GetUsersPayments(ctx context.Context, in *auth_service.UserIdRequest, opts ...grpc.CallOption) (*auth_service.PaymentsResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetUsersPayments", varargs...)
+	ret0, _ := ret[0].(*auth_service.PaymentsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsersPayments indicates an expected call of GetUsersPayments.
+func (mr *MockAuthServiceClientMockRecorder) GetUsersPayments(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersPayments", reflect.TypeOf((*MockAuthServiceClient)(nil).GetUsersPayments), varargs...)
+}
+
+// HandlePaidPayments mocks base method.
+func (m *MockAuthServiceClient) HandlePaidPayments(ctx context.Context, in *auth_service.HandlePaidPaymentsRequest, opts ...grpc.CallOption) (*auth_service.HandlePaidPaymentsResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "HandlePaidPayments", varargs...)
+	ret0, _ := ret[0].(*auth_service.HandlePaidPaymentsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// HandlePaidPayments indicates an expected call of HandlePaidPayments.
+func (mr *MockAuthServiceClientMockRecorder) HandlePaidPayments(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HandlePaidPayments", reflect.TypeOf((*MockAuthServiceClient)(nil).HandlePaidPayments), varargs...)
+}
+
 // LoginUser mocks base method.
 func (m *MockAuthServiceClient) LoginUser(ctx context.Context, in *auth_service.LoginRequest, opts ...grpc.CallOption) (*auth_service.LoginResponse, error) {
 	m.ctrl.T.Helper()
@@ -257,6 +337,26 @@ func (mr *MockAuthServiceClientMockRecorder) RegisterUser(ctx, in interface{}, o
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUser", reflect.TypeOf((*MockAuthServiceClient)(nil).RegisterUser), varargs...)
 }
 
+// UpdatePayment mocks base method.
+func (m *MockAuthServiceClient) UpdatePayment(ctx context.Context, in *auth_service.UpdatePaymentRequest, opts ...grpc.CallOption) (*auth_service.PaymentResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UpdatePayment", varargs...)
+	ret0, _ := ret[0].(*auth_service.PaymentResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdatePayment indicates an expected call of UpdatePayment.
+func (mr *MockAuthServiceClientMockRecorder) UpdatePayment(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePayment", reflect.TypeOf((*MockAuthServiceClient)(nil).UpdatePayment), varargs...)
+}
+
 // UpdateUser mocks base method.
 func (m *MockAuthServiceClient) UpdateUser(ctx context.Context, in *auth_service.UpdateUserRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error) {
 	m.ctrl.T.Helper()
@@ -275,6 +375,26 @@ func (mr *MockAuthServiceClientMockRecorder) UpdateUser(ctx, in interface{}, opt
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockAuthServiceClient)(nil).UpdateUser), varargs...)
+}
+
+// UpdateUserBalance mocks base method.
+func (m *MockAuthServiceClient) UpdateUserBalance(ctx context.Context, in *auth_service.UpdateUserBalanceRequest, opts ...grpc.CallOption) (*auth_service.GetPublicUserResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UpdateUserBalance", varargs...)
+	ret0, _ := ret[0].(*auth_service.GetPublicUserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUserBalance indicates an expected call of UpdateUserBalance.
+func (mr *MockAuthServiceClientMockRecorder) UpdateUserBalance(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserBalance", reflect.TypeOf((*MockAuthServiceClient)(nil).UpdateUserBalance), varargs...)
 }
 
 // ValidateSession mocks base method.
@@ -320,6 +440,21 @@ func (m *MockAuthServiceServer) EXPECT() *MockAuthServiceServerMockRecorder {
 	return m.recorder
 }
 
+// AddPayment mocks base method.
+func (m *MockAuthServiceServer) AddPayment(arg0 context.Context, arg1 *auth_service.AddPaymentRequest) (*auth_service.PaymentResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddPayment", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.PaymentResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AddPayment indicates an expected call of AddPayment.
+func (mr *MockAuthServiceServerMockRecorder) AddPayment(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddPayment", reflect.TypeOf((*MockAuthServiceServer)(nil).AddPayment), arg0, arg1)
+}
+
 // CheckEmail mocks base method.
 func (m *MockAuthServiceServer) CheckEmail(arg0 context.Context, arg1 *auth_service.CheckEmailRequest) (*auth_service.GetPublicUserResponse, error) {
 	m.ctrl.T.Helper()
@@ -363,6 +498,21 @@ func (m *MockAuthServiceServer) GetCompanyUserLink(arg0 context.Context, arg1 *a
 func (mr *MockAuthServiceServerMockRecorder) GetCompanyUserLink(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompanyUserLink", reflect.TypeOf((*MockAuthServiceServer)(nil).GetCompanyUserLink), arg0, arg1)
+}
+
+// GetPayment mocks base method.
+func (m *MockAuthServiceServer) GetPayment(arg0 context.Context, arg1 *auth_service.GetPaymentRequest) (*auth_service.PaymentResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPayment", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.PaymentResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPayment indicates an expected call of GetPayment.
+func (mr *MockAuthServiceServerMockRecorder) GetPayment(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPayment", reflect.TypeOf((*MockAuthServiceServer)(nil).GetPayment), arg0, arg1)
 }
 
 // GetUser mocks base method.
@@ -440,6 +590,36 @@ func (mr *MockAuthServiceServerMockRecorder) GetUsersCompany(arg0, arg1 interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersCompany", reflect.TypeOf((*MockAuthServiceServer)(nil).GetUsersCompany), arg0, arg1)
 }
 
+// GetUsersPayments mocks base method.
+func (m *MockAuthServiceServer) GetUsersPayments(arg0 context.Context, arg1 *auth_service.UserIdRequest) (*auth_service.PaymentsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUsersPayments", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.PaymentsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUsersPayments indicates an expected call of GetUsersPayments.
+func (mr *MockAuthServiceServerMockRecorder) GetUsersPayments(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUsersPayments", reflect.TypeOf((*MockAuthServiceServer)(nil).GetUsersPayments), arg0, arg1)
+}
+
+// HandlePaidPayments mocks base method.
+func (m *MockAuthServiceServer) HandlePaidPayments(arg0 context.Context, arg1 *auth_service.HandlePaidPaymentsRequest) (*auth_service.HandlePaidPaymentsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HandlePaidPayments", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.HandlePaidPaymentsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// HandlePaidPayments indicates an expected call of HandlePaidPayments.
+func (mr *MockAuthServiceServerMockRecorder) HandlePaidPayments(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HandlePaidPayments", reflect.TypeOf((*MockAuthServiceServer)(nil).HandlePaidPayments), arg0, arg1)
+}
+
 // LoginUser mocks base method.
 func (m *MockAuthServiceServer) LoginUser(arg0 context.Context, arg1 *auth_service.LoginRequest) (*auth_service.LoginResponse, error) {
 	m.ctrl.T.Helper()
@@ -485,6 +665,21 @@ func (mr *MockAuthServiceServerMockRecorder) RegisterUser(arg0, arg1 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUser", reflect.TypeOf((*MockAuthServiceServer)(nil).RegisterUser), arg0, arg1)
 }
 
+// UpdatePayment mocks base method.
+func (m *MockAuthServiceServer) UpdatePayment(arg0 context.Context, arg1 *auth_service.UpdatePaymentRequest) (*auth_service.PaymentResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePayment", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.PaymentResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdatePayment indicates an expected call of UpdatePayment.
+func (mr *MockAuthServiceServerMockRecorder) UpdatePayment(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePayment", reflect.TypeOf((*MockAuthServiceServer)(nil).UpdatePayment), arg0, arg1)
+}
+
 // UpdateUser mocks base method.
 func (m *MockAuthServiceServer) UpdateUser(arg0 context.Context, arg1 *auth_service.UpdateUserRequest) (*auth_service.GetPublicUserResponse, error) {
 	m.ctrl.T.Helper()
@@ -498,6 +693,21 @@ func (m *MockAuthServiceServer) UpdateUser(arg0 context.Context, arg1 *auth_serv
 func (mr *MockAuthServiceServerMockRecorder) UpdateUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockAuthServiceServer)(nil).UpdateUser), arg0, arg1)
+}
+
+// UpdateUserBalance mocks base method.
+func (m *MockAuthServiceServer) UpdateUserBalance(arg0 context.Context, arg1 *auth_service.UpdateUserBalanceRequest) (*auth_service.GetPublicUserResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserBalance", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.GetPublicUserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUserBalance indicates an expected call of UpdateUserBalance.
+func (mr *MockAuthServiceServerMockRecorder) UpdateUserBalance(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserBalance", reflect.TypeOf((*MockAuthServiceServer)(nil).UpdateUserBalance), arg0, arg1)
 }
 
 // ValidateSession mocks base method.

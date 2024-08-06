@@ -16,20 +16,118 @@ import (
 )
 
 type UserDelivery interface {
+	Register(ctx *fasthttp.RequestCtx)
+	FastRegister(ctx *fasthttp.RequestCtx)
 	Login(ctx *fasthttp.RequestCtx)
 	Logout(ctx *fasthttp.RequestCtx)
-	Register(ctx *fasthttp.RequestCtx)
+
 	GetUserInfoById(ctx *fasthttp.RequestCtx)
 	GetUserByCookie(ctx *fasthttp.RequestCtx)
-	FastRegister(ctx *fasthttp.RequestCtx)
+
 	GetProfile(ctx *fasthttp.RequestCtx)
 	UpdateProfile(ctx *fasthttp.RequestCtx)
+
 	CheckEmail(ctx *fasthttp.RequestCtx)
+
+	CreatePayemntAddBalance(ctx *fasthttp.RequestCtx)
+	GetUsersPayments(ctx *fasthttp.RequestCtx)
+	CheckPayment(ctx *fasthttp.RequestCtx)
+	HandlePaidPayments(ctx *fasthttp.RequestCtx)
 }
 
 type userDelivery struct {
 	errorAdapter error_adapter.HttpAdapter
 	manager      usecase.UserUsecase
+}
+
+func (u *userDelivery) GetUsersPayments(ctx *fasthttp.RequestCtx) {
+
+	userID, err := u.manager.GetUserIdByCookie(ctx, string(ctx.Request.Header.Cookie(cnst.CookieName)))
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	payments, err := u.manager.GetUsersPayments(ctx, userID)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, _ := chttp.ApiResp(payments, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+}
+func (u *userDelivery) HandlePaidPayments(ctx *fasthttp.RequestCtx) {
+
+	userID, err := u.manager.GetUserIdByCookie(ctx, string(ctx.Request.Header.Cookie(cnst.CookieName)))
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	// save to db
+	credited, err := u.manager.HandlePaidPayments(ctx, userID)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, _ := chttp.ApiResp(credited, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+}
+
+func (u *userDelivery) CreatePayemntAddBalance(ctx *fasthttp.RequestCtx) {
+	userID, err := u.manager.GetUserIdByCookie(ctx, string(ctx.Request.Header.Cookie(cnst.CookieName)))
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	var request = &models.CreatePaymentRequest{}
+	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+	request.User_id = userID
+	// save to db
+
+	response, err := u.manager.CreatePayment(ctx, request)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, _ := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
+}
+
+func (u *userDelivery) CheckPayment(ctx *fasthttp.RequestCtx) {
+	var request = &models.CheckPaymentRequest{}
+	if err := json.Unmarshal(ctx.Request.Body(), request); err != nil {
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+	response, err := u.manager.GetPaymentInfo(ctx, request.PaymentID)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, _ := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
 }
 
 func (u *userDelivery) Login(ctx *fasthttp.RequestCtx) {

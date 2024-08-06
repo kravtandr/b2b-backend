@@ -8,6 +8,7 @@ import time
 import requests
 from PIL import Image
 import os
+import pandas as pd
 
 def custom_post_request(url, json, cookies):
     max_retries = 2
@@ -36,25 +37,29 @@ def base64_string_to_pillow_image(base64_str):
 def main():
     url = "https://bi-tu-bi.ru/api"
     local_url = "http://127.0.0.1:8080"
-    # url = local_url
+    url = local_url
     print("DDOS:", url)
 
     #auth
     auth = {
-        "email": "novo@test.ru", 
-        "password": "Xx2OkpyF"
+        "email": "test@mail.ru", 
+        "password": "password123"
     }
     auth_req = requests.post(url+'/user/login', json=auth) 
     time.sleep(200/1000)
 
+
     if auth_req.status_code == 200:
+        ddos_log = pd.DataFrame(columns=['name', 'info', 'price', 'docs', 'category_id', 
+                                 'amount', 'payWay', "deliveryWay","adress", 'product_photo','code', 'response'])
         df = pandas.read_excel('data.xlsx', names=['Ид_товара', 'НомерВерсии', 'ПометкаУдаления', 'Штрихкод', 'Артикул', 
                                     'БазоваяЕдиница', 'Ид_категории', "Название_категории","Количество", 'Наименование', 'Описание', "Цена", 
                                     'Картинка', 'Страна', 'Вес'])
+                                    
         # [7:12]
         lineNumber = 0
         err = 0
-        stopLine = 10000
+        stopLine = 20
         startLine = 1
         for row in df.itertuples():
             if lineNumber>= startLine and lineNumber<=stopLine:
@@ -82,11 +87,12 @@ def main():
                 except:
                     print("ERROR in photo")
                 try:
-                    getCategory_req = requests.post(local_url + '/search/categories?skip=0&limit=1', json={'name': row[8]}) 
+                    getCategory_req = requests.post(url + '/search/categories?skip=0&limit=1', json={'name': row[8]}) 
                     time.sleep(50/1000)
                     if getCategory_req.status_code != 200:
                         print("GetCategory Failed", getCategory_req.status_code)
                     else:
+
                         json = getCategory_req.json()
                         # print("Category id = ", json['data'][0]['id'])
                         product = {
@@ -110,10 +116,30 @@ def main():
                 except:
                     err+=1
                     print(row[10][0:15]+"... ",lineNumber,"/",stopLine,"Error addProduct")
+                    ddos_log.append({
+                        "name": row[10],
+                        "info": row[11],
+                        "price": float(row[12]),
+                        "docs":  [],
+                        "category_id": json['data'][0]['id'],
+                        "amount": float(row[9]),
+                        "payWay": "Default",
+                        "deliveryWay": "Default",
+                        "adress": "Default",
+                        "product_photo": [
+                        dataurl
+                        ],
+                        "code": 0,
+                        "response": ""
+                    }, ignore_index=True)
                 lineNumber+=1
             else:
                 lineNumber+=1
         print("Done. ", "Failed = ",err, "/", lineNumber, " | ", (lineNumber-err)/lineNumber*100, "%")
+        print("Save log in ./ddos_log.xlsx")
+        df = pd.DataFrame(ddos_log)
+        df.to_excel('ddos_log.xlsx', index=False)
+        print(ddos_log)
     else:
         print("Auth Failed", auth_req.status_code)
         print("Cred: ", auth)

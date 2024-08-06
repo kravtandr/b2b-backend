@@ -14,7 +14,10 @@ import (
 type ChatRepository interface {
 	CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
+	UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
+	DeleteChat(ctx context.Context, chat_id int64) (bool, error)
 	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
+	GetChatById(ctx context.Context, id int64) (*models.Chat, error)
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
@@ -51,7 +54,7 @@ func (a *chatRepository) NewChat(ctx context.Context, newChat *models.Chat) (*mo
 	query := a.queryFactory.CreateNewChat(newChat)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	chat := &models.Chat{}
-	if err := row.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status); err != nil {
+	if err := row.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status, &chat.Blured); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.ChatDoesNotExist
 		}
@@ -62,11 +65,31 @@ func (a *chatRepository) NewChat(ctx context.Context, newChat *models.Chat) (*mo
 	return chat, nil
 }
 
+func (a *chatRepository) UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error) {
+	query := a.queryFactory.CreateUpdateChat(chat)
+	tag, err := a.conn.Exec(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Println(tag)
+		return nil, err
+	}
+	return chat, nil
+}
+
+func (a *chatRepository) DeleteChat(ctx context.Context, chat_id int64) (bool, error) {
+	query := a.queryFactory.CreateDeleteChat(chat_id)
+	tag, err := a.conn.Exec(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Println(tag)
+		return false, errors.ChatDoesNotExist
+	}
+	return true, nil
+}
+
 func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error) {
 	query := a.queryFactory.CreateGetChat(chat)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	getChat := &models.Chat{}
-	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &chat.Status); err != nil {
+	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &chat.Status, &chat.Blured); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, errors.ChatDoesNotExist
 		}
@@ -74,6 +97,20 @@ func (a *chatRepository) GetChat(ctx context.Context, chat *models.Chat) (*model
 		return nil, err
 	}
 
+	return getChat, nil
+}
+
+func (a *chatRepository) GetChatById(ctx context.Context, id int64) (*models.Chat, error) {
+	query := a.queryFactory.CreateGetChatById(id)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	getChat := &models.Chat{}
+	if err := row.Scan(&getChat.Id, &getChat.Name, &getChat.CreatorId, &getChat.ProductId, &getChat.Status, &getChat.Blured); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, errors.ChatDoesNotExist
+		}
+
+		return nil, err
+	}
 	return getChat, nil
 }
 
@@ -157,7 +194,7 @@ func (a *chatRepository) GetAllChatsAndLastMsg(ctx context.Context, userId int64
 	defer rows.Close()
 	rows_count := 0
 	for rows.Next() {
-		err = rows.Scan(&onlyChatsLM[rows_count].Chat.Id, &onlyChatsLM[rows_count].Chat.Name, &onlyChatsLM[rows_count].Chat.CreatorId, &onlyChatsLM[rows_count].Chat.ProductId, &onlyChatsLM[rows_count].Chat.Status, &onlyChatsLM[rows_count].LastMsg.Id, &onlyChatsLM[rows_count].LastMsg.SenderId, &onlyChatsLM[rows_count].LastMsg.ReceiverId, &onlyChatsLM[rows_count].LastMsg.Checked, &onlyChatsLM[rows_count].LastMsg.Text, &onlyChatsLM[rows_count].LastMsg.Type, &onlyChatsLM[rows_count].LastMsg.Time)
+		err = rows.Scan(&onlyChatsLM[rows_count].Chat.Id, &onlyChatsLM[rows_count].Chat.Name, &onlyChatsLM[rows_count].Chat.CreatorId, &onlyChatsLM[rows_count].Chat.ProductId, &onlyChatsLM[rows_count].Chat.Status, &onlyChatsLM[rows_count].Chat.Blured, &onlyChatsLM[rows_count].LastMsg.Id, &onlyChatsLM[rows_count].LastMsg.SenderId, &onlyChatsLM[rows_count].LastMsg.ReceiverId, &onlyChatsLM[rows_count].LastMsg.Checked, &onlyChatsLM[rows_count].LastMsg.Text, &onlyChatsLM[rows_count].LastMsg.Type, &onlyChatsLM[rows_count].LastMsg.Time)
 		//chat.LastMsg.ChatId = chat.Chat.Id
 		//chats = append(chats, chat)
 		rows_count += 1
@@ -189,23 +226,22 @@ func (a *chatRepository) CombineChatsWithAndWithoutMsgs(ctx context.Context, onl
 		Time:       time.Now(),
 	}
 	for _, chat := range *onlyChats {
-		have_msgs := false
+		chat_have_msgs := false
 		for j, chatLM := range *chatsAndLM {
 			if chat.Id == chatLM.Chat.Id {
 				resulting_chats = append(resulting_chats, chatLM)
-				have_msgs = true
+				chat_have_msgs = true
 				chatsAndLM = a.remove((*chatsAndLM), j)
 			}
 		}
-		if !have_msgs {
+		if !chat_have_msgs {
 			resulting_chats = append(resulting_chats, models.ChatAndLastMsg{
 				Chat:    chat,
 				LastMsg: fakeLM,
 			})
 		}
-		resulting_chats = append(resulting_chats, *chatsAndLM...)
-
 	}
+	resulting_chats = append(resulting_chats, *chatsAndLM...)
 	return &resulting_chats
 }
 
@@ -219,7 +255,7 @@ func (a *chatRepository) GetUserCreatedChats(ctx context.Context, userId int64) 
 	}
 	defer rows.Close()
 	for rows.Next() {
-		err = rows.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status)
+		err = rows.Scan(&chat.Id, &chat.Name, &chat.CreatorId, &chat.ProductId, &chat.Status, &chat.Blured)
 		chats = append(chats, chat)
 	}
 	if rows.Err() != nil {

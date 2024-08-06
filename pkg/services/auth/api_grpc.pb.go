@@ -36,6 +36,12 @@ type AuthServiceClient interface {
 	CheckEmail(ctx context.Context, in *CheckEmailRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error)
 	GetUsersCompany(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*GetPrivateCompanyResponse, error)
 	GetCompanyUserLink(ctx context.Context, in *UserAndCompanyIdsRequest, opts ...grpc.CallOption) (*GetCompanyUserLinkResponse, error)
+	UpdateUserBalance(ctx context.Context, in *UpdateUserBalanceRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error)
+	AddPayment(ctx context.Context, in *AddPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	UpdatePayment(ctx context.Context, in *UpdatePaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	GetUsersPayments(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*PaymentsResponse, error)
+	GetPayment(ctx context.Context, in *GetPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
+	HandlePaidPayments(ctx context.Context, in *HandlePaidPaymentsRequest, opts ...grpc.CallOption) (*HandlePaidPaymentsResponse, error)
 }
 
 type authServiceClient struct {
@@ -163,6 +169,60 @@ func (c *authServiceClient) GetCompanyUserLink(ctx context.Context, in *UserAndC
 	return out, nil
 }
 
+func (c *authServiceClient) UpdateUserBalance(ctx context.Context, in *UpdateUserBalanceRequest, opts ...grpc.CallOption) (*GetPublicUserResponse, error) {
+	out := new(GetPublicUserResponse)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/UpdateUserBalance", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) AddPayment(ctx context.Context, in *AddPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/AddPayment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) UpdatePayment(ctx context.Context, in *UpdatePaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/UpdatePayment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetUsersPayments(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*PaymentsResponse, error) {
+	out := new(PaymentsResponse)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/GetUsersPayments", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetPayment(ctx context.Context, in *GetPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error) {
+	out := new(PaymentResponse)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/GetPayment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) HandlePaidPayments(ctx context.Context, in *HandlePaidPaymentsRequest, opts ...grpc.CallOption) (*HandlePaidPaymentsResponse, error) {
+	out := new(HandlePaidPaymentsResponse)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/HandlePaidPayments", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -180,6 +240,12 @@ type AuthServiceServer interface {
 	CheckEmail(context.Context, *CheckEmailRequest) (*GetPublicUserResponse, error)
 	GetUsersCompany(context.Context, *UserIdRequest) (*GetPrivateCompanyResponse, error)
 	GetCompanyUserLink(context.Context, *UserAndCompanyIdsRequest) (*GetCompanyUserLinkResponse, error)
+	UpdateUserBalance(context.Context, *UpdateUserBalanceRequest) (*GetPublicUserResponse, error)
+	AddPayment(context.Context, *AddPaymentRequest) (*PaymentResponse, error)
+	UpdatePayment(context.Context, *UpdatePaymentRequest) (*PaymentResponse, error)
+	GetUsersPayments(context.Context, *UserIdRequest) (*PaymentsResponse, error)
+	GetPayment(context.Context, *GetPaymentRequest) (*PaymentResponse, error)
+	HandlePaidPayments(context.Context, *HandlePaidPaymentsRequest) (*HandlePaidPaymentsResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -225,6 +291,24 @@ func (UnimplementedAuthServiceServer) GetUsersCompany(context.Context, *UserIdRe
 }
 func (UnimplementedAuthServiceServer) GetCompanyUserLink(context.Context, *UserAndCompanyIdsRequest) (*GetCompanyUserLinkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCompanyUserLink not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateUserBalance(context.Context, *UpdateUserBalanceRequest) (*GetPublicUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserBalance not implemented")
+}
+func (UnimplementedAuthServiceServer) AddPayment(context.Context, *AddPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddPayment not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdatePayment(context.Context, *UpdatePaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePayment not implemented")
+}
+func (UnimplementedAuthServiceServer) GetUsersPayments(context.Context, *UserIdRequest) (*PaymentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersPayments not implemented")
+}
+func (UnimplementedAuthServiceServer) GetPayment(context.Context, *GetPaymentRequest) (*PaymentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPayment not implemented")
+}
+func (UnimplementedAuthServiceServer) HandlePaidPayments(context.Context, *HandlePaidPaymentsRequest) (*HandlePaidPaymentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HandlePaidPayments not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -473,6 +557,114 @@ func _AuthService_GetCompanyUserLink_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_UpdateUserBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserBalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateUserBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/UpdateUserBalance",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateUserBalance(ctx, req.(*UpdateUserBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_AddPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).AddPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/AddPayment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).AddPayment(ctx, req.(*AddPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_UpdatePayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdatePayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/UpdatePayment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdatePayment(ctx, req.(*UpdatePaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetUsersPayments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetUsersPayments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/GetUsersPayments",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetUsersPayments(ctx, req.(*UserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPaymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetPayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/GetPayment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetPayment(ctx, req.(*GetPaymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_HandlePaidPayments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HandlePaidPaymentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).HandlePaidPayments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/HandlePaidPayments",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).HandlePaidPayments(ctx, req.(*HandlePaidPaymentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -531,6 +723,30 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCompanyUserLink",
 			Handler:    _AuthService_GetCompanyUserLink_Handler,
+		},
+		{
+			MethodName: "UpdateUserBalance",
+			Handler:    _AuthService_UpdateUserBalance_Handler,
+		},
+		{
+			MethodName: "AddPayment",
+			Handler:    _AuthService_AddPayment_Handler,
+		},
+		{
+			MethodName: "UpdatePayment",
+			Handler:    _AuthService_UpdatePayment_Handler,
+		},
+		{
+			MethodName: "GetUsersPayments",
+			Handler:    _AuthService_GetUsersPayments_Handler,
+		},
+		{
+			MethodName: "GetPayment",
+			Handler:    _AuthService_GetPayment_Handler,
+		},
+		{
+			MethodName: "HandlePaidPayments",
+			Handler:    _AuthService_HandlePaidPayments_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

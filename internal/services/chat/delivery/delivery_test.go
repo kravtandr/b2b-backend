@@ -25,7 +25,7 @@ package delivery
 //		Token:  "??",
 //		Cookie: hash,
 //	}
-//	expectedResponce := &auth_service.ValidateSessionResponse{
+//	expectedresponse := &auth_service.ValidateSessionResponse{
 //		UserId: int64(userID),
 //	}
 //
@@ -42,10 +42,10 @@ package delivery
 //	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(5), userRepo)
 //	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 //
-//	responce, err := userDelivery.ValidateSession(ctx, request)
+//	response, err := userDelivery.ValidateSession(ctx, request)
 //
 //	assert.Nil(t, err)
-//	assert.Equal(t, expectedResponce, responce)
+//	assert.Equal(t, expectedresponse, response)
 //}
 //
 //func TestHandler_Logout(t *testing.T) {
@@ -87,7 +87,7 @@ package delivery
 //		Email:    "email@mail.ru",
 //		Password: "pass",
 //	}
-//	expectedResponce := &auth_service.LoginResponse{
+//	expectedresponse := &auth_service.LoginResponse{
 //		Cookie: "",
 //		Token:  "",
 //	}
@@ -109,9 +109,9 @@ package delivery
 //	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(1), userRepo)
 //	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 //
-//	responce, _ := userDelivery.LoginUser(ctx, request)
+//	response, _ := userDelivery.LoginUser(ctx, request)
 //
-//	assert.Equal(t, expectedResponce, responce)
+//	assert.Equal(t, expectedresponse, response)
 //}
 //
 //func TestHandler_GetUser(t *testing.T) {
@@ -124,7 +124,7 @@ package delivery
 //	request := &auth_service.GetUserRequest{
 //		Id: 1,
 //	}
-//	expectedResponce := &auth_service.GetUserResponse{
+//	expectedresponse := &auth_service.GetUserResponse{
 //		Email: "email@mail.ru",
 //	}
 //
@@ -141,9 +141,9 @@ package delivery
 //	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(1), userRepo)
 //	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 //
-//	responce, _ := userDelivery.GetUser(ctx, request)
+//	response, _ := userDelivery.GetUser(ctx, request)
 //
-//	assert.Equal(t, expectedResponce, responce)
+//	assert.Equal(t, expectedresponse, response)
 //}
 //
 //func TestHandler_GetUserByEmail(t *testing.T) {
@@ -156,7 +156,7 @@ package delivery
 //	request := &auth_service.UserEmailRequest{
 //		Email: user.Email,
 //	}
-//	expectedResponce := &auth_service.UserId{
+//	expectedresponse := &auth_service.UserId{
 //		Id: user.Id,
 //	}
 //
@@ -173,9 +173,9 @@ package delivery
 //	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(1), userRepo)
 //	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 //
-//	responce, _ := userDelivery.GetUserByEmail(ctx, request)
+//	response, _ := userDelivery.GetUserByEmail(ctx, request)
 //
-//	assert.Equal(t, expectedResponce, responce)
+//	assert.Equal(t, expectedresponse, response)
 //}
 //
 ////func TestHandler_GetUserInfo(t *testing.T) {
@@ -188,7 +188,7 @@ package delivery
 ////	request := &auth_service.GetUserRequest{
 ////		Id: 1,
 ////	}
-////	expectedResponce := &auth_service.UserInfo{
+////	expectedresponse := &auth_service.UserInfo{
 ////		UserId: 1,
 ////	}
 ////
@@ -205,9 +205,9 @@ package delivery
 ////	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(1), userRepo)
 ////	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 ////
-////	responce, _ := userDelivery.GetUserInfo(ctx, request)
+////	response, _ := userDelivery.GetUserInfo(ctx, request)
 ////
-////	assert.Equal(t, expectedResponce, responce)
+////	assert.Equal(t, expectedresponse, response)
 ////}
 //
 //func TestHandler_Register(t *testing.T) {
@@ -256,7 +256,7 @@ package delivery
 ////		Password: "",
 ////	}
 ////
-////	expectedResponce := &auth_service.GetUserResponse{
+////	expectedresponse := &auth_service.GetUserResponse{
 ////		Email: "email@mail.ru",
 ////	}
 ////
@@ -269,8 +269,8 @@ package delivery
 ////	userUsecase := user_usecase.NewAuthUseCase(hasher.NewHasher(1), userRepo)
 ////	userDelivery := NewAuthDelivery(userUsecase, error_adapter.NewErrorAdapter(grpc_errors.PreparedAuthServiceErrorMap))
 ////
-////	responce, err := userDelivery.UpdateUser(ctx, request)
+////	response, err := userDelivery.UpdateUser(ctx, request)
 ////
-////	assert.Equal(t, expectedResponce, responce)
+////	assert.Equal(t, expectedresponse, response)
 ////	assert.Nil(t, err)
 ////}

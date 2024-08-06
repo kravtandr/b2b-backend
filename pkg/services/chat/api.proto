@@ -31,6 +31,7 @@ message NewChatRequest {
   string Name = 1;
   int64  CreatorId = 2;
   int64  ProductId = 3;
+  bool  Blured = 4;
 }
 
 message GetChatRequest {
@@ -44,6 +45,7 @@ message ChatResponse {
   int64  CreatorId = 3;
   int64  ProductId = 4;
   string  Status = 5;
+  bool  Blured = 6;
 }
 
 message WriteNewMsgRequest {
@@ -74,8 +76,15 @@ message ChatAndLastMsgResponse {
   int64  CreatorId = 3;
   int64  ProductId = 4;
   string  Status = 5;
-  MsgResponse Msg = 6;
+  bool  Blured = 6;
+  MsgResponse Msg = 7;
 }
+
+message Bool {
+  string Status = 1;
+}
+
+
 
 message MsgsResponse {
   repeated MsgResponse Msgs = 1;
@@ -89,11 +98,20 @@ message    GetAllChatsAndLastMsgResponse{
   repeated ChatAndLastMsgResponse Chats = 1;
 }
 
+message UpdateChatStatusRequest{
+  int64 ChatId = 1;
+  string Status = 2;
+  bool Blured = 3;
+}
+
 
 service ChatService {
   rpc CheckIfUniqChat(CheckIfUniqChatRequest) returns (CheckIfUniqChatResponse) {}
   rpc NewChat(NewChatRequest) returns (ChatResponse) {}
+  rpc UpdateChatStatus(UpdateChatStatusRequest) returns (ChatResponse) {}
+  rpc DeleteChat(IdRequest) returns (Bool) {}
   rpc GetChat(GetChatRequest) returns (ChatResponse) {}
+  rpc GetChatById(IdRequest) returns (ChatResponse) {}
   rpc WriteNewMsg(WriteNewMsgRequest) returns (IdResponse) {}
   rpc GetMsgsFromChat(ChatAndUserIdRequest) returns (MsgsResponse) {}
   rpc GetAllUserChats(IdRequest) returns (GetAllUserChatsResponse) {}

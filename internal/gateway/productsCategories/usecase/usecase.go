@@ -12,13 +12,17 @@ import (
 )
 
 type ProductsCategoriesUseCase interface {
-	GetCategoryById(ctx context.Context, request *models.GetCategoryByIdRequest) (*models.GetCategoryByIdResponse, error)
-	GetProductById(ctx context.Context, request *models.GetProductByIdRequest) (*models.GetProductByIdResponse, error)
-	SearchCategories(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*[]models.GetCategoryByIdResponse, error)
-	GetProductsList(ctx context.Context, request *chttp.QueryParam) (*models.GetProductsList, error)
-	GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategory, error)
-	SearchProducts(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*models.GetProductsList, error)
 	AddProduct(ctx context.Context, request *models.UserInfoAndAddProductByFormRequest) (*models.GetProduct, error)
+	GetProductById(ctx context.Context, request *models.GetProductByIdRequest) (*models.GetProductByIdResponse, error)
+	UpdateProduct(ctx context.Context, request *models.UserInfoAndUpdateProductByFormRequest) (*models.GetProduct, error)
+
+	GetProductsList(ctx context.Context, request *chttp.QueryParam) (*models.GetProductsList, error)
+	GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategoryAndCompany, error)
+	SearchProducts(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*models.GetProductsList, error)
+	GetCompanyProducts(ctx context.Context, request *models.GetCompanyProductsRequest, params *chttp.QueryParam) (*models.GetProductsList, error)
+
+	GetCategoryById(ctx context.Context, request *models.GetCategoryByIdRequest) (*models.GetCategoryByIdResponse, error)
+	SearchCategories(ctx context.Context, request *chttp.SearchItemNameWithSkipLimit) (*[]models.GetCategoryByIdResponse, error)
 }
 
 type productsCategoriesUseCase struct {
@@ -42,6 +46,56 @@ func (u *productsCategoriesUseCase) GetCategoryById(ctx context.Context, request
 		Name:        response.Name,
 		Description: description,
 	}, nil
+}
+
+func (u *productsCategoriesUseCase) UpdateProduct(ctx context.Context, request *models.UserInfoAndUpdateProductByFormRequest) (*models.GetProduct, error) {
+	userProfile, err := u.AuthUsecase.Profile(ctx, request.UserProfile.Id)
+	if err != nil {
+		log.Println("Gateway -> Usecase -> UpdateProduct -> u.AuthUsecase.Profile ERROR", err)
+		return &models.GetProduct{}, err
+	}
+	request.UserProfile = *userProfile
+	description := &productsCategories_service.SqlNullString{
+		String_: request.Product.Description,
+		Valid:   true}
+
+	// var photo string
+	// var photos []string
+	// for _, result := range request.Product.Photo {
+
+	// 	modelCategories = append(modelCategories, modelCategory)
+	// }
+	response, err := u.ProductsCategoriesGRPC.UpdateProduct(ctx, &productsCategories_service.UpdateProductRequest{
+		Id:           request.Product.Id,
+		Name:         request.Product.Name,
+		CategoryId:   request.Product.CategoryId,
+		Description:  description,
+		Price:        request.Product.Price,
+		Amount:       request.Product.Amount,
+		PayWay:       request.Product.PayWay,
+		Adress:       request.Product.Adress,
+		DeliveryWay:  request.Product.DeliveryWay,
+		ProductPhoto: request.Product.Photo,
+		Docs:         request.Product.Docs,
+		UserId:       request.UserProfile.Id,
+		CompanyId:    request.UserProfile.Company.Id,
+	})
+	if err != nil {
+		log.Println("Gateway -> Usecase -> UpdateProduct -> u.ProductsCategoriesGRPC.UpdateProduct ERROR", err)
+		return &models.GetProduct{}, err
+	}
+	respDescription := sql.NullString{
+		String: response.Description.String_,
+		Valid:  response.Description.Valid}
+	return &models.GetProduct{
+		Id:          response.Id,
+		Name:        response.Name,
+		Description: respDescription,
+		Price:       response.Price,
+		Photo:       response.Photo,
+		Docs:        response.Documents,
+	}, nil
+
 }
 
 func (u *productsCategoriesUseCase) AddProduct(ctx context.Context, request *models.UserInfoAndAddProductByFormRequest) (*models.GetProduct, error) {
@@ -115,6 +169,7 @@ func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request 
 		Photo:       response.Photo,
 		Docs:        response.Documents,
 		Company: models.Company{
+			Id:           productCompany.Id,
 			Name:         productCompany.Name,
 			Description:  productCompany.Description,
 			LegalName:    productCompany.LegalName,
@@ -129,6 +184,7 @@ func (u *productsCategoriesUseCase) GetProductById(ctx context.Context, request 
 			OwnerId:      productCompany.OwnerId,
 			Rating:       productCompany.Rating,
 			Verified:     productCompany.Verified,
+			Photo:        productCompany.Photo,
 		},
 	}, nil
 }
@@ -187,7 +243,7 @@ func (u *productsCategoriesUseCase) SearchProducts(ctx context.Context, request 
 	}
 	return &modelProducts, nil
 }
-func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategory, error) {
+func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context, params *chttp.QueryParam, request *models.GetProductsByFilters) (*models.ProductsWithCategoryAndCompany, error) {
 	response, err := u.ProductsCategoriesGRPC.GetProductsListByFilters(ctx, &productsCategories_service.GetProductsListByFiltersRequest{
 		ProductName:      request.Product_name,
 		CategoryName:     request.Category_name,
@@ -198,23 +254,50 @@ func (u *productsCategoriesUseCase) GetProductsListByFilters(ctx context.Context
 		Limit:            params.Limit,
 	})
 	if err != nil {
-		return &models.ProductsWithCategory{}, err
+		return &models.ProductsWithCategoryAndCompany{}, err
 	}
-	var modelProduct models.ProductWithCategory
-	var modelProducts models.ProductsWithCategory
-	for _, result := range response.Products {
+	var modelProduct models.ProductWithCategoryAndCompany
+	var modelProducts models.ProductsWithCategoryAndCompany
+	var company models.Company
+
+	for _, product := range response.Products {
+
 		description := sql.NullString{
-			String: result.Description.String_,
-			Valid:  result.Description.Valid}
-		modelProduct = models.ProductWithCategory{
-			Id:           result.Id,
-			Name:         result.Name,
+			String: product.Description.String_,
+			Valid:  product.Description.Valid}
+		company_response, err := u.CompanyUsecase.GetCompanyByProductId(ctx, product.Id)
+
+		if err != nil {
+			return nil, err
+		}
+		company = models.Company{
+			Id:           company_response.Id,
+			Name:         company_response.Name,
+			Description:  company_response.Description,
+			LegalName:    company_response.LegalName,
+			Itn:          company_response.Itn,
+			Psrn:         company_response.Psrn,
+			Address:      company_response.Address,
+			LegalAddress: company_response.LegalAddress,
+			Email:        company_response.Email,
+			Phone:        company_response.Phone,
+			Link:         company_response.Link,
+			Activity:     company_response.Activity,
+			OwnerId:      company_response.OwnerId,
+			Rating:       company_response.Rating,
+			Verified:     company_response.Verified,
+			Photo:        company_response.Photo,
+		}
+		modelProduct = models.ProductWithCategoryAndCompany{
+			Id:           product.Id,
+			Name:         product.Name,
 			Description:  description,
-			Price:        result.Price,
-			Photo:        result.Photo,
-			Docs:         result.Documents,
-			CategoryId:   result.CategoryId,
-			CategoryName: result.CategoryName,
+			Price:        product.Price,
+			Photo:        product.Photo,
+			Docs:         product.Documents,
+			CategoryId:   product.CategoryId,
+			CategoryName: product.CategoryName,
+			Company:      company,
 		}
 		modelProducts = append(modelProducts, modelProduct)
 	}
@@ -225,6 +308,34 @@ func (u *productsCategoriesUseCase) GetProductsList(ctx context.Context, request
 	response, err := u.ProductsCategoriesGRPC.GetProductsList(ctx, &productsCategories_service.GetProductsListRequest{
 		Skip:  request.Skip,
 		Limit: request.Limit,
+	})
+	if err != nil {
+		return &models.GetProductsList{}, err
+	}
+	var modelProduct models.GetProduct
+	var modelProducts models.GetProductsList
+	for _, result := range response.Products {
+		description := sql.NullString{
+			String: result.Description.String_,
+			Valid:  result.Description.Valid}
+		modelProduct = models.GetProduct{
+			Id:          result.Id,
+			Name:        result.Name,
+			Description: description,
+			Price:       result.Price,
+			Photo:       result.Photo,
+			Docs:        result.Documents,
+		}
+		modelProducts = append(modelProducts, modelProduct)
+	}
+	return &modelProducts, nil
+}
+
+func (u *productsCategoriesUseCase) GetCompanyProducts(ctx context.Context, request *models.GetCompanyProductsRequest, params *chttp.QueryParam) (*models.GetProductsList, error) {
+	response, err := u.ProductsCategoriesGRPC.GetCompanyProducts(ctx, &productsCategories_service.GetCompanyProductsRequest{
+		CompanyId: request.CompanyId,
+		Skip:      params.Skip,
+		Limit:     params.Limit,
 	})
 	if err != nil {
 		return &models.GetProductsList{}, err

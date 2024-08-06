@@ -9,6 +9,12 @@ const LogoutURL = "/logout"
 const UserInfoURL = "/user/{id}"
 const UserInfoByCookieURL = "/user/me"
 
+// yookassa
+const CreatePaymentAddBalanceURL = "/payment/addbalance"
+const CheckPaymentURL = "/payment/check"
+const HandlePaidPaymentsURL = "/user/payment/handle/all"
+const GetUsersPaymentsURL = "/user/payments/list"
+
 // FastOrder
 const FastOrderURL = "/fastOrder"
 const LandingOrderURL = "/landingOrder"
@@ -28,10 +34,14 @@ const AddProductURL = "/product/add"
 const ProductsListURL = "/products/list"
 const ProductsListByFiltersURL = "/products/list/filter" // {category_name}
 const SearchProductsURL = "/search/products"
+const CompanyProductsListURL = "/company/products"
+const UpdateProductURL = "/product/edit"
 
 // Chat
 const CheckIfUniqChat = "/chat/unique"
 const InitChat = "/chat/init"
+const DeleteChat = "/chat/delete"
+const ChatChangeStatus = "/chat/status"
 const ProductChatURL = "/ws"
 const AllChats = "/allchats"
 const AllMsgsFromChat = "/chat/{id}"

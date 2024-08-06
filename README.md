@@ -45,3 +45,6 @@ Parser:
   Раскомментировать 23 строку для добавления товаров на локалке  # url = local_url
   Запустить добавление товаров:
     python ./ddos.py
+
+Grpc protogen:
+export PATH="$PATH:$(go env GOPATH)/bin" && make all

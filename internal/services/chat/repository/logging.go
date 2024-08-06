@@ -25,6 +25,40 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next ChatRepository) ChatRe
 	}
 }
 
+func (l *loggingMiddleware) UpdateChat(ctx context.Context, chat *models.Chat) (updated *models.Chat, err error) {
+	l.logger.Infow(module,
+		"Action", "UpdateChat",
+		"Request", chat,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "UpdateChat",
+				"Request", chat,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.UpdateChat(ctx, chat)
+}
+
+func (l *loggingMiddleware) DeleteChat(ctx context.Context, chat_id int64) (deleted bool, err error) {
+	l.logger.Infow(module,
+		"Action", "DeleteChat",
+		"Request", chat_id,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "DeleteChat",
+				"Request", chat_id,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.DeleteChat(ctx, chat_id)
+}
+
 func (l *loggingMiddleware) CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (unique bool, err error) {
 	l.logger.Infow(module,
 		"Action", "CheckIfUniqChat",
@@ -127,6 +161,24 @@ func (l *loggingMiddleware) GetChat(ctx context.Context, chat *models.Chat) (get
 	}()
 
 	return l.next.GetChat(ctx, chat)
+}
+
+func (l *loggingMiddleware) GetChatById(ctx context.Context, chatId int64) (chat *models.Chat, err error) {
+	l.logger.Infow(module,
+		"Action", "GetChatById",
+		"Request", chatId,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetChatById",
+				"Request", chatId,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetChatById(ctx, chatId)
 }
 
 func (l *loggingMiddleware) WriteNewMsg(ctx context.Context, newMsg *models.Msg) (id int64, err error) {

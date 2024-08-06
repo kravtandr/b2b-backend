@@ -1,9 +1,10 @@
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} Deploy with GitHub Actions 🚀
+name: GitHub Actions b2b backend
+run-name: ${{ github.actor }} Deploy 🚀
 on:
   push:
     branches:
-      - deploy
+      - main
+
 jobs:
   stop:
     runs-on: ubuntu-latest
@@ -13,29 +14,39 @@ jobs:
       - name: SSH Setup
         uses: appleboy/ssh-action@master
         with:
-          host: ${{secrets.SSH_HOST}}
-          username: ${{secrets.SSH_USER}}
-          key: ${{secrets.SSH_PRIVATE_KEY}}
-          port: 22
-          script: |
-            su - postgres -c "cd /var/lib/postgresql/backend/b2b-backend && docker-compose down";
-            cd /var/lib/postgresql/backend && sudo chown -R postgres b2b-backend/
-            
+            host: ${{secrets.SSH_HOST}}
+            username: ${{secrets.SSH_USER}}
+            key: ${{secrets.SSH_PRIVATE_KEY}}
+            port: 22
+            script: |
+                su - postgres -c "cd /var/lib/postgresql/backend/b2b-backend && docker-compose down";
+                cd /var/lib/postgresql/backend && sudo chown -R postgres b2b-backend/ && docker image prune -a
   deploy:
-    needs: stop
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      
       - name: SSH Setup
         uses: appleboy/ssh-action@master
         with:
-          host: ${{secrets.SSH_HOST}}
-          username: ${{secrets.SSH_USER}}
-          key: ${{secrets.SSH_PRIVATE_KEY}}
-          port: 22
-          script: |
-            su - postgres -c "cd /var/lib/postgresql/backend/b2b-backend && git pull && docker-compose up -d --build";
-            curl "https://api.telegram.org/bot${{secrets.BOT_TOKEN}}/sendMessage?&chat_id=${{secrets.CHAT_ID}}&text=[Backend]%20[${{ github.actor }}]%20Successfully%20Deploy%20https://bi-tu-bi.ru/%0A${{ github.event.head_commit.message }}"
+            host: ${{ secrets.SSH_HOST }}
+            username: ${{ secrets.SSH_USER }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: 22
+            script: |
+                su - postgres -c "cd /var/lib/postgresql/backend/b2b-backend && git pull && docker-compose up -d --build";
 
+      - name: Notify Telegram on success
+        if: success()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.CHAT_ID }}" \
+            -d text="[Backend] [${{ github.actor }}]%0A Successfully Deploy https://bi-tu-bi.ru/%0A${{ github.event.head_commit.message }}"
 
+      - name: Notify Telegram on failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.CHAT_ID }}" \
+            -d text="[Backend] [${{ github.actor }}]%0A Deployment Failed https://bi-tu-bi.ru/%0A${{ github.event.head_commit.message }}"

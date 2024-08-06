@@ -18,6 +18,7 @@ type Company struct {
 	OwnerId      int64  `json:"owner_id"`
 	Rating       int64  `json:"rating"`
 	Verified     int64  `json:"verified"`
+	Photo        string `json:"photo"`
 	//Docks        []string `json:"docs"`
 }
 

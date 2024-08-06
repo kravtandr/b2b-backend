@@ -37,14 +37,14 @@ func (m *MockCompanyServiceClient) EXPECT() *MockCompanyServiceClientMockRecorde
 }
 
 // GetCompanyById mocks base method.
-func (m *MockCompanyServiceClient) GetCompanyById(ctx context.Context, in *company_service.GetCompanyRequestById, opts ...grpc.CallOption) (*company_service.GetCompanyResponse, error) {
+func (m *MockCompanyServiceClient) GetCompanyById(ctx context.Context, in *company_service.GetCompanyRequestById, opts ...grpc.CallOption) (*company_service.GetPrivateCompanyResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "GetCompanyById", varargs...)
-	ret0, _ := ret[0].(*company_service.GetCompanyResponse)
+	ret0, _ := ret[0].(*company_service.GetPrivateCompanyResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -120,10 +120,10 @@ func (m *MockCompanyServiceServer) EXPECT() *MockCompanyServiceServerMockRecorde
 }
 
 // GetCompanyById mocks base method.
-func (m *MockCompanyServiceServer) GetCompanyById(arg0 context.Context, arg1 *company_service.GetCompanyRequestById) (*company_service.GetCompanyResponse, error) {
+func (m *MockCompanyServiceServer) GetCompanyById(arg0 context.Context, arg1 *company_service.GetCompanyRequestById) (*company_service.GetPrivateCompanyResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCompanyById", arg0, arg1)
-	ret0, _ := ret[0].(*company_service.GetCompanyResponse)
+	ret0, _ := ret[0].(*company_service.GetPrivateCompanyResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

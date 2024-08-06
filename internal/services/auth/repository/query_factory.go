@@ -16,9 +16,54 @@ type QueryFactory interface {
 	CreateValidateUserSession(hash string) *query.Query
 	CreateRemoveUserSession(hash string) *query.Query
 	CreateUpdateUser(user *models.User) *query.Query
+	CreateUpdateUserBalance(userID int64, newBalance int64) *query.Query
+	CreateAddPayment(payment *models.Payment) *query.Query
+	CreateUpdatePayment(payment *models.Payment) *query.Query
+	CreateGetPayment(paymentID string) *query.Query
+	CreateGetUsersPayments(userID int64) *query.Query
+	CreateCountUsersPayments(userID int64) *query.Query
 }
 
 type queryFactory struct{}
+
+func (q *queryFactory) CreateCountUsersPayments(userID int64) *query.Query {
+	return &query.Query{
+		Request: createCountUserPayments,
+		Params:  []interface{}{userID},
+	}
+}
+
+func (q *queryFactory) CreateAddPayment(payment *models.Payment) *query.Query {
+	return &query.Query{
+		Request: createAddPayment,
+		Params: []interface{}{
+			payment.UserId, payment.PaymentId, payment.Amount, payment.Type,
+		},
+	}
+}
+
+func (q *queryFactory) CreateUpdatePayment(payment *models.Payment) *query.Query {
+	return &query.Query{
+		Request: createUpdatePayment,
+		Params: []interface{}{
+			payment.UserId, payment.PaymentId, payment.Amount, payment.Status, payment.Paid, payment.Type, payment.Credited,
+		},
+	}
+}
+
+func (q *queryFactory) CreateGetPayment(paymentID string) *query.Query {
+	return &query.Query{
+		Request: createGetPayment,
+		Params:  []interface{}{paymentID},
+	}
+}
+
+func (q *queryFactory) CreateGetUsersPayments(userID int64) *query.Query {
+	return &query.Query{
+		Request: createGetUserPayments,
+		Params:  []interface{}{userID},
+	}
+}
 
 func (q *queryFactory) CreateGetCompanyByUserId(Id int64) *query.Query {
 	return &query.Query{
@@ -32,6 +77,15 @@ func (q *queryFactory) CreateUpdateUser(user *models.User) *query.Query {
 		Request: createCreateUpdateUser,
 		Params: []interface{}{
 			user.Id, user.Name, user.Surname, user.Patronymic, user.Email, user.Password,
+		},
+	}
+}
+
+func (q *queryFactory) CreateUpdateUserBalance(userID int64, newBalance int64) *query.Query {
+	return &query.Query{
+		Request: createUpdateUserBalance,
+		Params: []interface{}{
+			userID, newBalance,
 		},
 	}
 }

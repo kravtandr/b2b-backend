@@ -1,3 +1,5 @@
+# export PATH="$PATH:$(go env GOPATH)/bin"
+
 protogen-api-with-validator:
 	protoc 								\
     		-I. 								\

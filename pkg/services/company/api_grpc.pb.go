@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CompanyServiceClient interface {
-	GetCompanyById(ctx context.Context, in *GetCompanyRequestById, opts ...grpc.CallOption) (*GetCompanyResponse, error)
+	GetCompanyById(ctx context.Context, in *GetCompanyRequestById, opts ...grpc.CallOption) (*GetPrivateCompanyResponse, error)
 	GetCompanyByProductId(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*GetPrivateCompanyResponse, error)
 	UpdateCompanyByOwnerId(ctx context.Context, in *UpdateCompanyRequest, opts ...grpc.CallOption) (*GetCompanyAndPostResponse, error)
 }
@@ -35,8 +35,8 @@ func NewCompanyServiceClient(cc grpc.ClientConnInterface) CompanyServiceClient {
 	return &companyServiceClient{cc}
 }
 
-func (c *companyServiceClient) GetCompanyById(ctx context.Context, in *GetCompanyRequestById, opts ...grpc.CallOption) (*GetCompanyResponse, error) {
-	out := new(GetCompanyResponse)
+func (c *companyServiceClient) GetCompanyById(ctx context.Context, in *GetCompanyRequestById, opts ...grpc.CallOption) (*GetPrivateCompanyResponse, error) {
+	out := new(GetPrivateCompanyResponse)
 	err := c.cc.Invoke(ctx, "/services.company_service.CompanyService/GetCompanyById", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (c *companyServiceClient) UpdateCompanyByOwnerId(ctx context.Context, in *U
 // All implementations must embed UnimplementedCompanyServiceServer
 // for forward compatibility
 type CompanyServiceServer interface {
-	GetCompanyById(context.Context, *GetCompanyRequestById) (*GetCompanyResponse, error)
+	GetCompanyById(context.Context, *GetCompanyRequestById) (*GetPrivateCompanyResponse, error)
 	GetCompanyByProductId(context.Context, *IdRequest) (*GetPrivateCompanyResponse, error)
 	UpdateCompanyByOwnerId(context.Context, *UpdateCompanyRequest) (*GetCompanyAndPostResponse, error)
 	mustEmbedUnimplementedCompanyServiceServer()
@@ -76,7 +76,7 @@ type CompanyServiceServer interface {
 type UnimplementedCompanyServiceServer struct {
 }
 
-func (UnimplementedCompanyServiceServer) GetCompanyById(context.Context, *GetCompanyRequestById) (*GetCompanyResponse, error) {
+func (UnimplementedCompanyServiceServer) GetCompanyById(context.Context, *GetCompanyRequestById) (*GetPrivateCompanyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCompanyById not implemented")
 }
 func (UnimplementedCompanyServiceServer) GetCompanyByProductId(context.Context, *IdRequest) (*GetPrivateCompanyResponse, error) {

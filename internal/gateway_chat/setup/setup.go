@@ -26,6 +26,7 @@ import (
 	productsCategories_service "b2b/m/pkg/services/productsCategories"
 	"time"
 
+	yookassa "github.com/rvinnie/yookassa-sdk-go/yookassa"
 	"gopkg.in/webdeskltd/dadata.v2"
 
 	"google.golang.org/grpc"
@@ -55,8 +56,13 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 	if err != nil {
 		return p, stopFunc, err
 	}
+	var UKASSA_SECRET_KEY = "test_on5XfensBJfl8nY63uzUp3CBTW5YE0w6SVhr4VxAdH4"
+	var ACCIUNT_ID = "415910"
+	yooclient := yookassa.NewClient(ACCIUNT_ID, UKASSA_SECRET_KEY)
+	// Создаем обработчик платежей
+	paymentHandler := yookassa.NewPaymentHandler(yooclient)
 	userGRPC := auth_service.NewAuthServiceClient(conn)
-	userUsecase := uu.NewUserUsecase(userGRPC, CompanyGRPC)
+	userUsecase := uu.NewUserUsecase(userGRPC, CompanyGRPC, paymentHandler)
 	userDelivery := ud.NewUserDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,
@@ -94,7 +100,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		return p, stopFunc, err
 	}
 	RestchatGRPC := chat_service.NewChatServiceClient(RestChatConn)
-	RestchatUsecase := restchatu.NewChatUsecase(RestchatGRPC, CompanyGRPC, ProductsCategoriesGRPC, userGRPC)
+	RestchatUsecase := restchatu.NewChatUsecase(RestchatGRPC, CompanyGRPC, ProductsCategoriesGRPC, userGRPC, userUsecase)
 	RestchatDelivery := restchatd.NewChatDelivery(
 		error_adapter.NewGrpcToHttpAdapter(
 			grpc_errors.UserGatewayError, grpc_errors.CommonError,

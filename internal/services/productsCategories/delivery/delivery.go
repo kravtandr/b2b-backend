@@ -48,6 +48,38 @@ func (a *productsCategoriesDelivery) AddProduct(ctx context.Context, request *pr
 	}, nil
 }
 
+func (a *productsCategoriesDelivery) UpdateProduct(ctx context.Context, request *productsCategories_service.UpdateProductRequest) (*productsCategories_service.GetProduct, error) {
+	resp, err := a.productsCategoriesUseCase.UpdateProduct(ctx, &models.Product{
+		Name: request.Name,
+		Description: sql.NullString{
+			String: request.Description.String_,
+			Valid:  request.Description.Valid},
+		Price: request.Price,
+		Photo: request.ProductPhoto,
+		Docs:  request.Docs,
+	}, &models.CompaniesProducts{
+		CompanyId:   request.CompanyId,
+		AddedBy:     request.UserId,
+		Amount:      request.Amount,
+		PayWay:      request.PayWay,
+		DeliveryWay: request.DeliveryWay,
+		Adress:      request.Adress,
+	}, request.UserId, request.CompanyId, request.CategoryId)
+	if err != nil {
+		return &productsCategories_service.GetProduct{}, a.errorAdapter.AdaptError(err)
+	}
+	description := productsCategories_service.SqlNullString{
+		String_: resp.Description.String,
+		Valid:   resp.Description.Valid}
+	return &productsCategories_service.GetProduct{
+		Id:          resp.Id,
+		Name:        resp.Name,
+		Description: &description,
+		Price:       resp.Price,
+		Photo:       resp.Photo,
+	}, nil
+}
+
 func (a *productsCategoriesDelivery) GetProductsList(ctx context.Context, request *productsCategories_service.GetProductsListRequest) (*productsCategories_service.GetProductsListResponse, error) {
 	resp, err := a.productsCategoriesUseCase.GetProductsList(ctx, &chttp.QueryParam{
 		Skip:  request.Skip,
@@ -203,6 +235,35 @@ func (a *productsCategoriesDelivery) SearchCategories(ctx context.Context, reque
 			Description: &description,
 		}
 		res.Categories = append(res.Categories, modelCategory)
+
+	}
+	return &res, nil
+}
+
+func (a *productsCategoriesDelivery) GetCompanyProducts(ctx context.Context, request *productsCategories_service.GetCompanyProductsRequest) (*productsCategories_service.GetProductsListResponse, error) {
+	resp, err := a.productsCategoriesUseCase.GetCompanyProducts(ctx, request.CompanyId, &chttp.QueryParam{
+		Skip:  request.Skip,
+		Limit: request.Limit,
+	})
+	if err != nil {
+		return &productsCategories_service.GetProductsListResponse{}, a.errorAdapter.AdaptError(err)
+	}
+	var res productsCategories_service.GetProductsListResponse
+	var modelProduct *productsCategories_service.GetProduct
+
+	for _, result := range *resp {
+		description := productsCategories_service.SqlNullString{
+			String_: result.Description.String,
+			Valid:   result.Description.Valid}
+		modelProduct = &productsCategories_service.GetProduct{
+			Id:          result.Id,
+			Name:        result.Name,
+			Description: &description,
+			Price:       result.Price,
+			Photo:       result.Photo,
+			Documents:   result.Docs,
+		}
+		res.Products = append(res.Products, modelProduct)
 
 	}
 	return &res, nil

@@ -9,23 +9,53 @@ import (
 )
 
 type QueryFactory interface {
-	CreateGetCategoryById(id int64) *query.Query
+	CreateAddProduct(Product *models.Product) *query.Query
+	CreateAddProductDocuments(productId int64, objName string) *query.Query
+	CreateAddProductPhotos(productId int64, objName string) *query.Query
 	CreateGetProductById(id int64) *query.Query
-	CreateGetAllCategories() *query.Query
-	CreateSearchCategories(SearchBody *chttp.SearchItemNameWithSkipLimit) *query.Query
+	CreateGetProductPhotos(productId int64) *query.Query
+	CreateGetProductDocuments(productId int64) *query.Query
+	CreateUpdateProduct(Product *models.Product) *query.Query
+
 	CreateGetProductsList(SkipLimit *chttp.QueryParam) *query.Query
 	CreateGetProductsListByFilters(filters *models.ProductsFilters) *query.Query
 	CreateSearchProducts(SearchBody *chttp.SearchItemNameWithSkipLimit) *query.Query
-	CreateAddProduct(Product *models.Product) *query.Query
+	CreateGetCompanyProducts(CompanyId int64, SkipLimit *chttp.QueryParam) *query.Query
+
+	CreateGetCategoryById(id int64) *query.Query
+	CreateGetAllCategories() *query.Query
+
+	CreateSearchCategories(SearchBody *chttp.SearchItemNameWithSkipLimit) *query.Query
+
 	CreateAddProductsCategoriesLink(productId int64, categoryId int64) *query.Query
+	CreateGetProductsCategoriesLink(productId int64) *query.Query
+	CreateUpdateProductsCategoriesLink(productId int64, newCategoryId int64) *query.Query
+
 	CreateAddCompaniesProductsLink(CompaniesProducts *models.CompaniesProducts) *query.Query
-	CreateAddProductDocuments(productId int64, objName string) *query.Query
-	CreateAddProductPhotos(productId int64, objName string) *query.Query
-	CreateGetProductPhotos(productId int64) *query.Query
-	CreateGetProductDocuments(productId int64) *query.Query
 }
 
 type queryFactory struct{}
+
+func (q *queryFactory) CreateUpdateProductsCategoriesLink(productId int64, newCategoryId int64) *query.Query {
+	return &query.Query{
+		Request: createUpdateProductsCategoriesLink,
+		Params:  []interface{}{productId, newCategoryId},
+	}
+}
+
+func (q *queryFactory) CreateUpdateProduct(Product *models.Product) *query.Query {
+	return &query.Query{
+		Request: createUpdateProduct,
+		Params:  []interface{}{Product.Id, Product.Name, Product.Description, Product.Price},
+	}
+}
+
+func (q *queryFactory) CreateGetProductsCategoriesLink(productId int64) *query.Query {
+	return &query.Query{
+		Request: createGetProductsCategoriesLink,
+		Params:  []interface{}{productId},
+	}
+}
 
 func (q *queryFactory) CreateGetProductPhotos(productId int64) *query.Query {
 	return &query.Query{
@@ -121,6 +151,12 @@ func (q *queryFactory) CreateSearchProducts(SearchBody *chttp.SearchItemNameWith
 	return &query.Query{
 		Request: createSearchProducts,
 		Params:  []interface{}{SearchBody.Name, SearchBody.Skip, SearchBody.Limit},
+	}
+}
+func (q *queryFactory) CreateGetCompanyProducts(CompanyId int64, SkipLimit *chttp.QueryParam) *query.Query {
+	return &query.Query{
+		Request: createGetCompanyProducts,
+		Params:  []interface{}{CompanyId, SkipLimit.Skip, SkipLimit.Limit},
 	}
 }
 

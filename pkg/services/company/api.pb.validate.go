@@ -393,6 +393,8 @@ func (m *GetPrivateCompanyResponse) validate(all bool) error {
 
 	// no validation rules for Verified
 
+	// no validation rules for Photo
+
 	if len(errors) > 0 {
 		return GetPrivateCompanyResponseMultiError(errors)
 	}
@@ -521,6 +523,8 @@ func (m *GetCompanyResponse) validate(all bool) error {
 	// no validation rules for Rating
 
 	// no validation rules for Verified
+
+	// no validation rules for Photo
 
 	if len(errors) > 0 {
 		return GetCompanyResponseMultiError(errors)
@@ -653,6 +657,8 @@ func (m *GetCompanyAndPostResponse) validate(all bool) error {
 
 	// no validation rules for Post
 
+	// no validation rules for Photo
+
 	if len(errors) > 0 {
 		return GetCompanyAndPostResponseMultiError(errors)
 	}
@@ -773,6 +779,8 @@ func (m *UpdateCompanyRequest) validate(all bool) error {
 	// no validation rules for OwnerId
 
 	// no validation rules for Post
+
+	// no validation rules for Photo
 
 	if len(errors) > 0 {
 		return UpdateCompanyRequestMultiError(errors)

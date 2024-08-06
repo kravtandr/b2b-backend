@@ -8,6 +8,7 @@ type Chat struct {
 	CreatorId int64  `json:"creator_id"`
 	ProductId int64  `json:"product_id"`
 	Status    string `json:"status"`
+	Blured    bool   `json:"blured"`
 }
 
 type Chats []Chat
@@ -36,12 +37,22 @@ type WsMsg struct {
 type InitMsg struct {
 	SenderId int64 `json:"sender_id"`
 }
+type DeleteChatRequest struct {
+	Chat_id int64 `json:"chat_id"`
+}
+
+type UpdateChatStatusRequest struct {
+	Chat_id int64  `json:"chat_id"`
+	Status  string `json:"status"`
+	Blured  bool   `json:"blured"`
+}
 
 type Msgs []Msg
 
 type ChatAndLastMsg struct {
-	Chat    Chat `json:"chat"`
-	LastMsg Msg  `json:"last_msg"`
+	Chat    Chat    `json:"chat"`
+	LastMsg Msg     `json:"last_msg"`
+	Company Company `json:"company"`
 }
 
 type ChatsAndLastMsg []ChatAndLastMsg
@@ -51,7 +62,7 @@ type CheckUnique struct {
 	ProducId int64 `json:"product_id"`
 }
 
-type InitChatResponce struct {
+type InitChatresponse struct {
 	ChatId        int64 `json:"chat_id"`
 	CreateNewChat bool  `json:"create_new_chat"`
 }

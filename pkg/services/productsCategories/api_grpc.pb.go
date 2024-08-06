@@ -23,12 +23,14 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductsCategoriesServiceClient interface {
 	AddProduct(ctx context.Context, in *AddProductRequest, opts ...grpc.CallOption) (*GetProduct, error)
+	UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*GetProduct, error)
 	GetCategoryById(ctx context.Context, in *GetCategoryByID, opts ...grpc.CallOption) (*GetCategory, error)
 	GetProductById(ctx context.Context, in *GetProductByID, opts ...grpc.CallOption) (*GetProduct, error)
 	SearchCategories(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetCategories, error)
 	SearchProducts(ctx context.Context, in *SearchItemNameWithSkipLimitRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
 	GetProductsList(ctx context.Context, in *GetProductsListRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
 	GetProductsListByFilters(ctx context.Context, in *GetProductsListByFiltersRequest, opts ...grpc.CallOption) (*GetProductsByFiltersResponse, error)
+	GetCompanyProducts(ctx context.Context, in *GetCompanyProductsRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error)
 }
 
 type productsCategoriesServiceClient struct {
@@ -42,6 +44,15 @@ func NewProductsCategoriesServiceClient(cc grpc.ClientConnInterface) ProductsCat
 func (c *productsCategoriesServiceClient) AddProduct(ctx context.Context, in *AddProductRequest, opts ...grpc.CallOption) (*GetProduct, error) {
 	out := new(GetProduct)
 	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/AddProduct", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productsCategoriesServiceClient) UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*GetProduct, error) {
+	out := new(GetProduct)
+	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/UpdateProduct", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,17 +113,28 @@ func (c *productsCategoriesServiceClient) GetProductsListByFilters(ctx context.C
 	return out, nil
 }
 
+func (c *productsCategoriesServiceClient) GetCompanyProducts(ctx context.Context, in *GetCompanyProductsRequest, opts ...grpc.CallOption) (*GetProductsListResponse, error) {
+	out := new(GetProductsListResponse)
+	err := c.cc.Invoke(ctx, "/services.productsCategories_service.ProductsCategoriesService/GetCompanyProducts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductsCategoriesServiceServer is the server API for ProductsCategoriesService service.
 // All implementations must embed UnimplementedProductsCategoriesServiceServer
 // for forward compatibility
 type ProductsCategoriesServiceServer interface {
 	AddProduct(context.Context, *AddProductRequest) (*GetProduct, error)
+	UpdateProduct(context.Context, *UpdateProductRequest) (*GetProduct, error)
 	GetCategoryById(context.Context, *GetCategoryByID) (*GetCategory, error)
 	GetProductById(context.Context, *GetProductByID) (*GetProduct, error)
 	SearchCategories(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetCategories, error)
 	SearchProducts(context.Context, *SearchItemNameWithSkipLimitRequest) (*GetProductsListResponse, error)
 	GetProductsList(context.Context, *GetProductsListRequest) (*GetProductsListResponse, error)
 	GetProductsListByFilters(context.Context, *GetProductsListByFiltersRequest) (*GetProductsByFiltersResponse, error)
+	GetCompanyProducts(context.Context, *GetCompanyProductsRequest) (*GetProductsListResponse, error)
 	mustEmbedUnimplementedProductsCategoriesServiceServer()
 }
 
@@ -122,6 +144,9 @@ type UnimplementedProductsCategoriesServiceServer struct {
 
 func (UnimplementedProductsCategoriesServiceServer) AddProduct(context.Context, *AddProductRequest) (*GetProduct, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddProduct not implemented")
+}
+func (UnimplementedProductsCategoriesServiceServer) UpdateProduct(context.Context, *UpdateProductRequest) (*GetProduct, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProduct not implemented")
 }
 func (UnimplementedProductsCategoriesServiceServer) GetCategoryById(context.Context, *GetCategoryByID) (*GetCategory, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCategoryById not implemented")
@@ -140,6 +165,9 @@ func (UnimplementedProductsCategoriesServiceServer) GetProductsList(context.Cont
 }
 func (UnimplementedProductsCategoriesServiceServer) GetProductsListByFilters(context.Context, *GetProductsListByFiltersRequest) (*GetProductsByFiltersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProductsListByFilters not implemented")
+}
+func (UnimplementedProductsCategoriesServiceServer) GetCompanyProducts(context.Context, *GetCompanyProductsRequest) (*GetProductsListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCompanyProducts not implemented")
 }
 func (UnimplementedProductsCategoriesServiceServer) mustEmbedUnimplementedProductsCategoriesServiceServer() {
 }
@@ -169,6 +197,24 @@ func _ProductsCategoriesService_AddProduct_Handler(srv interface{}, ctx context.
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductsCategoriesServiceServer).AddProduct(ctx, req.(*AddProductRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProductsCategoriesService_UpdateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateProductRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductsCategoriesServiceServer).UpdateProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.productsCategories_service.ProductsCategoriesService/UpdateProduct",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductsCategoriesServiceServer).UpdateProduct(ctx, req.(*UpdateProductRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -281,6 +327,24 @@ func _ProductsCategoriesService_GetProductsListByFilters_Handler(srv interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductsCategoriesService_GetCompanyProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCompanyProductsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductsCategoriesServiceServer).GetCompanyProducts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.productsCategories_service.ProductsCategoriesService/GetCompanyProducts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductsCategoriesServiceServer).GetCompanyProducts(ctx, req.(*GetCompanyProductsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductsCategoriesService_ServiceDesc is the grpc.ServiceDesc for ProductsCategoriesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -291,6 +355,10 @@ var ProductsCategoriesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddProduct",
 			Handler:    _ProductsCategoriesService_AddProduct_Handler,
+		},
+		{
+			MethodName: "UpdateProduct",
+			Handler:    _ProductsCategoriesService_UpdateProduct_Handler,
 		},
 		{
 			MethodName: "GetCategoryById",
@@ -315,6 +383,10 @@ var ProductsCategoriesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProductsListByFilters",
 			Handler:    _ProductsCategoriesService_GetProductsListByFilters_Handler,
+		},
+		{
+			MethodName: "GetCompanyProducts",
+			Handler:    _ProductsCategoriesService_GetCompanyProducts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

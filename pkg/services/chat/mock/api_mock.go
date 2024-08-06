@@ -77,6 +77,26 @@ func (mr *MockChatServiceClientMockRecorder) CheckIfUniqChat(ctx, in interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckIfUniqChat", reflect.TypeOf((*MockChatServiceClient)(nil).CheckIfUniqChat), varargs...)
 }
 
+// DeleteChat mocks base method.
+func (m *MockChatServiceClient) DeleteChat(ctx context.Context, in *chat_service.IdRequest, opts ...grpc.CallOption) (*chat_service.Bool, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DeleteChat", varargs...)
+	ret0, _ := ret[0].(*chat_service.Bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteChat indicates an expected call of DeleteChat.
+func (mr *MockChatServiceClientMockRecorder) DeleteChat(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChat", reflect.TypeOf((*MockChatServiceClient)(nil).DeleteChat), varargs...)
+}
+
 // GetAllChatsAndLastMsg mocks base method.
 func (m *MockChatServiceClient) GetAllChatsAndLastMsg(ctx context.Context, in *chat_service.IdRequest, opts ...grpc.CallOption) (*chat_service.GetAllChatsAndLastMsgResponse, error) {
 	m.ctrl.T.Helper()
@@ -137,6 +157,26 @@ func (mr *MockChatServiceClientMockRecorder) GetChat(ctx, in interface{}, opts .
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChat", reflect.TypeOf((*MockChatServiceClient)(nil).GetChat), varargs...)
 }
 
+// GetChatById mocks base method.
+func (m *MockChatServiceClient) GetChatById(ctx context.Context, in *chat_service.IdRequest, opts ...grpc.CallOption) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetChatById", varargs...)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetChatById indicates an expected call of GetChatById.
+func (mr *MockChatServiceClientMockRecorder) GetChatById(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChatById", reflect.TypeOf((*MockChatServiceClient)(nil).GetChatById), varargs...)
+}
+
 // GetMsgsFromChat mocks base method.
 func (m *MockChatServiceClient) GetMsgsFromChat(ctx context.Context, in *chat_service.ChatAndUserIdRequest, opts ...grpc.CallOption) (*chat_service.MsgsResponse, error) {
 	m.ctrl.T.Helper()
@@ -175,6 +215,26 @@ func (mr *MockChatServiceClientMockRecorder) NewChat(ctx, in interface{}, opts .
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewChat", reflect.TypeOf((*MockChatServiceClient)(nil).NewChat), varargs...)
+}
+
+// UpdateChatStatus mocks base method.
+func (m *MockChatServiceClient) UpdateChatStatus(ctx context.Context, in *chat_service.UpdateChatStatusRequest, opts ...grpc.CallOption) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "UpdateChatStatus", varargs...)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateChatStatus indicates an expected call of UpdateChatStatus.
+func (mr *MockChatServiceClientMockRecorder) UpdateChatStatus(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChatStatus", reflect.TypeOf((*MockChatServiceClient)(nil).UpdateChatStatus), varargs...)
 }
 
 // WriteNewMsg mocks base method.
@@ -250,6 +310,21 @@ func (mr *MockChatServiceServerMockRecorder) CheckIfUniqChat(arg0, arg1 interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckIfUniqChat", reflect.TypeOf((*MockChatServiceServer)(nil).CheckIfUniqChat), arg0, arg1)
 }
 
+// DeleteChat mocks base method.
+func (m *MockChatServiceServer) DeleteChat(arg0 context.Context, arg1 *chat_service.IdRequest) (*chat_service.Bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteChat", arg0, arg1)
+	ret0, _ := ret[0].(*chat_service.Bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteChat indicates an expected call of DeleteChat.
+func (mr *MockChatServiceServerMockRecorder) DeleteChat(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteChat", reflect.TypeOf((*MockChatServiceServer)(nil).DeleteChat), arg0, arg1)
+}
+
 // GetAllChatsAndLastMsg mocks base method.
 func (m *MockChatServiceServer) GetAllChatsAndLastMsg(arg0 context.Context, arg1 *chat_service.IdRequest) (*chat_service.GetAllChatsAndLastMsgResponse, error) {
 	m.ctrl.T.Helper()
@@ -295,6 +370,21 @@ func (mr *MockChatServiceServerMockRecorder) GetChat(arg0, arg1 interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChat", reflect.TypeOf((*MockChatServiceServer)(nil).GetChat), arg0, arg1)
 }
 
+// GetChatById mocks base method.
+func (m *MockChatServiceServer) GetChatById(arg0 context.Context, arg1 *chat_service.IdRequest) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetChatById", arg0, arg1)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetChatById indicates an expected call of GetChatById.
+func (mr *MockChatServiceServerMockRecorder) GetChatById(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChatById", reflect.TypeOf((*MockChatServiceServer)(nil).GetChatById), arg0, arg1)
+}
+
 // GetMsgsFromChat mocks base method.
 func (m *MockChatServiceServer) GetMsgsFromChat(arg0 context.Context, arg1 *chat_service.ChatAndUserIdRequest) (*chat_service.MsgsResponse, error) {
 	m.ctrl.T.Helper()
@@ -323,6 +413,21 @@ func (m *MockChatServiceServer) NewChat(arg0 context.Context, arg1 *chat_service
 func (mr *MockChatServiceServerMockRecorder) NewChat(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NewChat", reflect.TypeOf((*MockChatServiceServer)(nil).NewChat), arg0, arg1)
+}
+
+// UpdateChatStatus mocks base method.
+func (m *MockChatServiceServer) UpdateChatStatus(arg0 context.Context, arg1 *chat_service.UpdateChatStatusRequest) (*chat_service.ChatResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateChatStatus", arg0, arg1)
+	ret0, _ := ret[0].(*chat_service.ChatResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateChatStatus indicates an expected call of UpdateChatStatus.
+func (mr *MockChatServiceServerMockRecorder) UpdateChatStatus(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChatStatus", reflect.TypeOf((*MockChatServiceServer)(nil).UpdateChatStatus), arg0, arg1)
 }
 
 // WriteNewMsg mocks base method.

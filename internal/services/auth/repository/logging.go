@@ -26,6 +26,108 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next AuthRepository) AuthRe
 	}
 }
 
+func (l *loggingMiddleware) CountUsersPayments(ctx context.Context, userID int64) (count int, err error) {
+	l.logger.Infow(module,
+		"Action", "CountUsersPayments",
+		"Request", userID,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "CountUsersPayments",
+				"Request", userID,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.CountUsersPayments(ctx, userID)
+}
+
+func (l *loggingMiddleware) AddPayment(ctx context.Context, payment *models.Payment) (p *models.Payment, err error) {
+	l.logger.Infow(module,
+		"Action", "AddPayment",
+		"Request", payment,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "AddPayment",
+				"Request", payment,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.AddPayment(ctx, payment)
+}
+
+func (l *loggingMiddleware) UpdatePayment(ctx context.Context, payment *models.Payment) (p *models.Payment, err error) {
+	l.logger.Infow(module,
+		"Action", "UpdatePayment",
+		"Request", payment,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "UpdatePayment",
+				"Request", payment,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.UpdatePayment(ctx, payment)
+}
+
+func (l *loggingMiddleware) GetPayment(ctx context.Context, paymentID string) (p *models.Payment, err error) {
+	l.logger.Infow(module,
+		"Action", "GetPayment",
+		"Request", paymentID,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetPayment",
+				"Request", paymentID,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.GetPayment(ctx, paymentID)
+}
+
+func (l *loggingMiddleware) GetUsersPayments(ctx context.Context, userID int64) (p *models.Payments, err error) {
+	l.logger.Infow(module,
+		"Action", "GetUsersPayments",
+		"Request", userID,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetUsersPayments",
+				"Request", userID,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.GetUsersPayments(ctx, userID)
+}
+
+func (l *loggingMiddleware) UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (u *models.User, err error) {
+	l.logger.Infow(module,
+		"Action", "UpdateUserBalance",
+		"Request", userID,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "UpdateUserBalance",
+				"Request", userID,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.UpdateUserBalance(ctx, userID, newBalance)
+}
+
 func (l *loggingMiddleware) GetUserByEmail(ctx context.Context, email string) (u *models.User, err error) {
 	l.logger.Infow(module,
 		"Action", "GetUserByEmail",

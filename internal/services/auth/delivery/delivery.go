@@ -6,6 +6,7 @@ import (
 	"b2b/m/pkg/error_adapter"
 	auth_service "b2b/m/pkg/services/auth"
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/golang/protobuf/ptypes/empty"
@@ -45,6 +46,7 @@ func (a *authDelivery) CheckEmail(ctx context.Context, request *auth_service.Che
 }
 
 func (a *authDelivery) LoginUser(ctx context.Context, request *auth_service.LoginRequest) (*auth_service.LoginResponse, error) {
+	log.Println("LoginUser in service delivery")
 	response, err := a.authUsecase.LoginUser(ctx, &models.User{
 		Email:    request.Email,
 		Password: request.Password,
@@ -52,7 +54,7 @@ func (a *authDelivery) LoginUser(ctx context.Context, request *auth_service.Logi
 	if err != nil {
 		return &auth_service.LoginResponse{}, a.errorAdapter.AdaptError(err)
 	}
-
+	log.Println("return from LoginUser in service delivery")
 	return &auth_service.LoginResponse{
 		Cookie:       response.Cookie,
 		Token:        response.Token,
@@ -134,9 +136,12 @@ func (a *authDelivery) GetUser(ctx context.Context, request *auth_service.GetUse
 	}
 
 	return &auth_service.GetUserResponse{
-		Name:    response.Name,
-		Surname: response.Surname,
-		Email:   response.Email,
+		Name:       response.Name,
+		Surname:    response.Surname,
+		Patronymic: response.Patronymic,
+		Country:    response.Country,
+		Email:      response.Email,
+		Balance:    response.Balance,
 	}, nil
 }
 
@@ -177,21 +182,21 @@ func (a *authDelivery) GetUserInfo(ctx context.Context, request *auth_service.Ge
 }
 
 func (a *authDelivery) GetUserByEmail(ctx context.Context, request *auth_service.UserEmailRequest) (*auth_service.UserId, error) {
-	responce, err := a.authUsecase.GetUserByEmail(ctx, request.Email)
+	response, err := a.authUsecase.GetUserByEmail(ctx, request.Email)
 	if err != nil {
 		return &auth_service.UserId{}, a.errorAdapter.AdaptError(err)
 	}
 
-	return &auth_service.UserId{Id: responce.Id}, nil
+	return &auth_service.UserId{Id: response.Id}, nil
 }
 
 func (a *authDelivery) GetUserIdByCookie(ctx context.Context, request *auth_service.GetUserIdByCookieRequest) (*auth_service.UserId, error) {
-	responce, err := a.authUsecase.ValidateSession(ctx, request.Hash)
+	response, err := a.authUsecase.ValidateSession(ctx, request.Hash)
 	if err != nil {
 		return &auth_service.UserId{}, a.errorAdapter.AdaptError(err)
 	}
 
-	return &auth_service.UserId{Id: responce}, nil
+	return &auth_service.UserId{Id: response}, nil
 }
 
 func (a *authDelivery) GetUsersCompany(ctx context.Context, request *auth_service.UserIdRequest) (*auth_service.GetPrivateCompanyResponse, error) {
@@ -230,6 +235,116 @@ func (a *authDelivery) GetCompanyUserLink(ctx context.Context, request *auth_ser
 		CompanyId: response.CompanyId,
 		UserId:    response.UserId,
 		Itn:       response.Itn,
+	}, nil
+}
+
+func (a *authDelivery) UpdateUserBalance(ctx context.Context, request *auth_service.UpdateUserBalanceRequest) (*auth_service.GetPublicUserResponse, error) {
+	response, err := a.authUsecase.UpdateUserBalance(ctx, request.UserId, request.Balance)
+	if err != nil {
+		return &auth_service.GetPublicUserResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.GetPublicUserResponse{
+		Name:       response.Name,
+		Surname:    response.Surname,
+		Patronymic: response.Patronymic,
+		Email:      response.Email,
+	}, nil
+}
+
+func (a *authDelivery) AddPayment(ctx context.Context, request *auth_service.AddPaymentRequest) (*auth_service.PaymentResponse, error) {
+	response, err := a.authUsecase.AddPayment(ctx, &models.Payment{
+		UserId:    request.UserId,
+		PaymentId: request.PaymentId,
+		Amount:    request.Amount,
+	})
+	if err != nil {
+		return &auth_service.PaymentResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.PaymentResponse{
+		UserId:    response.UserId,
+		PaymentId: response.PaymentId,
+		Amount:    response.Amount,
+		Status:    response.Status,
+		Paid:      response.Paid,
+		Type:      response.Type,
+		Time:      fmt.Sprint(response.Time),
+	}, nil
+}
+
+func (a *authDelivery) UpdatePayment(ctx context.Context, request *auth_service.UpdatePaymentRequest) (*auth_service.PaymentResponse, error) {
+	response, err := a.authUsecase.UpdatePayment(ctx, &models.Payment{
+		UserId:    request.UserId,
+		PaymentId: request.PaymentId,
+		Amount:    request.Amount,
+		Status:    request.Status,
+		Paid:      request.Paid,
+		Type:      request.Type,
+	})
+	if err != nil {
+		return &auth_service.PaymentResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.PaymentResponse{
+		UserId:    response.UserId,
+		PaymentId: response.PaymentId,
+		Amount:    response.Amount,
+		Status:    response.Status,
+		Paid:      response.Paid,
+		Type:      response.Type,
+		Time:      fmt.Sprint(response.Time),
+	}, nil
+}
+
+func (a *authDelivery) GetPayment(ctx context.Context, request *auth_service.GetPaymentRequest) (*auth_service.PaymentResponse, error) {
+	response, err := a.authUsecase.GetPayment(ctx, request.PaymentId)
+	if err != nil {
+		return &auth_service.PaymentResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.PaymentResponse{
+		UserId:    response.UserId,
+		PaymentId: response.PaymentId,
+		Amount:    response.Amount,
+		Status:    response.Status,
+		Paid:      response.Paid,
+		Type:      response.Type,
+		Time:      fmt.Sprint(response.Time),
+	}, nil
+}
+
+func (a *authDelivery) GetUsersPayments(ctx context.Context, request *auth_service.UserIdRequest) (*auth_service.PaymentsResponse, error) {
+	response, err := a.authUsecase.GetUsersPayments(ctx, request.Id)
+	if err != nil {
+		return &auth_service.PaymentsResponse{}, a.errorAdapter.AdaptError(err)
+	}
+	var respPayment *auth_service.PaymentResponse
+	var paymnets auth_service.PaymentsResponse
+	for _, payment := range *response {
+		respPayment = &auth_service.PaymentResponse{
+			UserId:    payment.UserId,
+			PaymentId: payment.PaymentId,
+			Amount:    payment.Amount,
+			Status:    payment.Status,
+			Paid:      payment.Paid,
+			Type:      payment.Type,
+			Time:      fmt.Sprint(payment.Time),
+		}
+
+		paymnets.Payments = append(paymnets.Payments, respPayment)
+	}
+	return &paymnets, nil
+}
+
+func (a *authDelivery) HandlePaidPayments(ctx context.Context, request *auth_service.HandlePaidPaymentsRequest) (*auth_service.HandlePaidPaymentsResponse, error) {
+	response, err := a.authUsecase.HandlePaidPayments(ctx, request.UserId)
+	if err != nil {
+		return &auth_service.HandlePaidPaymentsResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.HandlePaidPaymentsResponse{
+		Credited: response,
 	}, nil
 }
 

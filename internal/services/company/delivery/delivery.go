@@ -14,13 +14,14 @@ type companyDelivery struct {
 	company_service.UnimplementedCompanyServiceServer
 }
 
-func (a *companyDelivery) GetCompanyById(ctx context.Context, request *company_service.GetCompanyRequestById) (*company_service.GetCompanyResponse, error) {
+func (a *companyDelivery) GetCompanyById(ctx context.Context, request *company_service.GetCompanyRequestById) (*company_service.GetPrivateCompanyResponse, error) {
 	company, err := a.companyUseCase.GetCompanyById(ctx, request.Id)
 	if err != nil {
 		return nil, a.errorAdapter.AdaptError(err)
 	}
 
-	return &company_service.GetCompanyResponse{
+	return &company_service.GetPrivateCompanyResponse{
+		Id:           company.Id,
 		Name:         company.Name,
 		Description:  company.Description,
 		LegalName:    company.LegalName,
@@ -35,6 +36,7 @@ func (a *companyDelivery) GetCompanyById(ctx context.Context, request *company_s
 		OwnerId:      company.OwnerId,
 		Rating:       company.Rating,
 		Verified:     company.Verified,
+		Photo:        company.Photo,
 	}, nil
 }
 
@@ -60,6 +62,7 @@ func (a *companyDelivery) GetCompanyByProductId(ctx context.Context, request *co
 		OwnerId:      company.OwnerId,
 		Rating:       company.Rating,
 		Verified:     company.Verified,
+		Photo:        company.Photo,
 	}, nil
 }
 
@@ -74,6 +77,7 @@ func (a *companyDelivery) UpdateCompanyByOwnerId(ctx context.Context, request *c
 		Link:         request.Link,
 		Activity:     request.Activity,
 		OwnerId:      request.OwnerId,
+		Photo:        request.Photo,
 	}, request.Post)
 
 	if err != nil {
@@ -96,6 +100,7 @@ func (a *companyDelivery) UpdateCompanyByOwnerId(ctx context.Context, request *c
 		Rating:       company.Rating,
 		Verified:     company.Verified,
 		Post:         post,
+		Photo:        company.Photo,
 	}, nil
 }
 
