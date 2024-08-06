@@ -114,25 +114,35 @@ func (a *authUseCase) HandlePaidPayments(ctx context.Context, userID int64) (boo
 }
 
 func (a *authUseCase) LoginUser(ctx context.Context, user *models.User) (models.CompanyWithCookie, error) {
+	log.Println("LoginUser in service usecase", user)
+
 	repoUser, err := a.repo.GetUserByEmail(ctx, user.Email)
 	if err != nil {
+		log.Println("ERROR GetUserByEmail  in service usecase ", err)
 		return models.CompanyWithCookie{}, err
 	}
+	log.Println("GetUserByEmail  in service usecase ", repoUser)
 
 	pass, _ := a.hashGenerator.DecodeString(repoUser.Password)
 	if pass != user.Password {
+		log.Println("WrongUserPassword  in service usecase ", err)
 		return models.CompanyWithCookie{}, errors.WrongUserPassword
 	}
 
 	cookie := a.uuidGen.GenerateString()
 	if err = a.repo.CreateUserSession(ctx, repoUser.Id, cookie); err != nil {
+		log.Println("ERROR CreateUserSession  in service usecase ", err)
 		return models.CompanyWithCookie{}, err
 	}
+	log.Println("CreateUserSession  in service usecase ")
 
 	userCompany, err := a.repo.GetUsersCompany(ctx, repoUser.Id)
 	if err != nil {
+		log.Println("ERROR GetUsersCompany  in service usecase ", err)
 		return models.CompanyWithCookie{}, err
 	}
+	log.Println("GetUsersCompany  in service usecase ")
+	log.Println("return LoginUser  in service usecase ")
 
 	return models.CompanyWithCookie{
 		Cookie:       cookie,

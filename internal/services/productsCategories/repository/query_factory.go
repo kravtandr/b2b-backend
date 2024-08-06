@@ -15,6 +15,7 @@ type QueryFactory interface {
 	CreateGetProductById(id int64) *query.Query
 	CreateGetProductPhotos(productId int64) *query.Query
 	CreateGetProductDocuments(productId int64) *query.Query
+	CreateUpdateProduct(Product *models.Product) *query.Query
 
 	CreateGetProductsList(SkipLimit *chttp.QueryParam) *query.Query
 	CreateGetProductsListByFilters(filters *models.ProductsFilters) *query.Query
@@ -27,11 +28,34 @@ type QueryFactory interface {
 	CreateSearchCategories(SearchBody *chttp.SearchItemNameWithSkipLimit) *query.Query
 
 	CreateAddProductsCategoriesLink(productId int64, categoryId int64) *query.Query
+	CreateGetProductsCategoriesLink(productId int64) *query.Query
+	CreateUpdateProductsCategoriesLink(productId int64, newCategoryId int64) *query.Query
 
 	CreateAddCompaniesProductsLink(CompaniesProducts *models.CompaniesProducts) *query.Query
 }
 
 type queryFactory struct{}
+
+func (q *queryFactory) CreateUpdateProductsCategoriesLink(productId int64, newCategoryId int64) *query.Query {
+	return &query.Query{
+		Request: createUpdateProductsCategoriesLink,
+		Params:  []interface{}{productId, newCategoryId},
+	}
+}
+
+func (q *queryFactory) CreateUpdateProduct(Product *models.Product) *query.Query {
+	return &query.Query{
+		Request: createUpdateProduct,
+		Params:  []interface{}{Product.Id, Product.Name, Product.Description, Product.Price},
+	}
+}
+
+func (q *queryFactory) CreateGetProductsCategoriesLink(productId int64) *query.Query {
+	return &query.Query{
+		Request: createGetProductsCategoriesLink,
+		Params:  []interface{}{productId},
+	}
+}
 
 func (q *queryFactory) CreateGetProductPhotos(productId int64) *query.Query {
 	return &query.Query{

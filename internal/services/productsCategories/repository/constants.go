@@ -7,6 +7,7 @@ const (
 	createGetProductById      = "SELECT id, name, description,price FROM products WHERE id = $1"
 	createGetProductPhotos    = "SELECT photo_obj_name FROM ProductPhotos WHERE product_id = $1"
 	createGetProductDocuments = "SELECT document_obj_name FROM ProductDocuments WHERE product_id = $1"
+	createUpdateProduct       = "UPDATE Products SET name = $2, description = $3, price = $4 WHERE id = $1"
 
 	createGetProductsList          = "SELECT id, name, description,price FROM products OFFSET $1 LIMIT $2"
 	createSearchProducts           = "SELECT id, name, description,price FROM products WHERE name ~* $1 OFFSET $2 LIMIT $3"
@@ -18,7 +19,9 @@ const (
 	createGetAllCategories = "SELECT id, name From categories"
 	createSearchCategories = "SELECT id, name, description FROM categories WHERE name ~* $1 OFFSET $2 LIMIT $3"
 
-	createAddProductsCategoriesLink = "INSERT INTO ProductsCategories (product_id, category_id) VALUES ($1, $2)"
+	createAddProductsCategoriesLink    = "INSERT INTO ProductsCategories (product_id, category_id) VALUES ($1, $2)"
+	createGetProductsCategoriesLink    = "SELECT product_id, category_id FROM ProductsCategories WHERE product_id = $1"
+	createUpdateProductsCategoriesLink = "UPDATE ProductsCategories SET category_id = $2 WHERE product_id = $1"
 
 	createAddCompaniesProductsLink = "INSERT INTO CompaniesProducts (company_id, product_id, addedBy, amount, pay_way, delivery_way, adress) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 )

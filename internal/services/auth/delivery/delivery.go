@@ -46,6 +46,7 @@ func (a *authDelivery) CheckEmail(ctx context.Context, request *auth_service.Che
 }
 
 func (a *authDelivery) LoginUser(ctx context.Context, request *auth_service.LoginRequest) (*auth_service.LoginResponse, error) {
+	log.Println("LoginUser in service delivery")
 	response, err := a.authUsecase.LoginUser(ctx, &models.User{
 		Email:    request.Email,
 		Password: request.Password,
@@ -53,7 +54,7 @@ func (a *authDelivery) LoginUser(ctx context.Context, request *auth_service.Logi
 	if err != nil {
 		return &auth_service.LoginResponse{}, a.errorAdapter.AdaptError(err)
 	}
-
+	log.Println("return from LoginUser in service delivery")
 	return &auth_service.LoginResponse{
 		Cookie:       response.Cookie,
 		Token:        response.Token,

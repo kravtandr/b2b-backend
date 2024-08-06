@@ -27,6 +27,78 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next ProductsCategoriesRepo
 	}
 }
 
+func (l *loggingMiddleware) UpdateProduct(ctx context.Context, Product *models.Product) (product *models.Product, err error) {
+	l.logger.Infow(module,
+		"Action", "UpdateProduct",
+		"Request", Product,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "UpdateProduct",
+				"Request", Product,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.UpdateProduct(ctx, Product)
+}
+
+func (l *loggingMiddleware) UpdateProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) (err error) {
+	l.logger.Infow(module,
+		"Action", "UpdateProduct",
+		"Request", productId, categoryId,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "UpdateProduct",
+				"Request", productId, categoryId,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.UpdateProductsCategoriesLink(ctx, productId, categoryId)
+}
+
+func (l *loggingMiddleware) GetProductsCategoriesLink(ctx context.Context, productId int64) (prcat *models.ProductWithCategory, err error) {
+	l.logger.Infow(module,
+		"Action", "GetProductsCategoriesLink",
+		"Request", productId,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetProductsCategoriesLink",
+				"Request", productId,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.GetProductsCategoriesLink(ctx, productId)
+}
+
+func (l *loggingMiddleware) UpdateCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) (err error) {
+	l.logger.Infow(module,
+		"Action", "UpdateCompaniesProductsLink",
+		"Request", CompaniesProducts,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "UpdateCompaniesProductsLink",
+				"Request", CompaniesProducts,
+				"Error", err,
+			)
+		}
+	}()
+
+	return l.next.UpdateCompaniesProductsLink(ctx, CompaniesProducts)
+}
+
 func (l *loggingMiddleware) GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (c *models.Category, err error) {
 	l.logger.Infow(module,
 		"Action", "GetCategoryById",

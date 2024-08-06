@@ -23,7 +23,6 @@ type ProductsCategoriesRepository interface {
 	GetProductById(ctx context.Context, ProductId *models.ProductId) (*models.Product, error)
 	UpdateProduct(ctx context.Context, Product *models.Product) (*models.Product, error)
 
-	GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error)
 	GetProductsList(ctx context.Context, SkipLimit *chttp.QueryParam) (*models.Products, error)
 	GetProductsListByFilters(ctx context.Context, filters *models.ProductsFilters) (*models.ProductsWithCategory, error)
 	SearchProducts(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*models.Products, error)
@@ -32,11 +31,11 @@ type ProductsCategoriesRepository interface {
 	SearchCategories(ctx context.Context, SearchBody *chttp.SearchItemNameWithSkipLimit) (*[]models.Category, error)
 
 	AddCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error
-	GetCompanyProductsLink(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.CompaniesProducts, error)
+	GetCompanyProducts(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.Products, error)
 	UpdateCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error
 
 	AddProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error
-	GetProductsCategoriesLinks(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.ProductWithCategory, error)
+	GetProductsCategoriesLink(ctx context.Context, productId int64) (*models.ProductWithCategory, error)
 	UpdateProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error
 }
 
@@ -46,24 +45,27 @@ type productsCategoriesRepository struct {
 	minioClient  *minio.Client
 }
 
-func (a productsCategoriesRepository) GetProductsCategoriesLinks(ctx context.Context, CompanyId int64, SkipLimit *chttp.QueryParam) (*models.ProductWithCategory, error) {
-	// query := a.queryFactory.CreateGetProductsCategoriesLinks(CompanyId, SkipLimit.Skip, SkipLimit.Limit)
-	// rows, err := a.conn.Query(ctx, query.Request, query.Params...)
-	// if err!= nil {
-	//     return &models.ProductWithCategory{}, err
-	// }
-	// defer rows.Close()
+func (a productsCategoriesRepository) GetProductsCategoriesLink(ctx context.Context, productId int64) (*models.ProductWithCategory, error) {
+	// now only one product one category
+	query := a.queryFactory.CreateGetProductsCategoriesLink(productId)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 
-	// products := &models.ProductWithCategory{}
-	// for rows.Next() {
-	//     productCategory := &models.ProductWithCategory{}
-	//     if err := rows.Scan(
-	//         &productCategory.Id, &productCategory.Name, &productCategory.Description, &productCategory.Price,
-	//         &productCategory.CategoryId, &productCategory.CategoryName, &productCategory.CategoryDescription,
-	//     ); err!= nil {
-	//         return &models.ProductWithCategory{}, err
-	//     }
-	//     products.Items = append(products.Items, productCategory
+	productWithCategory := &models.ProductWithCategory{}
+	if err := row.Scan(
+		&productWithCategory.Product.Id, &productWithCategory.Category.Id,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			log.Printf("Product with this category does not exist")
+			return &models.ProductWithCategory{}, errors.CategoryDoesNotExist
+		}
+		return &models.ProductWithCategory{}, err
+	}
+	return productWithCategory, nil
+}
+
+func (a productsCategoriesRepository) UpdateCompaniesProductsLink(ctx context.Context, CompaniesProducts *models.CompaniesProducts) error {
+	//TODO
+	return nil
 }
 
 func (a productsCategoriesRepository) GetCategoryById(ctx context.Context, CategoryId *models.CategoryId) (*models.Category, error) {
@@ -280,6 +282,7 @@ func (a productsCategoriesRepository) UpdateProduct(ctx context.Context, Product
 	// if store base64 how to put base64 to minio??? what size? on the other side no decoding
 	// decode to img -> minio store -> encode to base64
 	log.Println("Start UpdateProduct")
+
 	log.Println("PutPhotos...")
 	Product, err := a.PutPhotos(ctx, Product)
 	if err != nil {
@@ -287,11 +290,13 @@ func (a productsCategoriesRepository) UpdateProduct(ctx context.Context, Product
 		return &models.Product{}, err
 	}
 	log.Println("PutPhotos - OK")
+
 	log.Println("CreateUpdateProduct...")
 	log.Println("a.queryFactory.CreateUpdateProduct...")
 	query := a.queryFactory.CreateUpdateProduct(Product)
 	log.Println("a.queryFactory.CreateUpdateProduct - OK")
 	log.Println("a.conn.QueryRow...")
+
 	//timeout 15 sek
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -304,6 +309,7 @@ func (a productsCategoriesRepository) UpdateProduct(ctx context.Context, Product
 	}
 	log.Println(ctx, query.Request, query.Params)
 	log.Println("_______________________________")
+
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	log.Println("a.conn.QueryRow - OK")
 	if err := row.Scan(
@@ -343,13 +349,13 @@ func (a productsCategoriesRepository) UpdateProduct(ctx context.Context, Product
 }
 
 func (a productsCategoriesRepository) UpdateProductsCategoriesLink(ctx context.Context, productId int64, categoryId int64) error {
-	product, err := a.GetProductsCategoriesLinks(ctx, &models.ProductId{Id: productId})
+	product, err := a.GetProductsCategoriesLink(ctx, productId)
 	if err != nil {
 		log.Println("ERROR GetProductById", err)
 		return err
 	}
 
-	if product.Id != categoryId {
+	if product.Category.Id != categoryId {
 		query := a.queryFactory.CreateUpdateProductsCategoriesLink(productId, categoryId)
 		if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
 			log.Println("ERROR UpdateProductsCategoriesLink", err)
