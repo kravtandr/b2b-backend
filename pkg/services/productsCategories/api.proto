@@ -52,18 +52,19 @@ message AddProductRequest {
 }
 
 message UpdateProductRequest {
-  string name = 1;
-  int64 category_id = 2 ;
-  sqlNullString description = 3;
-  int64 price = 4;
-  int64 amount = 5;
-  string pay_way = 6;
-  string adress = 7;
-  string delivery_way = 8;
-  repeated string product_photo = 9;
-  repeated string docs = 10;
-  int64 user_id = 11;
-  int64 company_id = 12;
+  int64 id = 1;
+  string name = 2;
+  int64 category_id = 3 ;
+  sqlNullString description = 4;
+  int64 price = 5;
+  int64 amount = 6;
+  string pay_way = 7;
+  string adress = 8;
+  string delivery_way = 9;
+  repeated string product_photo = 10;
+  repeated string docs = 11;
+  int64 user_id = 12;
+  int64 company_id = 13;
 } 
 
 message sqlNullString {

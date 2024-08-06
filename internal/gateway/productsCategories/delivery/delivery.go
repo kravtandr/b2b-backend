@@ -42,7 +42,7 @@ func (u *productsCategoriesDelivery) UpdateProduct(ctx *fasthttp.RequestCtx) {
 		ctx.SetBody([]byte(cnst.WrongRequestBody))
 		return
 	}
-	var request = &models.UserInfoAndAddProductByFormRequest{}
+	var request = &models.UserInfoAndUpdateProductByFormRequest{}
 	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
 	request.UserProfile.Id = userId
 	request.Product = *product

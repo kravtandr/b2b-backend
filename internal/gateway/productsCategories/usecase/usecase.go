@@ -66,6 +66,7 @@ func (u *productsCategoriesUseCase) UpdateProduct(ctx context.Context, request *
 	// 	modelCategories = append(modelCategories, modelCategory)
 	// }
 	response, err := u.ProductsCategoriesGRPC.UpdateProduct(ctx, &productsCategories_service.UpdateProductRequest{
+		Id:           request.Product.Id,
 		Name:         request.Product.Name,
 		CategoryId:   request.Product.CategoryId,
 		Description:  description,

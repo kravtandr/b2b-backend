@@ -41,14 +41,29 @@ type AddProductByFormRequest struct {
 	Adress      string   `json:"adress"`
 }
 
-type UpdateProductByFormRequest = AddProductByFormRequest
+type UpdateProductByFormRequest struct {
+	Id          int64    `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"info"`
+	Price       int64    `json:"price"`
+	Photo       []string `json:"product_photo"`
+	Docs        []string `json:"docs"`
+	CategoryId  int64    `json:"category_id"`
+	Amount      int64    `json:"amount"`
+	PayWay      string   `json:"payWay"`
+	DeliveryWay string   `json:"deliveryWay"`
+	Adress      string   `json:"adress"`
+}
 
 type UserInfoAndAddProductByFormRequest struct {
 	Product     AddProductByFormRequest
 	UserProfile Profile
 }
 
-type UserInfoAndUpdateProductByFormRequest = UserInfoAndAddProductByFormRequest
+type UserInfoAndUpdateProductByFormRequest struct {
+	Product     UpdateProductByFormRequest
+	UserProfile Profile
+}
 
 type GetProductByIdResponse struct {
 	Id          int64          `json:"id"`
