@@ -47,19 +47,25 @@ type userUsecase struct {
 func (u *userUsecase) HandlePaidPayments(ctx context.Context, userID int64) (bool, error) {
 	payments, err := u.GetUsersPayments(ctx, userID)
 	if err != nil {
+		log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.GetUsersPayments ERROR", err)
 		return false, err
 	}
+	log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS", payments)
 	for _, payment := range *payments {
 		_, err := u.ConfirmPayment(ctx, payment.ID)
 		if err != nil {
+			log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.ConfirmPayment ERROR", err)
 			return false, err
 		}
 
 	}
+	log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS CONFIRMED")
 	credited, err := u.AuthGRPC.HandlePaidPayments(ctx, &auth_service.HandlePaidPaymentsRequest{
 		UserId: userID,
 	})
+	log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS CREDITED", credited)
 	if err != nil {
+		log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.AuthGRPC.HandlePaidPayments ERROR", err)
 		return false, err
 	}
 	return credited.Credited, nil
@@ -103,11 +109,16 @@ func (u *userUsecase) ConfirmPayment(ctx context.Context, paymentID string) (*yo
 	if getPayment.Status == "waiting_for_capture" && getPayment.Paid {
 		log.Println("confirm: ", getPayment.ID)
 		// status = "waiting_for_capture"
-		getPayment, _ = u.paymentHandler.CapturePayment(getPayment)
+		getPayment, err = u.paymentHandler.CapturePayment(getPayment)
+		if err != nil {
+			log.Println("Gateway -> Usecase -> ConfirmPayment -> u.paymentHandler.CapturePayment ERROR", getPayment.ID, err)
+			return nil, err
+		}
 		getRepoPayment, err := u.AuthGRPC.GetPayment(ctx, &auth_service.GetPaymentRequest{
 			PaymentId: paymentID,
 		})
 		if err != nil {
+			log.Println("Gateway -> Usecase -> ConfirmPayment -> u.AuthGRPC.GetPayment ERROR", getRepoPayment.UserId, err)
 			return nil, err
 		}
 		// status = "succeeded"
@@ -119,6 +130,7 @@ func (u *userUsecase) ConfirmPayment(ctx context.Context, paymentID string) (*yo
 			Paid:      getPayment.Paid,
 		})
 		if err != nil {
+			log.Println("Gateway -> Usecase -> ConfirmPayment -> u.AuthGRPC.UpdatePayment ERROR", err)
 			return nil, err
 		}
 
