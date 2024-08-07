@@ -34,6 +34,7 @@ jobs:
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
             script: |
+                cd /var/lib/postgresql/backend && sudo chown -R postgres b2b-backend/;
                 su - postgres -c "cd /var/lib/postgresql/backend/b2b-backend && git pull && docker-compose up -d --build";
 
       - name: Notify Telegram on success
