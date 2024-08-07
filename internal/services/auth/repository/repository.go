@@ -254,6 +254,7 @@ func (a *authRepository) GetCompanyUserLink(ctx context.Context, userId int64, c
 		userId, companyId,
 	).Scan(&cULink.Id, &cULink.Post, &cULink.CompanyId, &cULink.UserId, &cULink.Itn)
 	if err != nil {
+		log.Println("ERROR: authRepository->GetCompanyUserLink", err)
 		return nil, err
 	}
 
