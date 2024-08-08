@@ -44,14 +44,13 @@ type authRepository struct {
 func (a *authRepository) AddPayment(ctx context.Context, payment *models.Payment) (*models.Payment, error) {
 
 	query := a.queryFactory.CreateAddPayment(payment)
-	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-	if err := row.Scan(
-		&payment.Id, &payment.UserId, &payment.PaymentId, &payment.Amount, &payment.Status, &payment.Paid, &payment.Type, &payment.Credited, &payment.Time,
-	); err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, errors.UserDoesNotExist
-		}
-
+	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+		log.Println("ERROR: authRepository->AddPayment", err)
+		return nil, err
+	}
+	payment, err := a.GetPayment(ctx, payment.PaymentId)
+	if err != nil {
+		log.Println("ERROR: authRepository->AddPayment, GetPayment err: ", err)
 		return nil, err
 	}
 
@@ -60,14 +59,13 @@ func (a *authRepository) AddPayment(ctx context.Context, payment *models.Payment
 
 func (a *authRepository) UpdatePayment(ctx context.Context, payment *models.Payment) (*models.Payment, error) {
 	query := a.queryFactory.CreateUpdatePayment(payment)
-	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-	if err := row.Scan(
-		&payment.Id, &payment.UserId, &payment.PaymentId, &payment.Amount, &payment.Status, &payment.Paid, &payment.Type, &payment.Credited, &payment.Time,
-	); err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, errors.UserDoesNotExist
-		}
-
+	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+		log.Println("ERROR: authRepository->UpdatePayment", err)
+		return nil, err
+	}
+	payment, err := a.GetPayment(ctx, payment.PaymentId)
+	if err != nil {
+		log.Println("ERROR: authRepository->UpdatePayment, GetPayment err: ", err)
 		return nil, err
 	}
 
@@ -309,18 +307,15 @@ func (a *authRepository) UpdateUser(ctx context.Context, user *models.User) (*mo
 
 func (a *authRepository) UpdateUserBalance(ctx context.Context, userID int64, newBalance int64) (*models.User, error) {
 	query := a.queryFactory.CreateUpdateUserBalance(userID, newBalance)
-	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 
-	updatedUser := &models.User{}
-	if err := row.Scan(
-		&updatedUser.Id, &updatedUser.Name, &updatedUser.Surname, &updatedUser.Patronymic, &updatedUser.Email, &updatedUser.Password,
-	); err != nil {
-		if err == pgx.ErrNoRows {
-			fmt.Println("Error", err)
-			return &models.User{}, errors.UserDoesNotExist
-		}
-
-		return &models.User{}, err
+	if _, err := a.conn.Exec(ctx, query.Request, query.Params...); err != nil {
+		log.Println("ERROR: authRepository->RemoveUserSession", err)
+		return nil, err
+	}
+	updatedUser, err := a.GetUserByID(ctx, userID)
+	if err != nil {
+		log.Println("ERROR: authRepository->UpdateUserBalance, GetUserByID err: ", err)
+		return nil, err
 	}
 	return updatedUser, nil
 }
