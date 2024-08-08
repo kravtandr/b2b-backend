@@ -93,8 +93,14 @@ func (a *authRepository) CountUsersPayments(ctx context.Context, userID int64) (
 	query := a.queryFactory.CreateCountUsersPayments(userID)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
 	var count int
-	if err := row.Scan(&count); err != nil {
-		return 0, err
+	if err := row.Scan(
+		&count,
+	); err != nil {
+		if err == pgx.ErrNoRows {
+			return 0, nil
+		}
+		log.Println("ERROR ", err)
+		return -1, err
 	}
 	return count, nil
 }

@@ -75,7 +75,7 @@ func (a *authUseCase) GetUsersPayments(ctx context.Context, userID int64) (*mode
 func (a *authUseCase) HandlePaidPayments(ctx context.Context, userID int64) (bool, error) {
 	log.Println(" in service usecase -> authUseCase -> HandlePaidPayments", userID)
 	credited := false
-	payments, err := a.repo.GetUsersPayments(ctx, userID)
+	payments, err := a.GetUsersPayments(ctx, userID)
 	if err != nil {
 		log.Println("ERROR: GetUsersPayments", err)
 		return false, err

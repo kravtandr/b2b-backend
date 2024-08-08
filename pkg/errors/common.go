@@ -21,6 +21,7 @@ var (
 	UnableToDecodeJpeg       = errors.New("UnableToDecodeJpeg")
 	UnableToEncodePng        = errors.New("UnableToEncodePng")
 	UnknownImgFormat         = errors.New("UnknownImgFormat")
+	PaymentsDoesNotExist     = errors.New("payments for this user does not exist")
 )
 
 var DeniedAccess = errors.New("user doesn't have permission for this action")
