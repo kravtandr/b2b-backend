@@ -12,25 +12,18 @@ jobs:
       run:
         shell: bash
     steps:
-      - name: SSH Setup
+      - name: SSH Setup & Stop
         uses: appleboy/ssh-action@master
         with:
             host: ${{secrets.SSH_HOST}}
             username: ${{secrets.SSH_USER}}
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
-      - name: ls
-        run: ls
-      - name: pwd
-        run: pwd
-      - name: Change user to postgres
-        run: /home/runner/work/b2b-backend/b2b-backend/scripts/change_user_cd_wd.sh
-      - name: Stop docker
-        run: /home/runner/work/b2b-backend/b2b-backend/scripts/stop.sh
-      - name: Exit to root 
-        run: /home/runner/work/b2b-backend/b2b-backend/scripts/exit.sh
-      - name: Clean and rights
-        run: /home/runner/work/b2b-backend/b2b-backend/scripts/clean_and_rights.sh
+            script: |
+              bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh;
+              bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/stop.sh;
+              bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/exit.sh;
+              bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/clean_and_rights.sh;
 
   build:
     runs-on: ubuntu-latest
@@ -47,10 +40,10 @@ jobs:
             username: ${{secrets.SSH_USER}}
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
-      - name: Change user to postgres
-        run: /home/runner/work/b2b-backend/b2b-backend/scripts/change_user_cd_wd.sh
-      - name: Build
-        run: /home/runner/work/b2b-backend/b2b-backend/scripts/build.sh
+            script: |
+              bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh;
+              bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/build.sh;
+
 
   start:
     runs-on: ubuntu-latest
@@ -66,10 +59,10 @@ jobs:
             username: ${{secrets.SSH_USER}}
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
-      - name: Change user to postgres
-        run: /home/runner/work/b2b-backend/b2b-backend/scripts/change_user_cd_wd.sh
-      - name: Start
-        run: /home/runner/work/b2b-backend/b2b-backend/scripts/start.sh
+            script: |
+              bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh;
+              bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/start.sh;
+
 
   notify:
     if: always()
