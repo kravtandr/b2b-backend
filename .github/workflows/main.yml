@@ -11,6 +11,7 @@ jobs:
     defaults:
       run:
         working-directory: ./.github/workflows/scripts
+        shell: bash
     steps:
       - name: SSH Setup
         uses: appleboy/ssh-action@master
@@ -33,6 +34,7 @@ jobs:
     defaults:
       run:
         working-directory: ./.github/workflows/scripts
+        shell: bash
     needs: stop
     steps:
       - name: SSH Setup
@@ -52,6 +54,7 @@ jobs:
     defaults:
       run:
         working-directory: ./.github/workflows/scripts
+        shell: bash
     needs: [build, stop]
     steps:
       - name: SSH Setup
@@ -66,6 +69,13 @@ jobs:
       - name: Start
         run: ./start.sh
 
+  notify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./.github/workflows/scripts
+        shell: bash
+    steps:
       - name: Notify Telegram on success
         if: success()
         run: |

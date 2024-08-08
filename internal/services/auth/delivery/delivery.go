@@ -338,8 +338,10 @@ func (a *authDelivery) GetUsersPayments(ctx context.Context, request *auth_servi
 }
 
 func (a *authDelivery) HandlePaidPayments(ctx context.Context, request *auth_service.HandlePaidPaymentsRequest) (*auth_service.HandlePaidPaymentsResponse, error) {
+	log.Println("in service delivery -> authDelivery -> HandlePaidPayments", request.UserId)
 	response, err := a.authUsecase.HandlePaidPayments(ctx, request.UserId)
 	if err != nil {
+		log.Println("Error: authDelivery -> HandlePaidPayments", err)
 		return &auth_service.HandlePaidPaymentsResponse{}, a.errorAdapter.AdaptError(err)
 	}
 

@@ -73,42 +73,57 @@ func (a *authUseCase) GetUsersPayments(ctx context.Context, userID int64) (*mode
 }
 
 func (a *authUseCase) HandlePaidPayments(ctx context.Context, userID int64) (bool, error) {
+	log.Println(" in service usecase -> authUseCase -> HandlePaidPayments", userID)
 	credited := false
 	payments, err := a.repo.GetUsersPayments(ctx, userID)
 	if err != nil {
+		log.Println("ERROR: GetUsersPayments", err)
 		return false, err
 	}
-	for _, payment := range *payments {
-		if payment.Status == "succeeded" && payment.Paid && !payment.Credited {
-			// "1000.00" to int64 1000
-			// Step 1: Parse the string to a float64
-			floatValue, err := strconv.ParseFloat(payment.Amount, 64)
-			if err != nil {
-				return false, err
-			}
-			// Step 2: Convert the float64 to int64
-			amount := int64(floatValue)
+	// if user have payments
+	if len(*payments) > 0 {
+		for _, payment := range *payments {
+			if payment.Status == "succeeded" && payment.Paid && !payment.Credited {
+				// "1000.00" to int64 1000
+				// Step 1: Parse the string to a float64
+				log.Println("Step 1: Parse the string to a float64")
+				floatValue, err := strconv.ParseFloat(payment.Amount, 64)
+				if err != nil {
+					return false, err
+				}
+				// Step 2: Convert the float64 to int64
+				log.Println("Step 2: Convert the float64 to int64")
+				amount := int64(floatValue)
 
-			_, err = a.AddUserBalance(ctx, userID, amount)
-			if err != nil {
-				return false, err
-			}
-			_, err = a.repo.UpdatePayment(ctx, &models.Payment{
-				Id:        payment.Id,
-				UserId:    payment.UserId,
-				PaymentId: payment.PaymentId,
-				Amount:    payment.Amount,
-				Status:    payment.Status,
-				Paid:      payment.Paid,
-				Credited:  true, // add balance
-				Time:      payment.Time,
-			})
-			if err != nil {
-				return false, err
-			}
-			credited = true
+				log.Println("AddUserBalance", userID, amount)
+				_, err = a.AddUserBalance(ctx, userID, amount)
+				if err != nil {
+					log.Println("ERROR: AddUserBalance", err)
+					return false, err
+				}
+				log.Panicln("UpdatePayment", payment.Id)
+				_, err = a.repo.UpdatePayment(ctx, &models.Payment{
+					Id:        payment.Id,
+					UserId:    payment.UserId,
+					PaymentId: payment.PaymentId,
+					Amount:    payment.Amount,
+					Status:    payment.Status,
+					Paid:      payment.Paid,
+					Credited:  true, // add balance
+					Time:      payment.Time,
+				})
+				if err != nil {
+					log.Println("ERROR: UpdatePayment", err)
+					return false, err
+				}
+				credited = true
 
+			}
 		}
+
+	} else {
+		log.Println("No payments for user")
+		return credited, nil
 	}
 	return credited, nil
 }
