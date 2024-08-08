@@ -73,6 +73,17 @@ func (a *authUseCase) GetUsersPayments(ctx context.Context, userID int64) (*mode
 }
 
 func (a *authUseCase) HandlePaidPayments(ctx context.Context, userID int64) (bool, error) {
+	payments_amount, err := a.repo.CountUsersPayments(ctx, userID)
+	if err != nil {
+		log.Println("ERROR: CountUsersPayments", err)
+		return false, err
+	}
+	log.Println("HandlePaidPayments -> CountUsersPayments", payments_amount)
+	if payments_amount == 0 {
+		log.Println("PaymentsDoesNotExist for user ID: ", userID)
+		return false, errors.PaymentsDoesNotExist
+	}
+
 	log.Println(" in service usecase -> authUseCase -> HandlePaidPayments", userID)
 	credited := false
 	payments, err := a.GetUsersPayments(ctx, userID)

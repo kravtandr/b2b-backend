@@ -50,14 +50,20 @@ func (u *userUsecase) HandlePaidPayments(ctx context.Context, userID int64) (boo
 		log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.GetUsersPayments ERROR", err)
 		return false, err
 	}
+	if len(*payments) == 0 {
+		log.Println("Gateway -> Usecase -> HandlePaidPayments -> No  payments found")
+		return false, nil
+	}
 	log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS", payments)
 	for _, payment := range *payments {
-		_, err := u.ConfirmPayment(ctx, payment.ID)
-		if err != nil {
-			log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.ConfirmPayment ERROR", err)
-			return false, err
+		// TODO check correct work with payment status
+		if payment.Status == "pending" {
+			_, err := u.ConfirmPayment(ctx, payment.ID)
+			if err != nil {
+				log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.ConfirmPayment ERROR", err)
+				return false, err
+			}
 		}
-
 	}
 	log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS CONFIRMED")
 	credited, err := u.AuthGRPC.HandlePaidPayments(ctx, &auth_service.HandlePaidPaymentsRequest{

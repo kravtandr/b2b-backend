@@ -24,6 +24,7 @@ type authRepository interface {
 	UpdatePayment(ctx context.Context, payment *models.Payment) (*models.Payment, error)
 	GetPayment(ctx context.Context, paymentID string) (*models.Payment, error)
 	GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error)
+	CountUsersPayments(ctx context.Context, userID int64) (int, error)
 }
 
 type hasher interface {
