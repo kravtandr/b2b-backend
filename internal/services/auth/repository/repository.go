@@ -100,29 +100,32 @@ func (a *authRepository) CountUsersPayments(ctx context.Context, userID int64) (
 }
 
 func (a *authRepository) GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error) {
+
+	payments_amount, err := a.CountUsersPayments(ctx, userID)
+	if err != nil {
+		log.Println("ERROR ", err)
+		return nil, err
+	}
+	if payments_amount == 0 {
+		log.Println("No payments found for user ID: ", userID)
+		return nil, nil
+	}
+	log.Println("payments_amount: ", payments_amount, " userID: ", userID)
+
 	query := a.queryFactory.CreateGetUsersPayments(userID)
-	payment := &models.Payment{}
+	var payment models.Payment
 	var payments models.Payments
+	// var payments = make(models.Payments, payments_amount)
+	log.Println("query.Request: ", query.Request)
 	rows, err := a.conn.Query(ctx, query.Request, query.Params...)
 	if err != nil {
 		log.Println("ERROR ", err)
 		return &payments, err
 	}
-	payments_amount, err := a.CountUsersPayments(ctx, userID)
-	if err != nil {
-		log.Println("ERROR ", err)
-		return &payments, err
-	}
-	if payments_amount == 0 {
-		return &payments, nil
-	}
-	log.Println("payments_amount: ", payments_amount, " userID: ", userID)
-
-	// payments = make(models.Payments, payments_amount)
 	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&payment.Id, &payment.UserId, &payment.PaymentId, &payment.Amount, &payment.Status, &payment.Paid, &payment.Type, &payment.Credited, &payment.Time)
-		payments = append(payments, *payment)
+		payments = append(payments, payment)
 	}
 	if rows.Err() != nil {
 		log.Println("ERROR ", err)
@@ -130,7 +133,8 @@ func (a *authRepository) GetUsersPayments(ctx context.Context, userID int64) (*m
 	}
 	log.Println("status: ", rows.Err())
 	log.Println("Repo result OK Result: ", payments)
-	return &payments, err
+	return &payments, nil
+
 }
 
 func (a *authRepository) FastRegistration(ctx context.Context, newCompany *company_models.Company, user *models.User, post string) error {

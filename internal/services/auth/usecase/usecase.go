@@ -80,6 +80,7 @@ func (a *authUseCase) HandlePaidPayments(ctx context.Context, userID int64) (boo
 		log.Println("ERROR: GetUsersPayments", err)
 		return false, err
 	}
+	log.Println("GetUsersPayments", payments)
 	// if user have payments
 	if len(*payments) > 0 {
 		for _, payment := range *payments {

@@ -19,6 +19,10 @@ jobs:
             username: ${{secrets.SSH_USER}}
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
+      - name: ls
+        run: ls
+      - name: pwd
+        run: pwd
       - name: Change user to postgres
         run: /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
       - name: Stop docker
