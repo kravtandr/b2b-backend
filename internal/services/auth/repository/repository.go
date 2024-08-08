@@ -171,18 +171,22 @@ func (a *authRepository) GetUserByID(ctx context.Context, ID int64) (*models.Use
 }
 
 func (a *authRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+	log.Println("in repo GetUserByEmail")
 	query := a.queryFactory.CreateGetUserByEmail(email)
+	log.Println("in repo CreateGetUserByEmail")
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-
+	log.Println("in repo GetUserByEmail QueryRow")
 	user := &models.User{}
+	log.Println("repo GetUserByEmail Scan start", user)
 	if err := row.Scan(&user.Id, &user.Name, &user.Surname, &user.Patronymic, &user.Email, &user.Password); err != nil {
 		if err == pgx.ErrNoRows {
+			log.Println("ERROR: authRepository->GetUserByEmail, UserDoesNotExist err: ", err)
 			return nil, errors.UserDoesNotExist
 		}
-
+		log.Println("ERROR: authRepository->GetUserByEmail, err: ", err)
 		return nil, err
 	}
-
+	log.Println("repo GetUserByEmail return - OK User: ", user)
 	return user, nil
 }
 
