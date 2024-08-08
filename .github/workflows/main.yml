@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./scripts
         shell: bash
     steps:
       - name: SSH Setup
@@ -21,13 +20,13 @@ jobs:
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
       - name: Change user to postgres
-        run: ./change_user_cd_wd.sh
+        run: ./var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
       - name: Stop docker
-        run: ./stop.sh
+        run: ./var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/stop.sh
       - name: Exit to root 
-        run: ./exit.sh
+        run: ./var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/exit.sh
       - name: Clean and rights
-        run: ./clean_and_rights.sh
+        run: ./var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/clean_and_rights.sh
 
   build:
     runs-on: ubuntu-latest
@@ -45,15 +44,14 @@ jobs:
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
       - name: Change user to postgres
-        run: ./change_user_cd_wd.sh
+        run: ./var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
       - name: Build
-        run: ./build.sh
+        run: ./var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/build.sh
 
   start:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./scripts
         shell: bash
     needs: [build, stop]
     steps:
@@ -65,15 +63,14 @@ jobs:
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
       - name: Change user to postgres
-        run: ./change_user_cd_wd.sh
+        run: ./var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
       - name: Start
-        run: ./start.sh
+        run: ./var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/start.sh
 
   notify:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./scripts
         shell: bash
     steps:
       - name: Notify Telegram on success
