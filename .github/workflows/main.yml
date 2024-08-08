@@ -24,13 +24,13 @@ jobs:
       - name: pwd
         run: pwd
       - name: Change user to postgres
-        run: /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
+        run: /home/runner/work/b2b-backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
       - name: Stop docker
-        run: /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/stop.sh
+        run: /home/runner/work/b2b-backend/b2b-backend/.github/workflows/scripts/stop.sh
       - name: Exit to root 
-        run: /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/exit.sh
+        run: /home/runner/work/b2b-backend/b2b-backend/.github/workflows/scripts/exit.sh
       - name: Clean and rights
-        run: /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/clean_and_rights.sh
+        run: /home/runner/work/b2b-backend/b2b-backend/.github/workflows/scripts/clean_and_rights.sh
 
   build:
     runs-on: ubuntu-latest
@@ -48,9 +48,9 @@ jobs:
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
       - name: Change user to postgres
-        run: /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
+        run: /home/runner/work/b2b-backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
       - name: Build
-        run: /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/build.sh
+        run: /home/runner/work/b2b-backend/b2b-backend/.github/workflows/scripts/build.sh
 
   start:
     runs-on: ubuntu-latest
@@ -67,9 +67,9 @@ jobs:
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
       - name: Change user to postgres
-        run: /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
+        run: /home/runner/work/b2b-backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh
       - name: Start
-        run: /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/start.sh
+        run: /home/runner/work/b2b-backend/b2b-backend/.github/workflows/scripts/start.sh
 
   notify:
     if: always()
