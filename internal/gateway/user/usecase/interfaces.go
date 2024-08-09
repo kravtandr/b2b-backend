@@ -33,4 +33,5 @@ type AuthGRPC interface {
 	UpdatePayment(ctx context.Context, in *auth_service.UpdatePaymentRequest, opts ...grpc.CallOption) (*auth_service.PaymentResponse, error)
 
 	HandlePaidPayments(ctx context.Context, in *auth_service.HandlePaidPaymentsRequest, opts ...grpc.CallOption) (*auth_service.HandlePaidPaymentsResponse, error)
+	CountUsersPayments(ctx context.Context, in *auth_service.UserIdRequest, opts ...grpc.CallOption) (*auth_service.PaymentsAmountResponse, error)
 }

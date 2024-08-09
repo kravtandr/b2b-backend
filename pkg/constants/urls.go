@@ -14,6 +14,7 @@ const CreatePaymentAddBalanceURL = "/payment/addbalance"
 const CheckPaymentURL = "/payment/check"
 const HandlePaidPaymentsURL = "/user/payment/handle/all"
 const GetUsersPaymentsURL = "/user/payments/list"
+const CountUsersPaymentsURL = "/user/payments/count"
 
 // FastOrder
 const FastOrderURL = "/fastOrder"

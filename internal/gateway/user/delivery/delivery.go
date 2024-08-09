@@ -33,11 +33,32 @@ type UserDelivery interface {
 	GetUsersPayments(ctx *fasthttp.RequestCtx)
 	CheckPayment(ctx *fasthttp.RequestCtx)
 	HandlePaidPayments(ctx *fasthttp.RequestCtx)
+	CountUsersPayments(ctx *fasthttp.RequestCtx)
 }
 
 type userDelivery struct {
 	errorAdapter error_adapter.HttpAdapter
 	manager      usecase.UserUsecase
+}
+
+func (u *userDelivery) CountUsersPayments(ctx *fasthttp.RequestCtx) {
+	userID, err := u.manager.GetUserIdByCookie(ctx, string(ctx.Request.Header.Cookie(cnst.CookieName)))
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	credited, err := u.manager.CountUsersPayments(ctx, userID)
+	if err != nil {
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, _ := chttp.ApiResp(credited, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
 }
 
 func (u *userDelivery) GetUsersPayments(ctx *fasthttp.RequestCtx) {

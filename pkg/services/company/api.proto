@@ -7,33 +7,52 @@ import "third_party/go-proto-validators/validator.proto";
 import "google/protobuf/empty.proto";
 
 message GetCompanyRequestByInn {
-  string inn = 1;
+  string inn = 1 [(validate.rules).string = {
+    min_len: 10,
+    max_len: 12,
+    min_bytes: 1,
+  }];
 }
 
 message GetCompanyRequestById {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message    IdRequest{
-    int64 id = 1;
+    int64 id = 1 [(validate.rules).int64 = {
+      gt: 0,
+    }];
 }
 
 
 
 message GetPrivateCompanyResponse {
-  int64 id = 1;
+  int64 id = 1  [(validate.rules).int64 = {
+    gt: 0,
+  }];;
   string name = 2;
   string description = 3;
   string legal_name = 4;
-  string itn = 5;
+  string itn = 5 [(validate.rules).string = {
+    min_len: 10,
+    max_len: 12,
+    min_bytes: 1,
+  }];
   string psrn = 6;
   string address = 7;
   string legal_address = 8;
-  string email = 9;
+  string email = 9 [(validate.rules).string = {
+    email: true,
+    max_len: 128,
+  }];
   string phone = 10;
   string link = 11;
   string activity = 12;
-  int64 owner_id = 13;
+  int64 owner_id = 13 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   int64 rating = 14;
   int64 verified = 15;
   string photo = 16;
@@ -43,15 +62,24 @@ message GetCompanyResponse {
   string name = 1;
   string description = 2;
   string legal_name = 3;
-  string itn = 4;
+  string itn = 4 [(validate.rules).string = {
+    min_len: 10,
+    max_len: 12,
+    min_bytes: 1,
+  }];
   string psrn = 5;
   string address = 6;
   string legal_address = 7;
-  string email = 8;
+  string email = 8 [(validate.rules).string = {
+    email: true,
+    max_len: 128,
+  }];
   string phone = 9;
   string link = 10;
   string activity = 11;
-  int64 owner_id = 12;
+  int64 owner_id = 12  [(validate.rules).int64 = {
+    gt: 0,
+  }];
   int64 rating = 13;
   int64 verified = 14;
   string photo = 15;
@@ -61,15 +89,24 @@ message GetCompanyAndPostResponse {
   string name = 1;
   string description = 2;
   string legal_name = 3;
-  string itn = 4;
+  string itn = 4 [(validate.rules).string = {
+    min_len: 10,
+    max_len: 12,
+    min_bytes: 1,
+  }];
   string psrn = 5;
   string address = 6;
   string legal_address = 7;
-  string email = 8;
+  string email = 8 [(validate.rules).string = {
+    email: true,
+    max_len: 128,
+  }];
   string phone = 9;
   string link = 10;
   string activity = 11;
-  int64 owner_id = 12;
+  int64 owner_id = 12 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   int64 rating = 13;
   int64 verified = 14;
   string post = 15;
@@ -83,11 +120,17 @@ message UpdateCompanyRequest{
   string description = 2;
   string address = 3;
   string legalAddress = 4;
-  string itn = 5;
+  string itn = 5 [(validate.rules).string = {
+    min_len: 10,
+    max_len: 12,
+    min_bytes: 1,
+  }];
   string phone = 6;
   string link = 7;
   string activity = 8;
-  int64 owner_id = 9;
+  int64 owner_id = 9  [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string post = 10;
   string photo = 11;
 }

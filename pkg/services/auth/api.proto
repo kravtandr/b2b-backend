@@ -56,11 +56,11 @@ message RegisterRequest {
   string name = 3 [(validate.rules).string = {
     max_len: 128,
     min_bytes: 1,
-  }];;
+  }];
   string surname = 4 [(validate.rules).string = {
     max_len: 128,
     min_bytes: 1,
-  }];;
+  }];
 }
 
 message GetUserRequest {
@@ -85,15 +85,34 @@ message UserAndCompanyIdsRequest {
 }
 
 message FastRegisterRequest {
-  string name = 1;
+  string name = 1 [(validate.rules).string = {
+    max_len: 128,
+    min_bytes: 1,
+  }];
   string legal_name = 2;
   string itn = 3;
-  string email = 4;
-  string password = 5;
+  string email = 4 [(validate.rules).string = {
+    email: true,
+    max_len: 128,
+  }];
+  string password = 5 [(validate.rules).string = {
+    min_len: 8,
+    max_len: 128,
+    min_bytes: 1,
+  }];
   string owner_name = 6;
-  string surname = 7;
-  string patronymic = 8;
-  string country = 9;
+  string surname = 7 [(validate.rules).string = {
+    max_len: 128,
+    min_bytes: 1,
+  }];
+  string patronymic = 8 [(validate.rules).string = {
+    max_len: 128,
+    min_bytes: 1,
+  }];
+  string country = 9 [(validate.rules).string = {
+    max_len: 128,
+    min_bytes: 1,
+  }];
   string post = 10;
 }
 
@@ -109,12 +128,30 @@ message GetUserResponse {
 }
 
 message UpdateUserRequest {
-  int64 Id = 1;
-  string Name = 2;
-  string Surname = 3;
-  string Patronymic = 4;
-  string Email = 5;
-  string Password = 6;
+  int64 Id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  string Name = 2 [(validate.rules).string = {
+    max_len: 128,
+    min_bytes: 1,
+  }];
+  string Surname = 3 [(validate.rules).string = {
+    max_len: 128,
+    min_bytes: 1,
+  }];
+  string Patronymic = 4 [(validate.rules).string = {
+    max_len: 128,
+    min_bytes: 1,
+  }];
+  string Email = 5 [(validate.rules).string = {
+    email: true,
+    max_len: 128,
+  }];
+  string Password = 6 [(validate.rules).string = {
+    min_len: 8,
+    max_len: 128,
+    min_bytes: 1,
+  }];
 }
 
 message Session {
@@ -129,11 +166,15 @@ message Session {
 }
 
 message ValidateSessionResponse {
-  int64 user_id = 1;
+  int64 user_id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message UserInfo {
-  int64 user_id = 1;
+  int64 user_id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string name = 3 [(validate.rules).string = {
     max_len: 128,
     min_bytes: 1,
@@ -153,7 +194,9 @@ message UserEmailRequest {
 }
 
 message UserId {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 message GetUserIdByCookieRequest{
   string hash = 1;
@@ -163,7 +206,10 @@ message GetPublicUserResponse{
   string Name = 1;
   string Surname = 2;
   string Patronymic = 3;
-  string Email = 4;
+  string Email = 4 [(validate.rules).string = {
+    email: true,
+    max_len: 128,
+  }];
 }
 
 message CheckEmailRequest{
@@ -174,15 +220,24 @@ message CheckEmailRequest{
 }
 
 message GetPrivateCompanyResponse {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string name = 2;
   string description = 3;
   string legal_name = 4;
-  string itn = 5;
+  string itn = 5[(validate.rules).string = {
+    min_len: 10,
+    max_len: 12,
+    min_bytes: 1,
+  }];
   string psrn = 6;
   string address = 7;
   string legal_address = 8;
-  string email = 9;
+  string email = 9 [(validate.rules).string = {
+    email: true,
+    max_len: 128,
+  }];
   string phone = 10;
   string link = 11;
   string activity = 12;
@@ -193,7 +248,9 @@ message GetPrivateCompanyResponse {
 }
 
 message GetCompanyUserLinkResponse {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string post = 2;
   int64 company_id = 3 [(validate.rules).int64 = {
     gt: 0,
@@ -201,22 +258,32 @@ message GetCompanyUserLinkResponse {
   int64 user_id = 4 [(validate.rules).int64 = {
     gt: 0,
   }];
-  string itn = 5;
+  string itn = 5 [(validate.rules).string = {
+    min_len: 10,
+    max_len: 12,
+    min_bytes: 1,
+  }];
 }
 
 message UpdateUserBalanceRequest {
-  int64 user_id = 1;
+  int64 user_id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   int64 balance = 2;
 }
 
 message AddPaymentRequest {
-  int64 user_id = 1;
+  int64 user_id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string payment_id = 2;
   string amount = 3;
 }
 
 message PaymentResponse {
-  int64 user_id = 1;
+  int64 user_id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string payment_id = 2;
   string amount = 3;
   string status = 4;
@@ -230,7 +297,9 @@ message PaymentsResponse {
 }
 
 message UpdatePaymentRequest {
-  int64 user_id = 1;
+  int64 user_id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string payment_id = 2;
   string amount = 3;
   string status = 4;
@@ -243,11 +312,17 @@ message GetPaymentRequest {
 }
 
 message HandlePaidPaymentsRequest {
-  int64 user_id = 1;
+  int64 user_id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message HandlePaidPaymentsResponse {
   bool credited = 1;
+}
+
+message PaymentsAmountResponse {
+  int64 amount = 1;
 }
 
 
@@ -271,4 +346,5 @@ service AuthService {
   rpc GetUsersPayments(UserIdRequest) returns (PaymentsResponse) {}
   rpc GetPayment(GetPaymentRequest) returns (PaymentResponse) {}
   rpc HandlePaidPayments(HandlePaidPaymentsRequest) returns (HandlePaidPaymentsResponse) {}
+  rpc CountUsersPayments(UserIdRequest) returns (PaymentsAmountResponse) {}
 }

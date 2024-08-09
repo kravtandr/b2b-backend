@@ -7,21 +7,33 @@ import "third_party/go-proto-validators/validator.proto";
 import "google/protobuf/empty.proto";
 
 message IdRequest {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message IdResponse {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message ChatAndUserIdRequest {
-  int64 ChatId = 1;
-  int64 UserId = 2;
+  int64 ChatId = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64 UserId = 2 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message CheckIfUniqChatRequest {
-  int64 UserId = 1;
-  int64 ProductId = 2;
+  int64 UserId = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64 ProductId = 2 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 message CheckIfUniqChatResponse {
   bool Unique = 1;
@@ -29,39 +41,65 @@ message CheckIfUniqChatResponse {
 
 message NewChatRequest {
   string Name = 1;
-  int64  CreatorId = 2;
-  int64  ProductId = 3;
+  int64  CreatorId = 2 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64  ProductId = 3 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   bool  Blured = 4;
 }
 
 message GetChatRequest {
-  int64  CreatorId = 1;
-  int64  ProductId = 2;
+  int64  CreatorId = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64  ProductId = 2 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message ChatResponse {
-  int64 Id = 1;
+  int64 Id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string Name = 2;
-  int64  CreatorId = 3;
-  int64  ProductId = 4;
+  int64  CreatorId = 3 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64  ProductId = 4 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string  Status = 5;
   bool  Blured = 6;
 }
 
 message WriteNewMsgRequest {
-  int64 ChatId = 1;
-  int64  SenderId = 2;
-  int64  ReceiverId = 3;
+  int64 ChatId = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64  SenderId = 2 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64  ReceiverId = 3 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   bool  Checked = 4;
   string  Text = 5;
   string  Type = 6;
-  string   Time = 7;
+  string  Time = 7;
 }
 message MsgResponse{
-  int64 Id = 1;
+  int64 Id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   int64 ChatId = 2;
-  int64  SenderId = 3;
-  int64  ReceiverId = 4;
+  int64  SenderId = 3 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64  ReceiverId = 4 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string SenderName = 5;
   string ReceiverName = 6;
   bool  Checked = 7;
@@ -71,10 +109,16 @@ message MsgResponse{
 }
 
 message ChatAndLastMsgResponse {
-  int64 Id = 1;
+  int64 Id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string Name = 2;
-  int64  CreatorId = 3;
-  int64  ProductId = 4;
+  int64  CreatorId = 3 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64  ProductId = 4 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string  Status = 5;
   bool  Blured = 6;
   MsgResponse Msg = 7;
@@ -99,7 +143,9 @@ message    GetAllChatsAndLastMsgResponse{
 }
 
 message UpdateChatStatusRequest{
-  int64 ChatId = 1;
+  int64 ChatId = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string Status = 2;
   bool Blured = 3;
 }

@@ -36,12 +36,21 @@ type UserUsecase interface {
 
 	GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error)
 	HandlePaidPayments(ctx context.Context, userID int64) (bool, error)
+	CountUsersPayments(ctx context.Context, userID int64) (*models.PaymentsAmount, error)
 }
 
 type userUsecase struct {
 	AuthGRPC       AuthGRPC
 	companyGRPC    company_usecase.CompanyGRPC
 	paymentHandler *yookassa.PaymentHandler
+}
+
+func (u *userUsecase) CountUsersPayments(ctx context.Context, userID int64) (*models.PaymentsAmount, error) {
+	response, err := u.AuthGRPC.CountUsersPayments(ctx, &auth_service.UserIdRequest{Id: userID})
+	if err != nil {
+		return &models.PaymentsAmount{}, err
+	}
+	return &models.PaymentsAmount{Amount: response.Amount}, nil
 }
 
 func (u *userUsecase) HandlePaidPayments(ctx context.Context, userID int64) (bool, error) {

@@ -38,23 +38,37 @@ message GetProductsListByFiltersRequest {
 
 message AddProductRequest {
   string name = 1;
-  int64 category_id = 2 ;
+  int64 category_id = 2 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   sqlNullString description = 3;
-  int64 price = 4;
-  int64 amount = 5;
+  int64 price = 4 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64 amount = 5 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string pay_way = 6;
   string adress = 7;
   string delivery_way = 8;
   repeated string product_photo = 9;
   repeated string docs = 10;
-  int64 user_id = 11;
-  int64 company_id = 12;
+  int64 user_id = 11 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64 company_id = 12 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message UpdateProductRequest {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string name = 2;
-  int64 category_id = 3 ;
+  int64 category_id = 3 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   sqlNullString description = 4;
   int64 price = 5;
   int64 amount = 6;
@@ -63,8 +77,12 @@ message UpdateProductRequest {
   string delivery_way = 9;
   repeated string product_photo = 10;
   repeated string docs = 11;
-  int64 user_id = 12;
-  int64 company_id = 13;
+  int64 user_id = 12 [(validate.rules).int64 = {
+    gt: 0,
+  }];
+  int64 company_id = 13 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 } 
 
 message sqlNullString {
@@ -73,7 +91,9 @@ message sqlNullString {
 }
 
 message GetCategory {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string name = 2;
   sqlNullString description = 3;
 }
@@ -83,7 +103,9 @@ message GetCategories {
 }
 
 message GetProduct {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string name = 2;
   sqlNullString description = 3;
   int64 price = 4;
@@ -92,7 +114,9 @@ message GetProduct {
 }
 
 message ProductWithCategory {
-  int64 id = 1;
+  int64 id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   string name = 2;
   sqlNullString description = 3;
   int64 price = 4;
@@ -116,7 +140,9 @@ message GetProductsByFiltersResponse {
 }
 
 message GetCompanyProductsRequest{
-  int64 company_id = 1;
+  int64 company_id = 1 [(validate.rules).int64 = {
+    gt: 0,
+  }];
   int64 skip = 2;
   int64 limit = 3;
 }

@@ -1,5 +1,13 @@
 package models
 
+type IdRequest struct {
+	Id int64 `json:"id"`
+}
+
+type PaymentsAmount struct {
+	Amount int64 `json:"amount"`
+}
+
 type Profile struct {
 	Id          int64       `json:"id"`
 	Name        string      `json:"name" valid:"required"`

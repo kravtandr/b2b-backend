@@ -54,6 +54,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.POST(cnst.CheckPaymentURL, lgrMw(authMw(cfg.UserDelivery.CheckPayment)))
 	p.POST(cnst.HandlePaidPaymentsURL, lgrMw(authMw(cfg.UserDelivery.HandlePaidPayments)))
 	p.GET(cnst.GetUsersPaymentsURL, lgrMw(authMw(cfg.UserDelivery.GetUsersPayments)))
+	p.POST(cnst.CountUsersPaymentsURL, lgrMw(authMw(cfg.UserDelivery.CountUsersPayments)))
 
 	// Unlinked Froms
 	p.POST(cnst.FastOrderURL, lgrMw(cfg.FastOrderDelivery.FastOrder))
