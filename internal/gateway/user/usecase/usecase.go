@@ -54,36 +54,48 @@ func (u *userUsecase) CountUsersPayments(ctx context.Context, userID int64) (*mo
 }
 
 func (u *userUsecase) HandlePaidPayments(ctx context.Context, userID int64) (bool, error) {
-	payments, err := u.GetUsersPayments(ctx, userID)
+	amount, err := u.CountUsersPayments(ctx, userID)
 	if err != nil {
-		log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.GetUsersPayments ERROR", err)
+		log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.CountUsersPayments ERROR", err)
 		return false, err
 	}
-	if len(*payments) == 0 {
-		log.Println("Gateway -> Usecase -> HandlePaidPayments -> No  payments found")
-		return false, nil
-	}
-	log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS", payments)
-	for _, payment := range *payments {
-		// TODO check correct work with payment status
-		if payment.Status == "pending" {
-			_, err := u.ConfirmPayment(ctx, payment.ID)
-			if err != nil {
-				log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.ConfirmPayment ERROR", err)
-				return false, err
+	if amount.Amount > 0 {
+		log.Println("Gateway -> Usecase -> HandlePaidPayments -> AMOUNT", amount)
+		payments, err := u.GetUsersPayments(ctx, userID)
+		if err != nil {
+			log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.GetUsersPayments ERROR", err)
+			return false, err
+		}
+		if len(*payments) == 0 {
+			log.Println("Gateway -> Usecase -> HandlePaidPayments -> No  payments found")
+			return false, nil
+		}
+		log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS", payments)
+		for _, payment := range *payments {
+			// TODO check correct work with payment status
+			if payment.Status == "pending" {
+				_, err := u.ConfirmPayment(ctx, payment.ID)
+				if err != nil {
+					log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.ConfirmPayment ERROR", err)
+					return false, err
+				}
 			}
 		}
+		log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS CONFIRMED")
+		credited, err := u.AuthGRPC.HandlePaidPayments(ctx, &auth_service.HandlePaidPaymentsRequest{
+			UserId: userID,
+		})
+		log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS CREDITED", credited)
+		if err != nil {
+			log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.AuthGRPC.HandlePaidPayments ERROR", err)
+			return false, err
+		}
+		return credited.Credited, nil
+	} else {
+		log.Println("Gateway -> Usecase -> HandlePaidPayments -> No payments to handle")
+		return false, nil
 	}
-	log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS CONFIRMED")
-	credited, err := u.AuthGRPC.HandlePaidPayments(ctx, &auth_service.HandlePaidPaymentsRequest{
-		UserId: userID,
-	})
-	log.Println("Gateway -> Usecase -> HandlePaidPayments -> PAYMENTS CREDITED", credited)
-	if err != nil {
-		log.Println("Gateway -> Usecase -> HandlePaidPayments -> u.AuthGRPC.HandlePaidPayments ERROR", err)
-		return false, err
-	}
-	return credited.Credited, nil
+
 }
 
 func (u *userUsecase) CreatePayment(ctx context.Context, request *models.CreatePaymentRequest) (*yoopayment.Payment, error) {
