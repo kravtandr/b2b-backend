@@ -606,7 +606,16 @@ func (m *AddProductRequest) validate(all bool) error {
 
 	// no validation rules for Name
 
-	// no validation rules for CategoryId
+	if m.GetCategoryId() <= 0 {
+		err := AddProductRequestValidationError{
+			field:  "CategoryId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if all {
 		switch v := interface{}(m.GetDescription()).(type) {
@@ -637,9 +646,27 @@ func (m *AddProductRequest) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for Price
+	if m.GetPrice() <= 0 {
+		err := AddProductRequestValidationError{
+			field:  "Price",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Amount
+	if m.GetAmount() <= 0 {
+		err := AddProductRequestValidationError{
+			field:  "Amount",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for PayWay
 
@@ -647,9 +674,27 @@ func (m *AddProductRequest) validate(all bool) error {
 
 	// no validation rules for DeliveryWay
 
-	// no validation rules for UserId
+	if m.GetUserId() <= 0 {
+		err := AddProductRequestValidationError{
+			field:  "UserId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for CompanyId
+	if m.GetCompanyId() <= 0 {
+		err := AddProductRequestValidationError{
+			field:  "CompanyId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return AddProductRequestMultiError(errors)
@@ -752,11 +797,29 @@ func (m *UpdateProductRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := UpdateProductRequestValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Name
 
-	// no validation rules for CategoryId
+	if m.GetCategoryId() <= 0 {
+		err := UpdateProductRequestValidationError{
+			field:  "CategoryId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if all {
 		switch v := interface{}(m.GetDescription()).(type) {
@@ -797,9 +860,27 @@ func (m *UpdateProductRequest) validate(all bool) error {
 
 	// no validation rules for DeliveryWay
 
-	// no validation rules for UserId
+	if m.GetUserId() <= 0 {
+		err := UpdateProductRequestValidationError{
+			field:  "UserId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for CompanyId
+	if m.GetCompanyId() <= 0 {
+		err := UpdateProductRequestValidationError{
+			field:  "CompanyId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return UpdateProductRequestMultiError(errors)
@@ -1005,7 +1086,16 @@ func (m *GetCategory) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := GetCategoryValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Name
 
@@ -1269,7 +1359,16 @@ func (m *GetProduct) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := GetProductValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Name
 
@@ -1402,7 +1501,16 @@ func (m *ProductWithCategory) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := ProductWithCategoryValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Name
 
@@ -1918,7 +2026,16 @@ func (m *GetCompanyProductsRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for CompanyId
+	if m.GetCompanyId() <= 0 {
+		err := GetCompanyProductsRequestValidationError{
+			field:  "CompanyId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Skip
 

@@ -77,6 +77,26 @@ func (mr *MockAuthServiceClientMockRecorder) CheckEmail(ctx, in interface{}, opt
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckEmail", reflect.TypeOf((*MockAuthServiceClient)(nil).CheckEmail), varargs...)
 }
 
+// CountUsersPayments mocks base method.
+func (m *MockAuthServiceClient) CountUsersPayments(ctx context.Context, in *auth_service.UserIdRequest, opts ...grpc.CallOption) (*auth_service.PaymentsAmountResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "CountUsersPayments", varargs...)
+	ret0, _ := ret[0].(*auth_service.PaymentsAmountResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountUsersPayments indicates an expected call of CountUsersPayments.
+func (mr *MockAuthServiceClientMockRecorder) CountUsersPayments(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountUsersPayments", reflect.TypeOf((*MockAuthServiceClient)(nil).CountUsersPayments), varargs...)
+}
+
 // FastRegister mocks base method.
 func (m *MockAuthServiceClient) FastRegister(ctx context.Context, in *auth_service.FastRegisterRequest, opts ...grpc.CallOption) (*auth_service.LoginResponse, error) {
 	m.ctrl.T.Helper()
@@ -468,6 +488,21 @@ func (m *MockAuthServiceServer) CheckEmail(arg0 context.Context, arg1 *auth_serv
 func (mr *MockAuthServiceServerMockRecorder) CheckEmail(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckEmail", reflect.TypeOf((*MockAuthServiceServer)(nil).CheckEmail), arg0, arg1)
+}
+
+// CountUsersPayments mocks base method.
+func (m *MockAuthServiceServer) CountUsersPayments(arg0 context.Context, arg1 *auth_service.UserIdRequest) (*auth_service.PaymentsAmountResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountUsersPayments", arg0, arg1)
+	ret0, _ := ret[0].(*auth_service.PaymentsAmountResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountUsersPayments indicates an expected call of CountUsersPayments.
+func (mr *MockAuthServiceServerMockRecorder) CountUsersPayments(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountUsersPayments", reflect.TypeOf((*MockAuthServiceServer)(nil).CountUsersPayments), arg0, arg1)
 }
 
 // FastRegister mocks base method.

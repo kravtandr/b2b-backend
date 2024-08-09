@@ -42,6 +42,7 @@ type AuthServiceClient interface {
 	GetUsersPayments(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*PaymentsResponse, error)
 	GetPayment(ctx context.Context, in *GetPaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
 	HandlePaidPayments(ctx context.Context, in *HandlePaidPaymentsRequest, opts ...grpc.CallOption) (*HandlePaidPaymentsResponse, error)
+	CountUsersPayments(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*PaymentsAmountResponse, error)
 }
 
 type authServiceClient struct {
@@ -223,6 +224,15 @@ func (c *authServiceClient) HandlePaidPayments(ctx context.Context, in *HandlePa
 	return out, nil
 }
 
+func (c *authServiceClient) CountUsersPayments(ctx context.Context, in *UserIdRequest, opts ...grpc.CallOption) (*PaymentsAmountResponse, error) {
+	out := new(PaymentsAmountResponse)
+	err := c.cc.Invoke(ctx, "/services.auth_service.AuthService/CountUsersPayments", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -246,6 +256,7 @@ type AuthServiceServer interface {
 	GetUsersPayments(context.Context, *UserIdRequest) (*PaymentsResponse, error)
 	GetPayment(context.Context, *GetPaymentRequest) (*PaymentResponse, error)
 	HandlePaidPayments(context.Context, *HandlePaidPaymentsRequest) (*HandlePaidPaymentsResponse, error)
+	CountUsersPayments(context.Context, *UserIdRequest) (*PaymentsAmountResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -309,6 +320,9 @@ func (UnimplementedAuthServiceServer) GetPayment(context.Context, *GetPaymentReq
 }
 func (UnimplementedAuthServiceServer) HandlePaidPayments(context.Context, *HandlePaidPaymentsRequest) (*HandlePaidPaymentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HandlePaidPayments not implemented")
+}
+func (UnimplementedAuthServiceServer) CountUsersPayments(context.Context, *UserIdRequest) (*PaymentsAmountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountUsersPayments not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -665,6 +679,24 @@ func _AuthService_HandlePaidPayments_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_CountUsersPayments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).CountUsersPayments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/services.auth_service.AuthService/CountUsersPayments",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).CountUsersPayments(ctx, req.(*UserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -747,6 +779,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HandlePaidPayments",
 			Handler:    _AuthService_HandlePaidPayments_Handler,
+		},
+		{
+			MethodName: "CountUsersPayments",
+			Handler:    _AuthService_CountUsersPayments_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

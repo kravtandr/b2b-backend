@@ -57,7 +57,16 @@ func (m *IdRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := IdRequestValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return IdRequestMultiError(errors)
@@ -157,7 +166,16 @@ func (m *IdResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := IdResponseValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return IdResponseMultiError(errors)
@@ -257,9 +275,27 @@ func (m *ChatAndUserIdRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for ChatId
+	if m.GetChatId() <= 0 {
+		err := ChatAndUserIdRequestValidationError{
+			field:  "ChatId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for UserId
+	if m.GetUserId() <= 0 {
+		err := ChatAndUserIdRequestValidationError{
+			field:  "UserId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return ChatAndUserIdRequestMultiError(errors)
@@ -362,9 +398,27 @@ func (m *CheckIfUniqChatRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for UserId
+	if m.GetUserId() <= 0 {
+		err := CheckIfUniqChatRequestValidationError{
+			field:  "UserId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for ProductId
+	if m.GetProductId() <= 0 {
+		err := CheckIfUniqChatRequestValidationError{
+			field:  "ProductId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return CheckIfUniqChatRequestMultiError(errors)
@@ -572,9 +626,27 @@ func (m *NewChatRequest) validate(all bool) error {
 
 	// no validation rules for Name
 
-	// no validation rules for CreatorId
+	if m.GetCreatorId() <= 0 {
+		err := NewChatRequestValidationError{
+			field:  "CreatorId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for ProductId
+	if m.GetProductId() <= 0 {
+		err := NewChatRequestValidationError{
+			field:  "ProductId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Blured
 
@@ -677,9 +749,27 @@ func (m *GetChatRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for CreatorId
+	if m.GetCreatorId() <= 0 {
+		err := GetChatRequestValidationError{
+			field:  "CreatorId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for ProductId
+	if m.GetProductId() <= 0 {
+		err := GetChatRequestValidationError{
+			field:  "ProductId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return GetChatRequestMultiError(errors)
@@ -780,13 +870,40 @@ func (m *ChatResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := ChatResponseValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Name
 
-	// no validation rules for CreatorId
+	if m.GetCreatorId() <= 0 {
+		err := ChatResponseValidationError{
+			field:  "CreatorId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for ProductId
+	if m.GetProductId() <= 0 {
+		err := ChatResponseValidationError{
+			field:  "ProductId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Status
 
@@ -890,11 +1007,38 @@ func (m *WriteNewMsgRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for ChatId
+	if m.GetChatId() <= 0 {
+		err := WriteNewMsgRequestValidationError{
+			field:  "ChatId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for SenderId
+	if m.GetSenderId() <= 0 {
+		err := WriteNewMsgRequestValidationError{
+			field:  "SenderId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for ReceiverId
+	if m.GetReceiverId() <= 0 {
+		err := WriteNewMsgRequestValidationError{
+			field:  "ReceiverId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Checked
 
@@ -1005,13 +1149,40 @@ func (m *MsgResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := MsgResponseValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for ChatId
 
-	// no validation rules for SenderId
+	if m.GetSenderId() <= 0 {
+		err := MsgResponseValidationError{
+			field:  "SenderId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for ReceiverId
+	if m.GetReceiverId() <= 0 {
+		err := MsgResponseValidationError{
+			field:  "ReceiverId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for SenderName
 
@@ -1123,13 +1294,40 @@ func (m *ChatAndLastMsgResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if m.GetId() <= 0 {
+		err := ChatAndLastMsgResponseValidationError{
+			field:  "Id",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Name
 
-	// no validation rules for CreatorId
+	if m.GetCreatorId() <= 0 {
+		err := ChatAndLastMsgResponseValidationError{
+			field:  "CreatorId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for ProductId
+	if m.GetProductId() <= 0 {
+		err := ChatAndLastMsgResponseValidationError{
+			field:  "ProductId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Status
 
@@ -1767,7 +1965,16 @@ func (m *UpdateChatStatusRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for ChatId
+	if m.GetChatId() <= 0 {
+		err := UpdateChatStatusRequestValidationError{
+			field:  "ChatId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for Status
 
