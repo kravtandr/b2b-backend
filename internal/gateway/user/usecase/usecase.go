@@ -48,6 +48,7 @@ type userUsecase struct {
 func (u *userUsecase) CountUsersPayments(ctx context.Context, userID int64) (*models.PaymentsAmount, error) {
 	response, err := u.AuthGRPC.CountUsersPayments(ctx, &auth_service.UserIdRequest{Id: userID})
 	if err != nil {
+		log.Println("Gateway -> Usecase -> CountUsersPayments -> u.AuthGRPC.CountUsersPayments ERROR", err)
 		return &models.PaymentsAmount{}, err
 	}
 	return &models.PaymentsAmount{Amount: response.Amount}, nil
