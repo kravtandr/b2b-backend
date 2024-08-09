@@ -17,6 +17,7 @@ type Config struct {
 	ChatServiceEndpoint               string `envconfig:"CHAT_ENDPOINT" required:"true"`
 	HTTPPort                          string `envconfig:"HTTP_PORT" required:"true"`
 	DBUrl                             string `envconfig:"DB_URL" required:"true"`
+	// TODO add yookassa here
 	// DefaultBucket    string `envconfig:"S3_BUCKET" required:"true"`
 	// S3Endpoint       string `envconfig:"S3_ENDPOINT" required:"true"`
 	// S3PublicEndpoint string `envconfig:"S3_PUBLIC_ENDPOINT" required:"true"`
