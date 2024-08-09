@@ -122,7 +122,7 @@ func (a *chatRepository) WriteNewMsg(ctx context.Context, newMsg *models.Msg) (i
 		if err == pgx.ErrNoRows {
 			return -1, errors.MsgDoesNotExist
 		}
-		log.Panicln("Error: WriteNewMsg", err)
+		log.Println("Error: WriteNewMsg", err)
 		return -1, err
 	}
 	return id, nil

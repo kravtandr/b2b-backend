@@ -118,7 +118,7 @@ func (a *authUseCase) HandlePaidPayments(ctx context.Context, userID int64) (boo
 					log.Println("ERROR: AddUserBalance", err)
 					return false, err
 				}
-				log.Panicln("UpdatePayment", payment.Id)
+				log.Println("UpdatePayment", payment.Id)
 				_, err = a.repo.UpdatePayment(ctx, &models.Payment{
 					Id:        payment.Id,
 					UserId:    payment.UserId,
