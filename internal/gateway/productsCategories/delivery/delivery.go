@@ -43,7 +43,9 @@ func (u *productsCategoriesDelivery) UpdateProduct(ctx *fasthttp.RequestCtx) {
 		return
 	}
 	var request = &models.UserInfoAndUpdateProductByFormRequest{}
+	log.Println("Gateway UpdateProduct ctx.UserValue(cnst.UserIDContextKey)")
 	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
+	log.Println("Gateway UpdateProduct userId", userId)
 
 	request.UserProfile.Id = userId
 	request.Product = *product

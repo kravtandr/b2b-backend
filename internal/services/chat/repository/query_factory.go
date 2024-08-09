@@ -18,9 +18,25 @@ type QueryFactory interface {
 	CreateGetAllUserChatsAndLastMsgs(userId int64) *query.Query
 	CreateGetAmountOfUserChats(userId int64) *query.Query
 	CreateUserCreatedChats(userId int64) *query.Query
+	CreateUpdateMsg(msg *models.Msg) *query.Query
+	CreateGetMsgById(msgId int64) *query.Query
 }
 
 type queryFactory struct{}
+
+func (q *queryFactory) CreateUpdateMsg(msg *models.Msg) *query.Query {
+	return &query.Query{
+		Request: createUpdateMsg,
+		Params:  []interface{}{msg.Checked, msg.Text, msg.Type, msg.Id},
+	}
+}
+
+func (q *queryFactory) CreateGetMsgById(msgId int64) *query.Query {
+	return &query.Query{
+		Request: createUpdateMsg,
+		Params:  []interface{}{msgId},
+	}
+}
 
 func (q *queryFactory) CreateUpdateChat(chat *models.Chat) *query.Query {
 	return &query.Query{

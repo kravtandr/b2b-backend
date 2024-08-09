@@ -25,7 +25,41 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next ChatRepository) ChatRe
 	}
 }
 
-func (l *loggingMiddleware) UpdateChat(ctx context.Context, chat *models.Chat) (updated *models.Chat, err error) {
+func (l *loggingMiddleware) UpdateMsg(ctx context.Context, msg *models.Msg) (err error) {
+	l.logger.Infow(module,
+		"Action", "UpdateMsg",
+		"Request", msg,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "UpdateMsg",
+				"Request", msg,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.UpdateMsg(ctx, msg)
+}
+
+func (l *loggingMiddleware) GetMsgById(ctx context.Context, msgId int64) (msg *models.Msg, err error) {
+	l.logger.Infow(module,
+		"Action", "GetMsgById",
+		"Request", msgId,
+	)
+	defer func() {
+		if err != nil {
+			l.logger.Infow(module,
+				"Action", "GetMsgById",
+				"Request", msgId,
+				"Error", err,
+			)
+		}
+	}()
+	return l.next.GetMsgById(ctx, msgId)
+}
+
+func (l *loggingMiddleware) UpdateChat(ctx context.Context, chat *models.Chat) (err error) {
 	l.logger.Infow(module,
 		"Action", "UpdateChat",
 		"Request", chat,

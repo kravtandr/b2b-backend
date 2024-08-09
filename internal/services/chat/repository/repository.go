@@ -12,23 +12,53 @@ import (
 )
 
 type ChatRepository interface {
-	CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
-	UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
-	DeleteChat(ctx context.Context, chat_id int64) (bool, error)
 	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
 	GetChatById(ctx context.Context, id int64) (*models.Chat, error)
-	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
-	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
-	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
-	GetUserLastMsgs(ctx context.Context, userId int64) (*models.Msgs, error)
+	CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error)
+	UpdateChat(ctx context.Context, chat *models.Chat) error
+	DeleteChat(ctx context.Context, chat_id int64) (bool, error)
+
 	GetUserCreatedChats(ctx context.Context, userId int64) (*models.Chats, error)
+
+	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
+	GetMsgById(ctx context.Context, msgId int64) (*models.Msg, error)
+	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
+	GetUserLastMsgs(ctx context.Context, userId int64) (*models.Msgs, error)
+	UpdateMsg(ctx context.Context, msg *models.Msg) error
+
+	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
 	CombineChatsWithAndWithoutMsgs(ctx context.Context, onlyChats *models.Chats, chatsAndLM *models.ChatsAndLastMsg) *models.ChatsAndLastMsg
 }
 
 type chatRepository struct {
 	queryFactory QueryFactory
 	conn         *pgxpool.Pool
+}
+
+func (a *chatRepository) UpdateMsg(ctx context.Context, msg *models.Msg) error {
+	query := a.queryFactory.CreateUpdateMsg(msg)
+	tag, err := a.conn.Exec(ctx, query.Request, query.Params...)
+	if err != nil {
+		log.Println(tag)
+		return err
+	}
+	return nil
+}
+
+func (a *chatRepository) GetMsgById(ctx context.Context, msgId int64) (*models.Msg, error) {
+	query := a.queryFactory.CreateGetMsgById(msgId)
+	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
+	getMsg := &models.Msg{}
+	if err := row.Scan(&getMsg.Id, &getMsg.ChatId, &getMsg.SenderId, &getMsg.ReceiverId, &getMsg.Checked, &getMsg.Text, &getMsg.Type, &getMsg.Time); err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, err
+		}
+
+		return nil, err
+	}
+
+	return getMsg, nil
 }
 
 func (a *chatRepository) CheckIfUniqChat(ctx context.Context, productId int64, userId int64) (bool, error) {
@@ -65,14 +95,14 @@ func (a *chatRepository) NewChat(ctx context.Context, newChat *models.Chat) (*mo
 	return chat, nil
 }
 
-func (a *chatRepository) UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error) {
+func (a *chatRepository) UpdateChat(ctx context.Context, chat *models.Chat) error {
 	query := a.queryFactory.CreateUpdateChat(chat)
 	tag, err := a.conn.Exec(ctx, query.Request, query.Params...)
 	if err != nil {
 		log.Println(tag)
-		return nil, err
+		return err
 	}
-	return chat, nil
+	return nil
 }
 
 func (a *chatRepository) DeleteChat(ctx context.Context, chat_id int64) (bool, error) {

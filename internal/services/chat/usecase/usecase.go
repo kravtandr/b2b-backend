@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"b2b/m/internal/services/chat/models"
+	"b2b/m/pkg/errors"
 	"b2b/m/pkg/generator"
 	"context"
 
@@ -9,14 +10,19 @@ import (
 )
 
 type ChatUseCase interface {
-	CheckIfUniqChat(ctx context.Context, user *models.UniqueCheck) (bool, error)
 	NewChat(ctx context.Context, newChat *models.Chat) (*models.Chat, error)
-	UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
-	DeleteChat(ctx context.Context, chat_id int64) (deleted bool, err error)
 	GetChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
 	GetChatById(ctx context.Context, chatId int64) (*models.Chat, error)
+	UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error)
+	DeleteChat(ctx context.Context, chat_id int64) (deleted bool, err error)
+
+	CheckIfUniqChat(ctx context.Context, user *models.UniqueCheck) (bool, error)
+
 	WriteNewMsg(ctx context.Context, newMsg *models.Msg) (int64, error)
+	GetMsgById(ctx context.Context, msgId int64) (*models.Msg, error)
 	GetMsgsFromChat(ctx context.Context, chatId int64, userId int64) (*models.Msgs, error)
+	UpdateMsg(ctx context.Context, msg *models.Msg) (*models.Msg, error)
+
 	GetAllChatsAndLastMsg(ctx context.Context, userId int64) (*models.ChatsAndLastMsg, error)
 }
 
@@ -35,7 +41,35 @@ func (a *chatUseCase) CheckIfUniqChat(ctx context.Context, uniqueCheck *models.U
 }
 
 func (a *chatUseCase) UpdateChat(ctx context.Context, chat *models.Chat) (*models.Chat, error) {
-	result, err := a.repo.UpdateChat(ctx, chat)
+	err := a.repo.UpdateChat(ctx, chat)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := a.GetChatById(ctx, chat.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *chatUseCase) UpdateMsg(ctx context.Context, msg *models.Msg) (*models.Msg, error) {
+	err := a.repo.UpdateMsg(ctx, msg)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := a.GetMsgById(ctx, msg.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (a *chatUseCase) GetMsgById(ctx context.Context, msgId int64) (*models.Msg, error) {
+	result, err := a.repo.GetMsgById(ctx, msgId)
 	if err != nil {
 		return nil, err
 	}
@@ -87,6 +121,16 @@ func (a *chatUseCase) GetMsgsFromChat(ctx context.Context, chatId int64, userId 
 	if err != nil {
 		return nil, err
 	}
+
+	if result == nil {
+		return nil, errors.MsgDoesNotExist
+	}
+
+	for _, msg := range *result {
+		msg.Checked = true
+		a.repo.UpdateMsg(ctx, &msg)
+	}
+
 	return result, nil
 }
 
