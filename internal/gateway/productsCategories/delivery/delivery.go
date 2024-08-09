@@ -44,6 +44,7 @@ func (u *productsCategoriesDelivery) UpdateProduct(ctx *fasthttp.RequestCtx) {
 	}
 	var request = &models.UserInfoAndUpdateProductByFormRequest{}
 	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
+
 	request.UserProfile.Id = userId
 	request.Product = *product
 	response, err := u.manager.UpdateProduct(ctx, request)

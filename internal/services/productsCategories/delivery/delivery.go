@@ -50,6 +50,7 @@ func (a *productsCategoriesDelivery) AddProduct(ctx context.Context, request *pr
 
 func (a *productsCategoriesDelivery) UpdateProduct(ctx context.Context, request *productsCategories_service.UpdateProductRequest) (*productsCategories_service.GetProduct, error) {
 	resp, err := a.productsCategoriesUseCase.UpdateProduct(ctx, &models.Product{
+		Id:   request.Id,
 		Name: request.Name,
 		Description: sql.NullString{
 			String: request.Description.String_,
