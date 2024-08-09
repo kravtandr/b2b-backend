@@ -26,7 +26,7 @@ func NewLoggingMiddleware(logger *zap.SugaredLogger, next AuthRepository) AuthRe
 	}
 }
 
-func (l *loggingMiddleware) CountUsersPayments(ctx context.Context, userID int64) (count int, err error) {
+func (l *loggingMiddleware) CountUsersPayments(ctx context.Context, userID int64) (count int64, err error) {
 	l.logger.Infow(module,
 		"Action", "CountUsersPayments",
 		"Request", userID,

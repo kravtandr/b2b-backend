@@ -238,6 +238,17 @@ func (a *authDelivery) GetCompanyUserLink(ctx context.Context, request *auth_ser
 	}, nil
 }
 
+func (a *authDelivery) CountUsersPayments(ctx context.Context, request *auth_service.UserIdRequest) (*auth_service.PaymentsAmountResponse, error) {
+	amount, err := a.authUsecase.CountUsersPayments(ctx, request.Id)
+	if err != nil {
+		return &auth_service.PaymentsAmountResponse{}, a.errorAdapter.AdaptError(err)
+	}
+
+	return &auth_service.PaymentsAmountResponse{
+		Amount: amount,
+	}, nil
+}
+
 func (a *authDelivery) UpdateUserBalance(ctx context.Context, request *auth_service.UpdateUserBalanceRequest) (*auth_service.GetPublicUserResponse, error) {
 	response, err := a.authUsecase.UpdateUserBalance(ctx, request.UserId, request.Balance)
 	if err != nil {

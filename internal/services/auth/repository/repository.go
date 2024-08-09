@@ -32,7 +32,7 @@ type AuthRepository interface {
 	AddPayment(ctx context.Context, payment *models.Payment) (*models.Payment, error)
 	GetPayment(ctx context.Context, paymentID string) (*models.Payment, error)
 	GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error)
-	CountUsersPayments(ctx context.Context, userID int64) (int, error)
+	CountUsersPayments(ctx context.Context, userID int64) (int64, error)
 	UpdatePayment(ctx context.Context, payment *models.Payment) (*models.Payment, error)
 }
 
@@ -89,10 +89,10 @@ func (a *authRepository) GetPayment(ctx context.Context, paymentID string) (*mod
 	return payment, nil
 }
 
-func (a *authRepository) CountUsersPayments(ctx context.Context, userID int64) (int, error) {
+func (a *authRepository) CountUsersPayments(ctx context.Context, userID int64) (int64, error) {
 	query := a.queryFactory.CreateCountUsersPayments(userID)
 	row := a.conn.QueryRow(ctx, query.Request, query.Params...)
-	var count int
+	var count int64
 	if err := row.Scan(
 		&count,
 	); err != nil {

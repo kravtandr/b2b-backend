@@ -31,6 +31,7 @@ type AuthUseCase interface {
 	GetPayment(ctx context.Context, paymentID string) (*models.Payment, error)
 	GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error)
 	HandlePaidPayments(ctx context.Context, userID int64) (bool, error)
+	CountUsersPayments(ctx context.Context, userID int64) (int64, error)
 }
 
 type authUseCase struct {
@@ -70,6 +71,10 @@ func (a *authUseCase) GetPayment(ctx context.Context, paymentID string) (*models
 
 func (a *authUseCase) GetUsersPayments(ctx context.Context, userID int64) (*models.Payments, error) {
 	return a.repo.GetUsersPayments(ctx, userID)
+}
+
+func (a *authUseCase) CountUsersPayments(ctx context.Context, userID int64) (int64, error) {
+	return a.repo.CountUsersPayments(ctx, userID)
 }
 
 func (a *authUseCase) HandlePaidPayments(ctx context.Context, userID int64) (bool, error) {
