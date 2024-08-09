@@ -107,7 +107,7 @@ services:
       - "10123:10123"
       - "11123:8080"
     environment:
-      - USER_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - USER_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - USER_GRPC_PORT=10123
       - USER_PREFIX_LEN=3
     networks:
@@ -128,7 +128,7 @@ services:
       - "10124:10124"
       - "11124:8080"
     environment:
-      - FASTORDER_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - FASTORDER_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - FASTORDER_GRPC_PORT=10124
     networks:
       - net
@@ -148,7 +148,7 @@ services:
       - "10125:10125"
       - "11125:8080"
     environment:
-      - COMPANY_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - COMPANY_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - COMPANY_GRPC_PORT=10125
       - COMPANY_MINIO_URL=host.docker.internal:9000
       - COMPANY_MINIO_USER=b2b
@@ -177,11 +177,11 @@ services:
       - "10126:10126"
       - "11126:8080"
     environment:
-      - PRODUCTSCATEGORIES_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - PRODUCTSCATEGORIES_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - PRODUCTSCATEGORIES_GRPC_PORT=10126
       - PRODUCTSCATEGORIES_MINIO_URL=host.docker.internal:9000
-      - PRODUCTSCATEGORIES_MINIO_USER=b2b
-      - PRODUCTSCATEGORIES_MINIO_PASS=b2b_pass
+      - PRODUCTSCATEGORIES_MINIO_USER=${MINIO_ROOT_USER}
+      - PRODUCTSCATEGORIES_MINIO_PASS=${MINIO_ROOT_PASSWORD}
       - PRODUCTSCATEGORIES_MINIO_SSL=false
     networks:
       - net
@@ -201,7 +201,7 @@ services:
       - "10127:10127"
       - "11127:8080"
     environment:
-      - CHAT_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - CHAT_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - CHAT_GRPC_PORT=10127
     networks:
       - net
@@ -242,7 +242,7 @@ services:
       - GATEWAY_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
       - GATEWAY_CHAT_ENDPOINT=host.docker.internal:10127
       - GATEWAY_MINIO_ENDPOINT=host.docker.internal:9000
-      - GATEWAY_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - GATEWAY_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     networks:
       - net
     restart: unless-stopped
@@ -287,7 +287,7 @@ services:
       - GATEWAY_CHAT_PRODUCTSCATEGORIES_ENDPOINT=host.docker.internal:10126
       - GATEWAY_CHAT_CHAT_ENDPOINT=host.docker.internal:10127
       - GATEWAY_CHAT_MINIO_ENDPOINT=host.docker.internal:9000
-      - GATEWAY_CHAT_DB_URL=postgres://b2b:b2b@postgres:5432/b2b
+      - GATEWAY_CHAT_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     networks:
       - net
     restart: unless-stopped
