@@ -172,7 +172,7 @@ func (u *userDelivery) Login(ctx *fasthttp.RequestCtx) {
 	ctx.SetBody(b)
 	log.Println("Login SetCookie:", response.Cookie, " id ", response.Id, " email ", response.Email)
 
-	chttp.SetCookieAndSession(ctx, response.Cookie)
+	chttp.SetCookieAndSession(ctx, response.Cookie, response.Id)
 }
 
 func (u *userDelivery) Logout(ctx *fasthttp.RequestCtx) {
@@ -209,7 +209,7 @@ func (u *userDelivery) FastRegister(ctx *fasthttp.RequestCtx) {
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 
-	chttp.SetCookieAndSession(ctx, response.Cookie)
+	chttp.SetCookieAndSession(ctx, response.Cookie, response.Id)
 }
 
 func (u *userDelivery) Register(ctx *fasthttp.RequestCtx) {
@@ -232,7 +232,7 @@ func (u *userDelivery) Register(ctx *fasthttp.RequestCtx) {
 	ctx.SetStatusCode(http.StatusOK)
 	ctx.SetBody(b)
 
-	chttp.SetCookieAndSession(ctx, response.Cookie)
+	chttp.SetCookieAndSession(ctx, response.Cookie, response.Id)
 }
 
 func (u *userDelivery) GetProfile(ctx *fasthttp.RequestCtx) {

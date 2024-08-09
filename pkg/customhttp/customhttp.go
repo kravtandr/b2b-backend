@@ -67,7 +67,7 @@ func GetQueryParams(ctx *fasthttp.RequestCtx) (*QueryParam, error) {
 	return params, nil
 }
 
-func SetCookieAndSession(ctx *fasthttp.RequestCtx, cookie string) {
+func SetCookieAndSession(ctx *fasthttp.RequestCtx, cookie string, userId int64) {
 	var c fasthttp.Cookie
 	c.SetPath("/")
 	c.SetKey(cnst.CookieName)
@@ -76,4 +76,6 @@ func SetCookieAndSession(ctx *fasthttp.RequestCtx, cookie string) {
 	c.SetHTTPOnly(true)
 	c.SetSameSite(fasthttp.CookieSameSiteStrictMode)
 	ctx.Response.Header.SetCookie(&c)
+	ctx.SetUserValue(cnst.UserIDContextKey, userId)
+	log.Println("Helpers ValidateSession set UserIDContextKey: ", userId)
 }

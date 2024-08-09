@@ -21,9 +21,10 @@ type authDelivery struct {
 func (a *authDelivery) ValidateSession(ctx context.Context, session *auth_service.Session) (*auth_service.ValidateSessionResponse, error) {
 	response, err := a.authUsecase.ValidateSession(ctx, session.Cookie)
 	if err != nil {
+		log.Println("ERROR: ValidateSession in service delivery", err)
 		return &auth_service.ValidateSessionResponse{}, a.errorAdapter.AdaptError(err)
 	}
-
+	log.Println("OK: ValidateSession in service delivery", response)
 	return &auth_service.ValidateSessionResponse{UserId: response}, nil
 }
 

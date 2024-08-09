@@ -5,22 +5,6 @@ volumes:
   minio_storage: {}
 
 services:
-  # tinode:
-  #   image: tinode/tinode-postgres:latest
-  #   ports:
-  #     - "5432:5432"
-  #     - "6060:6060"
-  #   volumes:
-  #     - minio_storage:/data
-  #   environment:
-  #     POSTGRES_DB: "b2b"
-  #     POSTGRES_USER: "b2b"
-  #     POSTGRES_PASSWORD: "b2b"
-  #     POSTGRES_DSN: "postgres://b2b:b2b@postgres:5432/b2b_chat"
-  #   networks:
-  #     - net
-  #   restart: unless-stopped
-
   minio:
     image: minio/minio
     ports:
@@ -249,20 +233,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  # pgadmin:
-  #   image: dpage/pgadmin4:6.12
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: b2b@b2b.com
-  #     PGADMIN_DEFAULT_PASSWORD: b2b
-  #   ports:
-  #     - 15432:80
-  #   volumes:
-  #     - .:/var/lib/postgresql/data
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #       - net
-
   gateway_chat:
     depends_on:
       - minio
@@ -293,4 +263,34 @@ services:
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  # pgadmin:
+  #   image: dpage/pgadmin4:6.12
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: b2b@b2b.com
+  #     PGADMIN_DEFAULT_PASSWORD: b2b
+  #   ports:
+  #     - 15432:80
+  #   volumes:
+  #     - .:/var/lib/postgresql/data
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #       - net
+
+  # tinode:
+  #   image: tinode/tinode-postgres:latest
+  #   ports:
+  #     - "5432:5432"
+  #     - "6060:6060"
+  #   volumes:
+  #     - minio_storage:/data
+  #   environment:
+  #     POSTGRES_DB: "b2b"
+  #     POSTGRES_USER: "b2b"
+  #     POSTGRES_PASSWORD: "b2b"
+  #     POSTGRES_DSN: "postgres://b2b:b2b@postgres:5432/b2b_chat"
+  #   networks:
+  #     - net
+  #   restart: unless-stopped
 
