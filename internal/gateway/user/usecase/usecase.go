@@ -15,7 +15,7 @@ import (
 )
 
 type UserUsecase interface {
-	Register(ctx context.Context, request *models.RegisterUserRequest) (*models.Session, error)
+	Register(ctx context.Context, request *models.RegisterUserRequest) (*models.CompanyWithCookie, error)
 	FastRegister(ctx context.Context, request *models.FastRegistrationForm) (*models.CompanyWithCookie, error)
 	Login(ctx context.Context, request *models.LoginUserRequest) (*models.CompanyWithCookie, error)
 	Logout(ctx context.Context, cookie string) error
@@ -242,8 +242,8 @@ func (u *userUsecase) Login(ctx context.Context, request *models.LoginUserReques
 	}, nil
 }
 
-func (u *userUsecase) Register(ctx context.Context, request *models.RegisterUserRequest) (*models.Session, error) {
-	response, err := u.AuthGRPC.RegisterUser(ctx, &auth_service.RegisterRequest{
+func (u *userUsecase) Register(ctx context.Context, request *models.RegisterUserRequest) (*models.CompanyWithCookie, error) {
+	_, err := u.AuthGRPC.RegisterUser(ctx, &auth_service.RegisterRequest{
 		Email:    request.Email,
 		Password: request.Password,
 		Name:     request.Name,
@@ -253,9 +253,22 @@ func (u *userUsecase) Register(ctx context.Context, request *models.RegisterUser
 		return nil, err
 	}
 
-	return &models.Session{
-		Token:  response.Token,
-		Cookie: response.Cookie,
+	loginResponse, err := u.AuthGRPC.LoginUser(ctx, &auth_service.LoginRequest{
+		Email:    request.Email,
+		Password: request.Password,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.CompanyWithCookie{
+		Cookie:    loginResponse.Cookie,
+		Token:     loginResponse.Token,
+		Name:      loginResponse.Name,
+		Email:     loginResponse.Email,
+		LegalName: loginResponse.LegalName,
+		Itn:       loginResponse.Itn,
+		OwnerId:   loginResponse.OwnerId,
 	}, nil
 }
 
