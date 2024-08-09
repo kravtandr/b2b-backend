@@ -29,8 +29,8 @@ services:
     volumes:
       - minio_storage:/data
     environment:
-      MINIO_ROOT_USER: b2b
-      MINIO_ROOT_PASSWORD: b2b_pass
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     command: server --console-address ":9001" /data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
@@ -43,9 +43,9 @@ services:
     container_name: postgres_container
     image: postgres:14.4-alpine3.16
     environment:
-      POSTGRES_DB: "b2b"
-      POSTGRES_USER: "b2b"
-      POSTGRES_PASSWORD: "b2b"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
       - .:/docker-entrypoint-initdb.d
@@ -154,6 +154,7 @@ services:
       - COMPANY_MINIO_USER=b2b
       - COMPANY_MINIO_PASS=b2b_pass
       - COMPANY_MINIO_SSL=false
+
     networks:
       - net
     restart: unless-stopped

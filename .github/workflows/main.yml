@@ -22,6 +22,7 @@ jobs:
             script: |
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh;
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/stop.sh;
+              bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/pull.sh;
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/exit.sh;
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/clean_and_rights.sh;
 
@@ -41,6 +42,11 @@ jobs:
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
             script: |
+              export MINIO_ROOT_USER="${{secrets.MINIO_ROOT_USER}}";
+              export MINIO_ROOT_PASSWORD="${{secrets.MINIO_ROOT_PASSWORD}}";
+              export POSTGRES_DB="${{secrets.POSTGRES_DB}}";
+              export POSTGRES_USER="${{secrets.POSTGRES_USER}}";
+              export POSTGRES_PASSWORD="${{secrets.POSTGRES_PASSWORD}}";
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh;
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/build.sh;
 
