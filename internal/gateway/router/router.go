@@ -75,7 +75,7 @@ func SetupRouter(cfg RouterConfig) (p fasthttpprom.Router) {
 	p.POST(cnst.SearchProductsURL, lgrMw(cfg.ProductsCategoriesDelivery.SearchProducts))
 	p.POST(cnst.AddProductURL, lgrMw(authMw(cfg.ProductsCategoriesDelivery.AddProduct)))
 	p.POST(cnst.CompanyProductsListURL, lgrMw(cfg.ProductsCategoriesDelivery.GetCompanyProducts))
-	p.PATCH(cnst.UpdateProductURL, lgrMw(cfg.ProductsCategoriesDelivery.UpdateProduct))
+	p.PATCH(cnst.UpdateProductURL, lgrMw(authMw(cfg.ProductsCategoriesDelivery.UpdateProduct)))
 
 	// Chat
 	p.GET(cnst.CheckIfUniqChat, lgrMw(authMw(cfg.ChatDelivery.CheckIfUniqChat)))

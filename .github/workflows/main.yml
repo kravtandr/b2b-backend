@@ -47,6 +47,10 @@ jobs:
               export POSTGRES_DB="${{secrets.POSTGRES_DB}}";
               export POSTGRES_USER="${{secrets.POSTGRES_USER}}";
               export POSTGRES_PASSWORD="${{secrets.POSTGRES_PASSWORD}}";
+              export DADATA_API_KEY="${{secrets.DADATA_API_KEY}}";
+              export DADATA_SECRET_KEY="${{secrets.DADATA_SECRET_KEY}}";
+              export UKASSA_SECRET_KEY="${{secrets.UKASSA_SECRET_KEY}}";
+              export UKASSA_SHOP_ID="${{secrets.UKASSA_SHOP_ID}}";
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh;
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/build.sh;
 

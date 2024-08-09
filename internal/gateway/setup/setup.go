@@ -38,7 +38,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 	}
 
 	companyConn, err := grpc.Dial(cfg.CompanyServiceEndpoint, grpc.WithInsecure(), grpc.WithBlock())
-	daData := dadata.NewDaData("42e877cc6e66e3cc70c47a2f42966120cfcea751", "984e0c50d52dd2611b98609eaa7c82268e46297e")
+	daData := dadata.NewDaData(cfg.DADATA_API_KEY, cfg.DADATA_SECRET_KEY)
 	if err != nil {
 		return p, stopFunc, err
 	}
@@ -56,9 +56,7 @@ func Setup(cfg config.Config) (p fasthttpprom.Router, stopFunc func(), err error
 		return p, stopFunc, err
 	}
 
-	var UKASSA_SECRET_KEY = "test_on5XfensBJfl8nY63uzUp3CBTW5YE0w6SVhr4VxAdH4"
-	var ACCIUNT_ID = "415910"
-	yooclient := yookassa.NewClient(ACCIUNT_ID, UKASSA_SECRET_KEY)
+	yooclient := yookassa.NewClient(cfg.UKASSA_SHOP_ID, cfg.UKASSA_SECRET_KEY)
 	// Создаем обработчик платежей
 	paymentHandler := yookassa.NewPaymentHandler(yooclient)
 
