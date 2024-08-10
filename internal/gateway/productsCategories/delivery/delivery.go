@@ -37,9 +37,10 @@ type productsCategoriesDelivery struct {
 func (u *productsCategoriesDelivery) UpdateProduct(ctx *fasthttp.RequestCtx) {
 	log.Println("Gateway delivery UpdateProduct")
 	var product = &models.UserInfoAndUpdateProductByFormRequest{}
-	log.Println("Gateway UpdateProduct ctx.UserValue(cnst.UserIDContextKey)")
-	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
-	log.Println("Gateway UpdateProduct userId", userId)
+	// log.Println("Gateway UpdateProduct ctx.UserValue(cnst.UserIDContextKey)")
+	// userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
+	// log.Println("Gateway UpdateProduct userId", userId)
+	var userId int64 = 16
 	if err := json.Unmarshal(ctx.Request.Body(), &product.Product); err != nil {
 		log.Println("Gateway UpdateProduct Unmarshal ERROR", err)
 		ctx.SetStatusCode(http.StatusBadRequest)
