@@ -26,3 +26,6 @@ parser/properties/
 
 #debug
 *.json
+
+#environment
+*.env
