@@ -36,34 +36,30 @@ type productsCategoriesDelivery struct {
 
 func (u *productsCategoriesDelivery) UpdateProduct(ctx *fasthttp.RequestCtx) {
 	log.Println("|||Gateway delivery UpdateProduct|||")
-	// var product = &models.UserInfoAndUpdateProductByFormRequest{}
-	// // log.Println("Gateway UpdateProduct ctx.UserValue(cnst.UserIDContextKey)")
-	// // userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
-	// // log.Println("Gateway UpdateProduct userId", userId)
-	// var userId int64 = 16
-	// if err := json.Unmarshal(ctx.Request.Body(), &product.Product); err != nil {
-	// 	log.Println("Gateway UpdateProduct Unmarshal ERROR", err)
-	// 	ctx.SetStatusCode(http.StatusBadRequest)
-	// 	ctx.SetBody([]byte(cnst.WrongRequestBody))
-	// 	return
-	// }
-	// var request = &models.UserInfoAndUpdateProductByFormRequest{}
+	var product = &models.UserInfoAndUpdateProductByFormRequest{}
+	log.Println("Gateway UpdateProduct ctx.UserValue(cnst.UserIDContextKey)")
+	userId := ctx.UserValue(cnst.UserIDContextKey).(int64)
+	log.Println("Gateway UpdateProduct userId", userId)
+	if err := json.Unmarshal(ctx.Request.Body(), &product.Product); err != nil {
+		log.Println("Gateway UpdateProduct Unmarshal ERROR", err)
+		ctx.SetStatusCode(http.StatusBadRequest)
+		ctx.SetBody([]byte(cnst.WrongRequestBody))
+		return
+	}
+	var request = &models.UserInfoAndUpdateProductByFormRequest{}
 
-	// request.UserProfile.Id = userId
-	// response, err := u.manager.UpdateProduct(ctx, request)
-	// if err != nil {
-	// 	log.Println("Gateway UpdateProduct u.manager.UpdateProduct ERROR", err)
-	// 	httpError := u.errorAdapter.AdaptError(err)
-	// 	ctx.SetStatusCode(httpError.Code)
-	// 	ctx.SetBody([]byte(httpError.MSG))
-	// 	return
-	// }
-	// b, _ := chttp.ApiResp(response, err)
-	// ctx.SetStatusCode(http.StatusOK)
-	// ctx.SetBody(b)
-	ctx.SetStatusCode(http.StatusBadRequest)
-	ctx.SetBody([]byte(cnst.WrongRequestBody))
-	return
+	request.UserProfile.Id = userId
+	response, err := u.manager.UpdateProduct(ctx, request)
+	if err != nil {
+		log.Println("Gateway UpdateProduct u.manager.UpdateProduct ERROR", err)
+		httpError := u.errorAdapter.AdaptError(err)
+		ctx.SetStatusCode(httpError.Code)
+		ctx.SetBody([]byte(httpError.MSG))
+		return
+	}
+	b, _ := chttp.ApiResp(response, err)
+	ctx.SetStatusCode(http.StatusOK)
+	ctx.SetBody(b)
 }
 
 func (u *productsCategoriesDelivery) AddProduct(ctx *fasthttp.RequestCtx) {
