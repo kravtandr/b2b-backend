@@ -20,15 +20,6 @@ jobs:
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
             script: |
-              export MINIO_ROOT_USER="${{secrets.MINIO_ROOT_USER}}";
-              export MINIO_ROOT_PASSWORD="${{secrets.MINIO_ROOT_PASSWORD}}";
-              export POSTGRES_DB="${{secrets.POSTGRES_DB}}";
-              export POSTGRES_USER="${{secrets.POSTGRES_USER}}";
-              export POSTGRES_PASSWORD="${{secrets.POSTGRES_PASSWORD}}";
-              export DADATA_API_KEY="${{secrets.DADATA_API_KEY}}";
-              export DADATA_SECRET_KEY="${{secrets.DADATA_SECRET_KEY}}";
-              export UKASSA_SECRET_KEY="${{secrets.UKASSA_SECRET_KEY}}";
-              export UKASSA_SHOP_ID="${{secrets.UKASSA_SHOP_ID}}";
               su - postgres -c "cd /var/lib/postgresql/backend/b2b-backend && git pull";
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh;
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/stop.sh;
@@ -46,21 +37,22 @@ jobs:
     steps:
       - name: SSH Setup
         uses: appleboy/ssh-action@master
+        env:
+          MINIO_ROOT_USER: ${{env.MINIO_ROOT_USER}}
+          MINIO_ROOT_PASSWORD: ${{env.MINIO_ROOT_PASSWORD}}
+          POSTGRES_DB: ${{env.POSTGRES_DB}}
+          POSTGRES_USER: ${{env.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{env.POSTGRES_PASSWORD}}
+          DADATA_API_KEY: ${{env.DADATA_API_KEY}}
+          DADATA_SECRET_KEY: ${{env.DADATA_SECRET_KEY}}
+          UKASSA_SECRET_KEY: ${{env.UKASSA_SECRET_KEY}}
+          UKASSA_SHOP_ID: ${{env.UKASSA_SHOP_ID}}
         with:
             host: ${{secrets.SSH_HOST}}
             username: ${{secrets.SSH_USER}}
             key: ${{secrets.SSH_PRIVATE_KEY}}
             port: 22
             script: |
-              export MINIO_ROOT_USER="${{secrets.MINIO_ROOT_USER}}";
-              export MINIO_ROOT_PASSWORD="${{secrets.MINIO_ROOT_PASSWORD}}";
-              export POSTGRES_DB="${{secrets.POSTGRES_DB}}";
-              export POSTGRES_USER="${{secrets.POSTGRES_USER}}";
-              export POSTGRES_PASSWORD="${{secrets.POSTGRES_PASSWORD}}";
-              export DADATA_API_KEY="${{secrets.DADATA_API_KEY}}";
-              export DADATA_SECRET_KEY="${{secrets.DADATA_SECRET_KEY}}";
-              export UKASSA_SECRET_KEY="${{secrets.UKASSA_SECRET_KEY}}";
-              export UKASSA_SHOP_ID="${{secrets.UKASSA_SHOP_ID}}";
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/change_user_cd_wd.sh;
               bash /var/lib/postgresql/backend/b2b-backend/.github/workflows/scripts/build.sh;
 
