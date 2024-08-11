@@ -81,7 +81,7 @@ services:
       - net
   auth_service:
     build:
-      dockerfile: Dockerfile.auth_service
+      dockerfile: ./docker/Dockerfile.auth_service
       context: .
       args:
         - APP_PKG_NAME=b2b/m
@@ -102,7 +102,7 @@ services:
 
   fastorder_service:
     build:
-      dockerfile: Dockerfile.fastOrder_service
+      dockerfile: ./docker/Dockerfile.fastOrder_service
       context: .
       args:
         - APP_PKG_NAME=b2b/m
@@ -122,7 +122,7 @@ services:
 
   company_service:
     build:
-      dockerfile: Dockerfile.company_service
+      dockerfile: ./docker/Dockerfile.company_service
       context: .
       args:
         - APP_PKG_NAME=b2b/m
@@ -151,7 +151,7 @@ services:
       - auth_service
       - company_service
     build:
-      dockerfile: Dockerfile.productsCategories_service
+      dockerfile: ./docker/Dockerfile.productsCategories_service
       context: .
       args:
         - APP_PKG_NAME=b2b/m
@@ -175,7 +175,7 @@ services:
 
   chat_service:
     build:
-      dockerfile: Dockerfile.chat_service
+      dockerfile: ./docker/Dockerfile.chat_service
       context: .
       args:
         - APP_PKG_NAME=b2b/m
@@ -208,7 +208,7 @@ services:
       - productscategories_service
       - chat_service
     build:
-      dockerfile: Dockerfile.gateway
+      dockerfile: ./docker/Dockerfile.gateway
       context: .
       args:
         - APP_PKG_NAME=b2b/m
@@ -227,6 +227,10 @@ services:
       - GATEWAY_CHAT_ENDPOINT=host.docker.internal:10127
       - GATEWAY_MINIO_ENDPOINT=host.docker.internal:9000
       - GATEWAY_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - DADATA_API_KEY: ${DADATA_API_KEY}
+      - DADATA_SECRET_KEY: ${DADATA_SECRET_KEY}
+      - UKASSA_SECRET_KEY: ${UKASSA_SECRET_KEY}
+      - UKASSA_SHOP_ID: ${UKASSA_SHOP_ID}
     networks:
       - net
     restart: unless-stopped
@@ -239,7 +243,7 @@ services:
       - postgres
       - chat_service
     build:
-      dockerfile: Dockerfile.gateway_chat
+      dockerfile: ./docker/Dockerfile.gateway_chat
       context: .
       args:
         - APP_PKG_NAME=b2b/m
