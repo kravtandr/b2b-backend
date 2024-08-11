@@ -227,10 +227,10 @@ services:
       - GATEWAY_CHAT_ENDPOINT=host.docker.internal:10127
       - GATEWAY_MINIO_ENDPOINT=host.docker.internal:9000
       - GATEWAY_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      - DADATA_API_KEY: ${DADATA_API_KEY}
-      - DADATA_SECRET_KEY: ${DADATA_SECRET_KEY}
-      - UKASSA_SECRET_KEY: ${UKASSA_SECRET_KEY}
-      - UKASSA_SHOP_ID: ${UKASSA_SHOP_ID}
+      - DADATA_API_KEY=${DADATA_API_KEY}
+      - DADATA_SECRET_KEY=${DADATA_SECRET_KEY}
+      - UKASSA_SECRET_KEY=${UKASSA_SECRET_KEY}
+      - UKASSA_SHOP_ID=${UKASSA_SHOP_ID}
     networks:
       - net
     restart: unless-stopped
