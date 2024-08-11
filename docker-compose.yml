@@ -219,6 +219,7 @@ services:
       - "18080:8080"
       # - "5001:5001"
     environment:
+      - ENDPOINT=${ENDPOINT}
       - GATEWAY_HTTP_PORT=:8081
       - GATEWAY_AUTH_ENDPOINT=host.docker.internal:10123
       - GATEWAY_FASTORDER_ENDPOINT=host.docker.internal:10124
@@ -254,6 +255,7 @@ services:
       - "5050:5051"
       - "15050:5050"
     environment:
+      - ENDPOINT=${ENDPOINT}
       - GATEWAY_CHAT_HTTP_PORT=:5051
       - GATEWAY_CHAT_AUTH_ENDPOINT=host.docker.internal:10123
       - GATEWAY_CHAT_FASTORDER_ENDPOINT=host.docker.internal:10124

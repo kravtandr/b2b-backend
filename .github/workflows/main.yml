@@ -38,6 +38,7 @@ jobs:
       - name: SSH Setup
         uses: appleboy/ssh-action@master
         env:
+          ENDPOINT: ${{env.ENDPOINT}}
           MINIO_ROOT_USER: ${{env.MINIO_ROOT_USER}}
           MINIO_ROOT_PASSWORD: ${{env.MINIO_ROOT_PASSWORD}}
           POSTGRES_DB: ${{env.POSTGRES_DB}}

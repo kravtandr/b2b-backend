@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	ENDPOINT                          string `envconfig:"ENDPOINT" required:"true"`
 	AuthServiceEndpoint               string `envconfig:"AUTH_ENDPOINT" required:"true"`
 	FastOrderServiceEndpoint          string `envconfig:"FASTORDER_ENDPOINT" required:"true"`
 	CompanyServiceEndpoint            string `envconfig:"COMPANY_ENDPOINT" required:"true"`
