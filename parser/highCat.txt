@@ -47,9 +47,16 @@
 Мансардные окна
 Пластиковые окна
 Изоляционные материалы
-Геотекстиль
-Звукоизоляция СтандартПласт
-Керамический гравий
+ГеотекстильMINIO_ROOT_USER=b2b_prod_user
+MINIO_ROOT_PASSWORD=9Mxe85vAQRTkQXddAGTD0Cs_s3EJKq
+POSTGRES_DB=b2b
+POSTGRES_USER=b2b
+POSTGRES_PASSWORD=38clN_GdbHY8vRc
+DADATA_API_KEY=42e877cc6e66e3cc70c47a2f42966120cfcea751
+DADATA_SECRET_KEY=984e0c50d52dd2611b98609eaa7c82268e46297e
+UKASSA_SECRET_KEY=test_on5XfensBJfl8nY63uzUp3CBTW5YE0w6SVhr4VxAdH4
+UKASSA_SHOP_ID=415910
+ENDPOINT=http://localhost:3000
 Межвенцовый утеплитель
 Минеральная вата
 Пенопласт
