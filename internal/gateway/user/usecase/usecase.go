@@ -397,6 +397,7 @@ func (u *userUsecase) UpdateProfile(ctx context.Context, userID int64, request *
 		Patronymic: request.Owner.Patronymic,
 		Email:      request.Owner.Email,
 		Password:   request.Owner.Password,
+		TgUserId:   request.Owner.TgUserId,
 	})
 	if err != nil {
 		return nil, err
@@ -424,6 +425,7 @@ func (u *userUsecase) UpdateProfile(ctx context.Context, userID int64, request *
 			Surname:    updatedUser.Surname,
 			Patronymic: updatedUser.Patronymic,
 			Email:      updatedUser.Email,
+			TgUserId:   updatedUser.TgUserId,
 		},
 		Company: models.CompanyUpdateProfileResponse{
 			Name:         request.Company.Name,

@@ -41,6 +41,9 @@ message LoginResponse {
   int64 owner_id = 14;
   int64 rating = 15;
   int64 verified = 16;
+  int64 TgUserId = 17 [(validate.rules).int64 = {
+    gt: 0,
+  }];
 }
 
 message RegisterRequest {
@@ -151,6 +154,9 @@ message UpdateUserRequest {
     min_len: 8,
     max_len: 128,
     min_bytes: 1,
+  }];
+  int64 TgUserId = 7 [(validate.rules).int64 = {
+    gt: 0,
   }];
 }
 

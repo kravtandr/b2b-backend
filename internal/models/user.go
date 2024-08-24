@@ -29,6 +29,7 @@ type UpdateProfileRequest struct {
 	Email       string `json:"email"`
 	Description string `json:"description"`
 	Password    string `json:"password"`
+	TgUserId    int64  `json:"tg_user_id"`
 }
 
 type LoginUserRequest struct {
@@ -49,6 +50,7 @@ type UpdateUserRequest struct {
 	Patronymic string `json:"patronymic"`
 	Email      string `json:"email"`
 	Password   string `json:"password"`
+	TgUserId   int64  `json:"tg_user_id"`
 }
 
 type UpdateUserResponse struct {
@@ -56,6 +58,7 @@ type UpdateUserResponse struct {
 	Surname    string `json:"surname"`
 	Patronymic string `json:"patronymic"`
 	Email      string `json:"email"`
+	TgUserId   int64  `json:"tg_user_id"`
 }
 
 type PublicUser struct {

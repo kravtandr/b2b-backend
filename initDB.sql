@@ -100,6 +100,7 @@ CREATE TABLE Users
     password        TEXT        NOT NULL,
     group_id        INT         DEFAULT 1,
     balance         INT         DEFAULT 1000,
+    tg_user_id      BIGINT      DEFAULT 0,
     FOREIGN KEY (group_id) REFERENCES Groups (id) ON DELETE CASCADE
 );
 
@@ -289,4 +290,17 @@ INSERT INTO groupaccessrights(add, edit, del) VALUES(true, true, true);
 INSERT INTO groups(name, access_rights) VALUES('Владелец', 1);
 
 
-COPY categories(name) FROM '/var/lib/postgresql/data/export_base_categories.csv' DELIMITER ',' CSV HEADER;
+INSERT INTO categories(name) VALUES('Test');
+INSERT INTO categories(name) VALUES('Баня и отопление');
+INSERT INTO categories(name) VALUES('Двери. Окна. Лестницы');
+INSERT INTO categories(name) VALUES('Изоляционные материалы');
+INSERT INTO categories(name) VALUES('Инструмент');
+INSERT INTO categories(name) VALUES('Кровля. Фасад. Забор');
+INSERT INTO categories(name) VALUES('Метиз и крепеж');
+INSERT INTO categories(name) VALUES('Отделочные материалы');
+INSERT INTO categories(name) VALUES('Пиломатериалы');
+INSERT INTO categories(name) VALUES('Сантехника');
+INSERT INTO categories(name) VALUES('Строительные материалы');
+INSERT INTO categories(name) VALUES('Товары для дома и сада');
+INSERT INTO categories(name) VALUES('Электротовары');
+
