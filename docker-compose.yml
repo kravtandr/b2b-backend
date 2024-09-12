@@ -89,7 +89,7 @@ services:
 #    image: net.entrypoint.auth_service
     ports:
       - "10123:10123"
-      - "11123:8080"
+      - "11123:1830"
     environment:
       - USER_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - USER_GRPC_PORT=10123
@@ -110,7 +110,7 @@ services:
 #    image: net.entrypoint.fastorder_service
     ports:
       - "10124:10124"
-      - "11124:8080"
+      - "11124:1830"
     environment:
       - FASTORDER_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - FASTORDER_GRPC_PORT=10124
@@ -130,7 +130,7 @@ services:
 #    image: net.entrypoint.company_service
     ports:
       - "10125:10125"
-      - "11125:8080"
+      - "11125:1830"
     environment:
       - COMPANY_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - COMPANY_GRPC_PORT=10125
@@ -159,7 +159,7 @@ services:
 #    image: net.entrypoint.productscategories_service
     ports:
       - "10126:10126"
-      - "11126:8080"
+      - "11126:1830"
     environment:
       - PRODUCTSCATEGORIES_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - PRODUCTSCATEGORIES_GRPC_PORT=10126
@@ -183,14 +183,14 @@ services:
 #    image: net.entrypoint.chat_service
     ports:
       - "10127:10127"
-      - "11127:8080"
+      - "11127:1830"
     environment:
       - CHAT_DB_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       - CHAT_GRPC_PORT=10127
     networks:
       - net
     # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:8080/chat/hjjjealth/live"]
+    #   test: ["CMD", "curl", "-f", "http://localhost:1830/chat/hjjjealth/live"]
     #   interval: 3s
     #   timeout: 2s
     #   retries: 3
@@ -215,8 +215,8 @@ services:
         - GOOS=linux
 #    image: net.entrypoint.gateway
     ports:
-      - "8080:8081"
-      - "18080:8080"
+      - "1830:8081"
+      - "11830:1830"
       # - "5001:5001"
     environment:
       - ENDPOINT=${ENDPOINT}
