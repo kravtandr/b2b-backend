@@ -34,33 +34,50 @@ def pillow_image_to_base64_string(img, ext):
 def base64_string_to_pillow_image(base64_str):
     return Image.open(io.BytesIO(base64.decodebytes(bytes(base64_str, "utf-8"))))
 
+
+def getProductCategory(product_category):
+    categories_df = pandas.read_excel('MappedCategories.xlsx', names=['Id','CategoryName','DBCategory'])
+    for row in categories_df.itertuples():  
+        if product_category == row[2]:
+            print("ProductCategory found = ", row[3])
+            return row[3]
+    print("ProductCategory not found")
+    return "Test"                 
+
 def main():
     url = "https://bi-tu-bi.ru/api"
     local_url = "http://127.0.0.1:8080"
-    url = local_url
+    
+    # for local db 
+    # url = local_url
+    
     print("DDOS:", url)
 
     #auth
     auth = {
-        "email": "test@mail.ru", 
-        "password": "password123"
+        "email": "novo@test.ru", 
+        "password": "Xx2OkpyF"
     }
     auth_req = requests.post(url+'/user/login', json=auth) 
     time.sleep(200/1000)
 
 
     if auth_req.status_code == 200:
+        
         ddos_log = pd.DataFrame(columns=['name', 'info', 'price', 'docs', 'category_id', 
-                                 'amount', 'payWay', "deliveryWay","adress", 'product_photo','code', 'response'])
+                                 'amount', 'payWay', "deliveryWay","adress", 'product_photo','code', 'response', 'exception'])
+        
         df = pandas.read_excel('data.xlsx', names=['Ид_товара', 'НомерВерсии', 'ПометкаУдаления', 'Штрихкод', 'Артикул', 
                                     'БазоваяЕдиница', 'Ид_категории', "Название_категории","Количество", 'Наименование', 'Описание', "Цена", 
                                     'Картинка', 'Страна', 'Вес'])
-                                    
+        
         # [7:12]
         lineNumber = 0
         err = 0
-        stopLine = 20
+        stopLine = 8588 #8588
         startLine = 1
+        getCategory_resp = {}
+
         for row in df.itertuples():
             if lineNumber>= startLine and lineNumber<=stopLine:
                 product = {}
@@ -87,33 +104,37 @@ def main():
                 except:
                     print("ERROR in photo")
                 try:
-                    getCategory_req = requests.post(url + '/search/categories?skip=0&limit=1', json={'name': row[8]}) 
-                    time.sleep(50/1000)
-                    if getCategory_req.status_code != 200:
-                        print("GetCategory Failed", getCategory_req.status_code)
+ 
+                    db_category_name =getProductCategory(row[8])
+                    
+                    getCategory_req = requests.post(url + '/search/categories?skip=0&limit=1', json={'name': db_category_name}) 
+                    # time.sleep(50/1000)
+                    if getCategory_req.status_code != 200 or getCategory_req.json() == {'data': None, 'msg': 'OK'}:
+                         print("GetCategory Failed", getCategory_req.status_code, getCategory_req.json())
                     else:
+                        getCategory_resp = getCategory_req.json()
+                        print("getCategory_resp = ", getCategory_resp)
 
-                        json = getCategory_req.json()
-                        # print("Category id = ", json['data'][0]['id'])
                         product = {
-                        "name": row[10],
-                        "info": row[11],
-                        "price": int(row[12]),
-                        "docs":  [],
-                        "category_id": json['data'][0]['id'],
-                        "amount": int(row[9]),
-                        "payWay": "Default",
-                        "deliveryWay": "Default",
-                        "adress": "Default",
-                        "product_photo": [
-                        dataurl
+                            "name": row[10],
+                            "info": row[11],
+                            "price": int(float(row[12])),
+                            "docs":  [],
+                            "category_id": getCategory_resp['data'][0]['id'],
+                            "amount": int(row[9]),
+                            "payWay": "Default",
+                            "deliveryWay": "Default",
+                            "adress": "Default",
+                            "product_photo": [
+                            dataurl
                         ]
-                }
+                        }
                     addProduct_req = custom_post_request(url+'/product/add', json=product, cookies=auth_req.cookies)
                     print(row[10][0:15]+"... ",lineNumber,"/",stopLine," addProduct = ",addProduct_req.status_code, ext)
                     time.sleep(200/1000)
         
-                except:
+                except Exception as e:
+                    print(e)
                     err+=1
                     print(row[10][0:15]+"... ",lineNumber,"/",stopLine,"Error addProduct")
                     ddos_log.append({
@@ -121,7 +142,7 @@ def main():
                         "info": row[11],
                         "price": float(row[12]),
                         "docs":  [],
-                        "category_id": json['data'][0]['id'],
+                        "category_id": getCategory_resp, # full responce 
                         "amount": float(row[9]),
                         "payWay": "Default",
                         "deliveryWay": "Default",
@@ -130,7 +151,8 @@ def main():
                         dataurl
                         ],
                         "code": 0,
-                        "response": ""
+                        "response": "",
+                        "exception": e
                     }, ignore_index=True)
                 lineNumber+=1
             else:
